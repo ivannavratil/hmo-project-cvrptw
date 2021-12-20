@@ -1,7 +1,8 @@
 import java.io.File
 
 fun main() {
-    val buffer = File("src/main/resources/i1").readLines()
+    val instance = 1
+    val buffer = File("src/main/resources/i$instance").readLines()
 
     val (numberOfVehicle, capacity) = buffer[2].parse()
     val depot: Depot = Depot.fromLine(buffer[7].parse())
