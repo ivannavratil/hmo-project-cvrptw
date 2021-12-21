@@ -19,18 +19,18 @@ fun main(args: Array<String>) {
     val depot: Depot = Depot.fromLine(buffer[7].parse())
     val customers = IntRange(8, buffer.size - 1).map { Customer.fromLine(buffer[it].parse()) }.toList()
 
-    val hints = RenderingHints(
-        RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON
-    )
-
     val max = customers.maxByOrNull { it.yCoordinate }!!.yCoordinate
 
     val multiplier = 1000 / max
 
     val pane: JPanel = object : JPanel() {
         override fun paintComponent(g: Graphics) {
-            (g as Graphics2D).setRenderingHints(hints)
-            //super.paintComponent(g)
+            (g as Graphics2D).setRenderingHints(
+                RenderingHints(
+                    RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON
+                )
+            )
+
             g.color = Color.red
             g.fillOval(depot.xCoordinate * multiplier, depot.yCoordinate * multiplier, 10, 10)
 
