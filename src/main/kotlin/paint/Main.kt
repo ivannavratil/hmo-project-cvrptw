@@ -15,8 +15,10 @@ fun main(args: Array<String>) {
     val instance = Instance.fromInstanceId(instanceId)
 
     val max = instance.customers.maxByOrNull { it.yCoordinate }!!.yCoordinate
-
     val multiplier = 1000 / max
+
+    val depotPointSize = 10
+    val customerPointSize = 3
 
     val pane: JPanel = object : JPanel() {
         override fun paintComponent(g: Graphics) {
@@ -27,11 +29,21 @@ fun main(args: Array<String>) {
             )
 
             g.color = Color.red
-            g.fillOval(instance.depot.xCoordinate * multiplier, instance.depot.yCoordinate * multiplier, 10, 10)
+            g.fillOval(
+                instance.depot.xCoordinate * multiplier - depotPointSize / 2,
+                instance.depot.yCoordinate * multiplier - depotPointSize / 2,
+                depotPointSize,
+                depotPointSize
+            )
 
             g.color = Color.black
             instance.customers.forEach {
-                g.fillOval(it.xCoordinate * multiplier, it.yCoordinate * multiplier, 3, 3)
+                g.fillOval(
+                    it.xCoordinate * multiplier - customerPointSize / 2,
+                    it.yCoordinate * multiplier - customerPointSize / 2,
+                    customerPointSize,
+                    customerPointSize
+                )
             }
         }
     }
