@@ -1,25 +1,20 @@
 package paint
 
-import Customer
-import Depot
-import parse
+import Instance
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.RenderingHints
-import java.io.File
 import javax.swing.JFrame
 import javax.swing.JPanel
 
 fun main(args: Array<String>) {
     val f = JFrame()
 
-    val instance = 1
-    val buffer = File("src/main/resources/i$instance").readLines()
-    val depot: Depot = Depot.fromLine(buffer[7].parse())
-    val customers = IntRange(8, buffer.size - 1).map { Customer.fromLine(buffer[it].parse()) }.toList()
+    val instanceId = 1
+    val instance = Instance.fromInstanceId(instanceId)
 
-    val max = customers.maxByOrNull { it.yCoordinate }!!.yCoordinate
+    val max = instance.customers.maxByOrNull { it.yCoordinate }!!.yCoordinate
 
     val multiplier = 1000 / max
 
@@ -32,10 +27,10 @@ fun main(args: Array<String>) {
             )
 
             g.color = Color.red
-            g.fillOval(depot.xCoordinate * multiplier, depot.yCoordinate * multiplier, 10, 10)
+            g.fillOval(instance.depot.xCoordinate * multiplier, instance.depot.yCoordinate * multiplier, 10, 10)
 
             g.color = Color.black
-            customers.forEach {
+            instance.customers.forEach {
                 g.fillOval(it.xCoordinate * multiplier, it.yCoordinate * multiplier, 3, 3)
             }
         }
