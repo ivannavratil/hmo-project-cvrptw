@@ -3,19 +3,15 @@ import java.io.File
 data class Instance(
     val numberOfVehicles: Int,
     val capacity: Int,
-    val depot: Depot,
-    val customers: List<Customer>
+    val nodes: List<Node>
 ) {
     companion object {
         @Suppress("MemberVisibilityCanBePrivate")
         fun fromFile(file: File): Instance {
             val buffer = file.readLines()
-
             val (numberOfVehicles, capacity) = buffer[2].parseInts()
-            val depot = Depot.fromLine(buffer[7].parseInts())
-            val customers = IntRange(8, buffer.size - 1).map { Customer.fromLine(buffer[it].parseInts()) }.toList()
-
-            return Instance(numberOfVehicles, capacity, depot, customers)
+            val nodes = IntRange(7, buffer.size - 1).map { Node.fromLine(buffer[it].parseInts()) }.toList()
+            return Instance(numberOfVehicles, capacity, nodes)
         }
 
         fun fromInstanceId(id: Int): Instance {
