@@ -17,8 +17,6 @@ fun main(args: Array<String>) {
     val width = screenSize.getWidth().toInt()
     val height = screenSize.getHeight().toInt()
 
-    println(width)
-
     val instanceId = 1
     val instance = Instance.fromInstanceId(instanceId)
 
