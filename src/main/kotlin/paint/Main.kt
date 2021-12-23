@@ -2,20 +2,28 @@ package paint
 
 import Instance
 import java.awt.Color
+import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.RenderingHints
+import java.awt.Toolkit
 import javax.swing.JFrame
 import javax.swing.JPanel
 
 fun main(args: Array<String>) {
     val f = JFrame()
 
+    val screenSize: Dimension = Toolkit.getDefaultToolkit().screenSize
+    val width = screenSize.getWidth().toInt()
+    val height = screenSize.getHeight().toInt()
+
+    println(width)
+
     val instanceId = 1
     val instance = Instance.fromInstanceId(instanceId)
 
     val max = instance.customers.maxByOrNull { it.yCoordinate }!!.yCoordinate
-    val multiplier = 1000 / max
+    val multiplier = (height * 0.9).toInt() / max
 
     val depotPointSize = 10
     val customerPointSize = 3
