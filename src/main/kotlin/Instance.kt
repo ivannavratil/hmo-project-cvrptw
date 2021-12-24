@@ -5,6 +5,8 @@ data class Instance(
     val capacity: Int,
     val nodes: List<Node>
 ) {
+    val depot get() = nodes[0]
+
     companion object {
         @Suppress("MemberVisibilityCanBePrivate")
         fun fromFile(file: File): Instance {
@@ -14,8 +16,6 @@ data class Instance(
             return Instance(numberOfVehicles, capacity, nodes)
         }
 
-        fun fromInstanceId(id: Int): Instance {
-            return fromFile(File("src/main/resources/i${id}"))
-        }
+        fun fromInstanceId(id: Int) = fromFile(File("src/main/resources/i${id}"))
     }
 }

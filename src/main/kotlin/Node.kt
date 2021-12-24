@@ -4,7 +4,7 @@ data class Node(
     val yCoordinate: Int,
     val demand: Int,
     val readyTime: Int,
-    val dueDate: Int,
+    val dueTime: Int,
     val serviceTime: Int
 ) {
     companion object {
