@@ -2,12 +2,6 @@ import org.jetbrains.bio.viktor.F64Array
 import java.lang.Integer.max
 import kotlin.math.ceil
 
-data class NodeMeta(
-    val node: Node,
-    val arrivalTime: Int,  // when vehicle arrived, might have to wait until ready time
-    val departureTime: Int  // when servicing is done, for caching purposes
-)
-
 class Ant(
     val instance: Instance,
     val distances: F64Array,
