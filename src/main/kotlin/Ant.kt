@@ -1,11 +1,9 @@
+import Distances.calculateTravelTime
 import org.jetbrains.bio.viktor.F64Array
 import java.lang.Integer.max
-import kotlin.math.ceil
 
 class Ant(
     val instance: Instance,
-    val distances: F64Array,
-    val inverseDistances: F64Array,
     val pheromones: F64Array
 ) {
     fun traverse(): SolutionBuilder? {
@@ -26,8 +24,6 @@ class Ant(
             }
         }
     }
-
-    private fun calculateTravelTime(id1: Int, id2: Int) = ceil(distances[id1, id2]).toInt()
 
 
     // TODO look for neighbors only in set of unvisited nodes?

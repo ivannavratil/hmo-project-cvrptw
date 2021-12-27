@@ -1,3 +1,5 @@
+import Distances.inverseDistances
+
 // TODO Remove all F64Array if calculations are not vectorized.
 // TODO Array / ArrayList / List ?
 // TODO Sparse structures?
@@ -7,7 +9,6 @@ fun main() {
     val instance = Instance.fromInstanceId(instanceId)
 
     val aco = AntColony(1.0, instance)
-    val (distances, inverseDistances) = AntColony.calculateDistances(instance)
 
     for (i in instance.nodes.indices) {
         for (j in instance.nodes.indices)
