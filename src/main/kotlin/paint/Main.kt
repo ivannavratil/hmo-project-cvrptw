@@ -18,7 +18,7 @@ fun main(args: Array<String>) {
     val screenSize: Dimension = Toolkit.getDefaultToolkit().screenSize
     val height = screenSize.getHeight().toInt()
 
-    val instanceId = 1
+    val instanceId = 6
     val instance = Instance.fromInstanceId(instanceId)
 
     val solution: Solution = Solution.fromFile(File("src/main/resources/results/i$instanceId.txt"))
@@ -26,7 +26,7 @@ fun main(args: Array<String>) {
 //    val solution: Solution? = null
 
     val max = instance.nodes.maxByOrNull { it.yCoordinate }!!.yCoordinate
-    val multiplier = (height * 0.9).toInt() / max
+    val multiplier = height * 0.9 / max
 
     val depotPointSize = 10
     val customerPointSize = 3
@@ -44,29 +44,34 @@ fun main(args: Array<String>) {
                 val pointSize = if (i == 0) depotPointSize else customerPointSize
 
                 g.fillOval(
-                    node.xCoordinate * multiplier - pointSize / 2,
-                    node.yCoordinate * multiplier - pointSize / 2,
+                    (node.xCoordinate * multiplier - pointSize / 2).toInt(),
+                    (node.yCoordinate * multiplier - pointSize / 2).toInt(),
                     pointSize,
                     pointSize
                 )
             }
 
+            val step = 1.0 / solution.routes.size
+            var current = 0.0
+
             @Suppress(
                 "UNREACHABLE_CODE",
                 "UNNECESSARY_SAFE_CALL",
                 "UNUSED_ANONYMOUS_PARAMETER"
-            ) solution?.routes?.forEachIndexed { i, route ->
-                g.color = Color.getHSBColor(i.toFloat() / solution.routes.size, 1f, 1f)
+            )
+            solution?.routes?.forEachIndexed { i, route ->
+                g.color = Color.getHSBColor(current.toFloat(), 1f, 1f)
+                current += step
 
                 route.nodes.zipWithNext().forEach {
                     val customer1 = instance.nodes[it.first.first]
                     val customer2 = instance.nodes[it.second.first]
 
                     g.drawLine(
-                        customer1.xCoordinate * multiplier,
-                        customer1.yCoordinate * multiplier,
-                        customer2.xCoordinate * multiplier,
-                        customer2.yCoordinate * multiplier
+                        (customer1.xCoordinate * multiplier).toInt(),
+                        (customer1.yCoordinate * multiplier).toInt(),
+                        (customer2.xCoordinate * multiplier).toInt(),
+                        (customer2.yCoordinate * multiplier).toInt()
                     )
                 }
             }
