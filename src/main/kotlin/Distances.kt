@@ -11,7 +11,7 @@ object Distances {
         distances = F64Array(instance.nodes.size, instance.nodes.size) { row, col ->
             val n1 = instance.nodes[row]
             val n2 = instance.nodes[col]
-            hypot(n2.xCoordinate - n1.xCoordinate.toDouble(), n2.yCoordinate - n1.yCoordinate.toDouble())
+            hypot(n2.xCoordinate - n1.xCoordinate, n2.yCoordinate - n1.yCoordinate)
         }
         inverseDistances = 1.0 / distances  // TODO Infinity on diagonal (NaN after *= 0.0)
     }

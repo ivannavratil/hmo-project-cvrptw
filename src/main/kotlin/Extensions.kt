@@ -1,3 +1,7 @@
+fun String.parseDoubles(): DoubleArray {
+    return this.trim().split("\\s++".toRegex()).map { it.toDouble() }.toDoubleArray()
+}
+
 fun String.parseInts(): IntArray {
     return this.trim().split("\\s++".toRegex()).map { it.toInt() }.toIntArray()
 }
