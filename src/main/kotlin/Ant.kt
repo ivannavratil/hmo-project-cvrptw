@@ -8,19 +8,46 @@ class Ant(
     val inverseDistances: F64Array,
     val pheromones: F64Array
 ) {
-    fun traverse() {
-        val solution = SolutionBuilder()
-        // TODO Check that all nodes are visited and that #routes <= instance.numberOfVehicles
+    fun traverse(): SolutionBuilder? {
+        val solutionBuilder = SolutionBuilder()
 
-//        solution.routes.last().isValidNextNode(node)
+        while (true) {
+            val neighbors = solutionBuilder.findNeighbors()
+            if (neighbors.isEmpty()) {
+                solutionBuilder.currentRoute.addNextNode(instance.depot)
+                if (solutionBuilder.isFinished)
+                    return solutionBuilder
+
+                solutionBuilder.createNewRoute()
+                if (solutionBuilder.vehiclesUsed > instance.numberOfVehicles)
+                    return null
+            } else {
+                // TODO Pick node! Update pheromones etc
+            }
+        }
     }
 
     private fun calculateTravelTime(id1: Int, id2: Int) = ceil(distances[id1, id2]).toInt()
 
+
+    // TODO look for neighbors only in set of unvisited nodes?
     inner class SolutionBuilder {
         val visitedNodes = F64Array(instance.nodes.size) { 0.0 }  // TODO Switch to set or regular array?
-        var visitedNodesCount = 0
+        var unvisitedNodesCount = instance.nodes.size - 1  // do not count depot
         val routes = mutableListOf(RouteBuilder())  // TODO Add new route when finished
+
+        val currentRoute get() = routes.last()
+        val vehiclesUsed get() = routes.size
+        val isFinished get() = unvisitedNodesCount <= 0
+
+        fun createNewRoute() = routes.add(RouteBuilder())
+
+        fun findNeighbors(): List<Node> {
+            return instance.nodes.filter { node ->
+                node !== instance.depot && currentRoute.isValidNextNode(node)
+            }
+        }
+
 
         inner class RouteBuilder {
             var remainingCapacity = instance.capacity
@@ -28,7 +55,7 @@ class Ant(
                 NodeMeta(this, this.readyTime, this.readyTime + this.serviceTime)
             })
 
-            // TODO Do not call this with depot as node!
+            // TODO Do not call this with depot as node! -- if (node === instance.depot) return false ? (findNeighbors)
             // TODO Can this be vectorized?
             fun isValidNextNode(node: Node): Boolean {
                 //has this node been visited before
@@ -67,7 +94,7 @@ class Ant(
                 if (!isValidNextNode(node)) throw RuntimeException("¡Ay, caramba!")  // TODO comment out
 
                 visitedNodes[node.id] = 1.0
-                visitedNodesCount++
+                unvisitedNodesCount--
 
                 remainingCapacity -= node.demand
             }

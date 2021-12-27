@@ -1,4 +1,6 @@
 // TODO Remove all F64Array if calculations are not vectorized.
+// TODO Array / ArrayList / List ?
+// TODO Sparse structures?
 
 fun main() {
     val instanceId = 1
