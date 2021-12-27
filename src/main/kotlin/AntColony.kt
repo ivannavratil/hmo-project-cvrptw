@@ -2,8 +2,9 @@ import org.jetbrains.bio.viktor.F64Array
 
 class AntColony(
     val instance: Instance,
-    val antColonyConfig: Config.AntColony,  // TODO set to 1/L for random first try?
+    val antColonyConfig: Config.AntColony
 ) {
+    // TODO Set tauZero to 1/L for random first try?
     val pheromones: F64Array = F64Array(instance.nodes.size, instance.nodes.size) { _, _ -> antColonyConfig.tauZero }
     var currentTemperature = antColonyConfig.startingTemperature
     var incumbentSolution: Ant.SolutionBuilder? = null
