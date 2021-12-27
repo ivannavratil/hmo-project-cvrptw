@@ -2,17 +2,12 @@ package paint
 
 import Instance
 import Solution
-import java.awt.Color
-import java.awt.Dimension
-import java.awt.Graphics
-import java.awt.Graphics2D
-import java.awt.RenderingHints
-import java.awt.Toolkit
+import java.awt.*
 import java.io.File
 import javax.swing.JFrame
 import javax.swing.JPanel
 
-fun main(args: Array<String>) {
+fun main() {
     val f = JFrame()
 
     val screenSize: Dimension = Toolkit.getDefaultToolkit().screenSize
@@ -51,8 +46,7 @@ fun main(args: Array<String>) {
                 )
             }
 
-            val step = 1.0 / solution.routes.size
-            var current = 0.0
+            val colorStep = 1.0f / solution.routes.size
 
             @Suppress(
                 "UNREACHABLE_CODE",
@@ -60,8 +54,7 @@ fun main(args: Array<String>) {
                 "UNUSED_ANONYMOUS_PARAMETER"
             )
             solution?.routes?.forEachIndexed { i, route ->
-                g.color = Color.getHSBColor(current.toFloat(), 1f, 1f)
-                current += step
+                g.color = Color.getHSBColor(colorStep * i, 1f, 1f)
 
                 route.nodes.zipWithNext().forEach {
                     val customer1 = instance.nodes[it.first.first]
