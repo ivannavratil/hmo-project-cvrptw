@@ -1,10 +1,18 @@
 import Distances.calculateTravelTime
+import Distances.inverseDistances
+import SavingsHeuristic.calculateSavings
+import WaitHeuristic.calculateWaitTime
 import org.jetbrains.bio.viktor.F64Array
 import java.lang.Integer.max
+import kotlin.math.pow
 
 class Ant(
     val instance: Instance,
-    val pheromones: F64Array
+    val pheromones: F64Array,
+    private val alpha: Double = 1.0,
+    private val beta: Double = 2.0,
+    private val lambda: Double = 3.0,
+    private val theta: Double = 0.75
 ) {
     fun traverse(): SolutionBuilder? {
         val solutionBuilder = SolutionBuilder()
@@ -23,6 +31,13 @@ class Ant(
                 // TODO Pick node! Update pheromones etc
             }
         }
+    }
+
+    fun calculateProbability(source: NodeMeta, destination: Node): Double {
+        return pheromones[source.node.id, destination.id].pow(alpha) *
+                inverseDistances[source.node.id, destination.id].pow(beta) *
+                calculateSavings(source.node.id, destination.id).pow(lambda) *
+                calculateWaitTime(source, destination).pow(theta)
     }
 
 
