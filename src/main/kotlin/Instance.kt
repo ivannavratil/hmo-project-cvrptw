@@ -5,7 +5,7 @@ data class Instance(
     val capacity: Int,
     val nodes: List<Node>
 ) {
-    val depot get() = nodes[0]
+    val depot = nodes[0]
 
     companion object {
         @Suppress("MemberVisibilityCanBePrivate")
