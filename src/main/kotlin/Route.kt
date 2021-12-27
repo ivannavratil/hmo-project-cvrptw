@@ -9,5 +9,9 @@ data class Route(
             }
             return Route(nodes)
         }
+
+        fun fromRouteBuilder(builder: Ant.SolutionBuilder.RouteBuilder) {
+            TODO()
+        }
     }
 }

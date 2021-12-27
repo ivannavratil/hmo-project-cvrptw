@@ -1,4 +1,5 @@
 import Distances.calculateTravelTime
+import Distances.distances
 import Distances.inverseDistances
 import SavingsHeuristic.calculateSavings
 import WaitHeuristic.calculateWaitTime
@@ -9,13 +10,13 @@ import kotlin.math.pow
 import kotlin.random.Random
 
 class Ant(
-    val instance: Instance,
-    val pheromones: F64Array,
-    private val alpha: Double = 1.0,
-    private val beta: Double = 2.0,
-    private val lambda: Double = 3.0,
-    private val theta: Double = 0.75,
-    private val q0: Double = 0.75
+    private val instance: Instance,
+    private val pheromones: F64Array,
+    private val alpha: Double,
+    private val beta: Double,
+    private val lambda: Double,
+    private val theta: Double,
+    private val q0: Double
 ) {
     // TODO Update local pheromones etc
     fun traverse(): SolutionBuilder? {
@@ -26,7 +27,7 @@ class Ant(
             if (neighbors.isEmpty()) {
                 solutionBuilder.currentRoute.addNextNode(instance.depot)
                 if (solutionBuilder.isFinished) {
-                    return solutionBuilder
+                    return solutionBuilder  // TODO local search
                 }
 
                 solutionBuilder.createNewRoute()
@@ -40,7 +41,7 @@ class Ant(
         }
     }
 
-    fun pickNextCustomer(sourceMeta: NodeMeta, neighbors: List<Node>): Node {
+    private fun pickNextCustomer(sourceMeta: NodeMeta, neighbors: List<Node>): Node {
         val numerators = DoubleArray(neighbors.size)
         neighbors.forEachIndexed { i, node ->
             numerators[i] = calculateNumerators(sourceMeta, node)
@@ -54,7 +55,7 @@ class Ant(
         return neighbors[chosenIndex]
     }
 
-    fun calculateNumerators(sourceMeta: NodeMeta, destination: Node): Double {
+    private fun calculateNumerators(sourceMeta: NodeMeta, destination: Node): Double {
         return pheromones[sourceMeta.node.id, destination.id].pow(alpha) *
                 inverseDistances[sourceMeta.node.id, destination.id].pow(beta) *
                 calculateSavings(sourceMeta.node.id, destination.id).pow(lambda) *
@@ -71,6 +72,7 @@ class Ant(
         val currentRoute get() = routes.last()
         val vehiclesUsed get() = routes.size
         val isFinished get() = unvisitedNodesCount <= 0
+        val totalDistance get() = routes.sumOf { it.totalDistance }
 
         fun createNewRoute() = routes.add(RouteBuilder())
 
@@ -83,6 +85,7 @@ class Ant(
 
         inner class RouteBuilder {
             var remainingCapacity = instance.capacity
+            var totalDistance = 0.0
             val route = mutableListOf(with(instance.depot) {
                 NodeMeta(this, this.readyTime, this.readyTime + this.serviceTime)
             })
@@ -119,6 +122,7 @@ class Ant(
                 val arrivalTime = lastNodeMeta.departureTime + calculateTravelTime(lastNodeMeta.node.id, node.id)
                 val departureTime = max(arrivalTime, node.readyTime) + node.serviceTime
                 route.add(NodeMeta(node, arrivalTime, departureTime))
+                totalDistance += distances[lastNodeMeta.node.id, node.id]
 
                 if (node === instance.depot)
                     return

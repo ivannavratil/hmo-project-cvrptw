@@ -11,5 +11,9 @@ data class Solution(
             val distance = buffer.last().toDouble()
             return Solution(routes, distance)
         }
+
+        fun fromSolutionBuilder(builder: Ant.SolutionBuilder): Solution {
+            TODO()
+        }
     }
 }

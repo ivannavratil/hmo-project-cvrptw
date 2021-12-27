@@ -8,7 +8,7 @@ fun main() {
     val instanceId = 1
     val instance = Instance.fromInstanceId(instanceId)
 
-    val aco = AntColony(1.0, instance)
+    val aco = AntColony(instance, 1.0, 100.0)
 
     for (i in instance.nodes.indices) {
         for (j in instance.nodes.indices)
