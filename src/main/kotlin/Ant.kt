@@ -32,9 +32,9 @@ class Ant(
 
     // TODO look for neighbors only in set of unvisited nodes?
     inner class SolutionBuilder {
+        val routes = mutableListOf(RouteBuilder())
         val visitedNodes = F64Array(instance.nodes.size) { 0.0 }  // TODO Switch to set or regular array?
         var unvisitedNodesCount = instance.nodes.size - 1  // do not count depot
-        val routes = mutableListOf(RouteBuilder())  // TODO Add new route when finished
 
         val currentRoute get() = routes.last()
         val vehiclesUsed get() = routes.size
