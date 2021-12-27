@@ -14,11 +14,11 @@ fun main() {
     }
     println("Config setup: $config")
 
-    val instance = Instance.fromInstanceId(config.instance)
+    val instance = Instance.fromInstanceId(config.instanceId)
 
     val aco = AntColony(instance, config.antColony)
 
     aco.run(config.iterations, config)
     Solution.fromSolutionBuilder(aco.incumbentSolution!!)
-        .exportToFile("src/main/resources/results/i${config.instance}.txt")
+        .exportToFile("src/main/resources/results/i${config.instanceId}.txt")
 }

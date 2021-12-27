@@ -1,4 +1,9 @@
-data class Config(val instance: Int, val iterations: Int, val ant: Ant, val antColony: AntColony) {
+data class Config(
+    val instanceId: Int,
+    val iterations: Int,
+    val ant: Ant,
+    val antColony: AntColony
+) {
     data class Ant(
         val count: Int,
         val alpha: Double,
