@@ -49,9 +49,8 @@ class Ant(
             //TODO: SimpleIntWeightedLottery doesn't throw but total solution is worse :(
             val min = numerators.minOf { it }
             if (min < 0) {
-                numerators.forEachIndexed { index, value ->
-                    numerators[index] = value + abs(min)
-                }
+                val absMin = abs(min)
+                numerators.indices.forEach { numerators[it] += absMin }
             }
             SimpleIntWeightedLottery(numerators).draw()
         }
