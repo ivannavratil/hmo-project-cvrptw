@@ -64,7 +64,7 @@ class Ant(
 
 
     // TODO look for neighbors only in set of unvisited nodes?
-    inner class SolutionBuilder {
+    inner class SolutionBuilder : Comparable<SolutionBuilder> {
         val routes = mutableListOf(RouteBuilder())
         val visitedNodes = F64Array(instance.nodes.size) { 0.0 }  // TODO Switch to set or regular array?
         var unvisitedNodesCount = instance.nodes.size - 1  // do not count depot
@@ -72,7 +72,7 @@ class Ant(
         val currentRoute get() = routes.last()
         val vehiclesUsed get() = routes.size
         val isFinished get() = unvisitedNodesCount <= 0
-        val totalDistance get() = routes.sumOf { it.totalDistance }
+        val totalDistance get() = routes.sumOf { it.totalDistance }  // TODO recalculated many times
 
         fun createNewRoute() = routes.add(RouteBuilder())
 
@@ -81,6 +81,9 @@ class Ant(
                 node !== instance.depot && currentRoute.isValidNextNode(node)
             }
         }
+
+        override fun compareTo(other: SolutionBuilder) =
+            compareValuesBy(this, other, { it.vehiclesUsed }, { it.totalDistance })
 
 
         inner class RouteBuilder {
