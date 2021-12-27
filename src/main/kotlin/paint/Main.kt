@@ -2,7 +2,12 @@ package paint
 
 import Instance
 import Solution
-import java.awt.*
+import java.awt.Color
+import java.awt.Dimension
+import java.awt.Graphics
+import java.awt.Graphics2D
+import java.awt.RenderingHints
+import java.awt.Toolkit
 import java.io.File
 import javax.swing.JFrame
 import javax.swing.JPanel
@@ -16,7 +21,7 @@ fun main(args: Array<String>) {
     val instanceId = 1
     val instance = Instance.fromInstanceId(instanceId)
 
-    val solution: Solution = Solution.fromFile(File("src/main/resources/results/test.txt"))
+    val solution: Solution = Solution.fromFile(File("src/main/resources/results/i$instanceId.txt"))
 //    val solution: Solution = Solution.fromFile(File("src/main/resources/results/fake-res-1m-i${instanceId}.txt"))
 //    val solution: Solution? = null
 
