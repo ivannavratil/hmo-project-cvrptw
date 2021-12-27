@@ -2,7 +2,7 @@ import org.jetbrains.bio.viktor.F64Array
 
 class AntColony(
     val instance: Instance,
-    val tauZero: Double = 1e-5,  // TODO set to 1/L for random first try?
+    val tauZero: Double = 1e-3,  // TODO set to 1/L for random first try?
     startingTemperature: Double
 ) {
     val pheromones: F64Array = F64Array(instance.nodes.size, instance.nodes.size) { _, _ -> tauZero }
@@ -25,13 +25,13 @@ class AntColony(
         // TODO Simulated annealing
 
         val solutions = mutableListOf<Ant.SolutionBuilder>()
-        repeat(antCount) {  // TODO parallelize
+        repeat(antCount) {  // TODO parallelize or use local pheromones (ACS)
             val ant = Ant(instance, pheromones, alpha, beta, lambda, theta, q0)
             ant.traverse()?.let(solutions::add)
         }
 
         // TODO e.g. pick best 2?
-        val bestSolution = solutions.maxOfOrNull { it } ?: return null
+        val bestSolution = solutions.minOfOrNull { it } ?: return null
 
         val pheromoneDelta = 1.0 / bestSolution.totalDistance
         pheromones *= (1 - rho)
@@ -43,14 +43,19 @@ class AntColony(
             }
         }
 
-        if (incumbentSolution == null || incumbentSolution!! < bestSolution) {
+        if (incumbentSolution == null || bestSolution < incumbentSolution!!) {
             println("Found new best solution")
+            println("${bestSolution.vehiclesUsed} ${bestSolution.totalDistance}")
             incumbentSolution = bestSolution
         }
-
-        println("${bestSolution.vehiclesUsed} ${bestSolution.totalDistance}")
 
         return bestSolution
     }
 
+    fun run(iters: Int = 1000) {
+        repeat(iters) {
+            if (it % 50 == 0) println(it)
+            performSingleIteration()
+        }
+    }
 }

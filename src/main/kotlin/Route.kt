@@ -1,6 +1,8 @@
 data class Route(
     val nodes: List<Pair<Int, Int>>
 ) {
+    fun formatOutput() = nodes.joinToString("->") { "${it.first}(${it.second})" }
+
     companion object {
         fun parseRoute(line: String): Route {
             val nodes = line.split(':')[1].trim().split("->").map {
@@ -10,8 +12,11 @@ data class Route(
             return Route(nodes)
         }
 
-        fun fromRouteBuilder(builder: Ant.SolutionBuilder.RouteBuilder) {
-            TODO()
+        fun fromRouteBuilder(builder: Ant.SolutionBuilder.RouteBuilder): Route {
+            val nodes = builder.route.map {
+                Pair(it.node.id, maxOf(it.arrivalTime, it.node.readyTime))
+            }
+            return Route(nodes)
         }
     }
 }

@@ -16,7 +16,8 @@ fun main(args: Array<String>) {
     val instanceId = 1
     val instance = Instance.fromInstanceId(instanceId)
 
-    val solution: Solution = Solution.fromFile(File("src/main/resources/results/fake-res-1m-i${instanceId}.txt"))
+    val solution: Solution = Solution.fromFile(File("src/main/resources/results/test.txt"))
+//    val solution: Solution = Solution.fromFile(File("src/main/resources/results/fake-res-1m-i${instanceId}.txt"))
 //    val solution: Solution? = null
 
     val max = instance.nodes.maxByOrNull { it.yCoordinate }!!.yCoordinate

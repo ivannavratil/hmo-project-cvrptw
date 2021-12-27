@@ -5,7 +5,6 @@ import SavingsHeuristic.calculateSavings
 import WaitHeuristic.calculateWaitTime
 import com.wl.SimpleIntWeightedLottery
 import org.jetbrains.bio.viktor.F64Array
-import java.lang.Integer.max
 import kotlin.math.pow
 import kotlin.random.Random
 
@@ -110,7 +109,7 @@ class Ant(
                     return false
 
                 // Will the vehicle manage to return to the depot
-                val depotArrival = max(arrivalTime, node.readyTime) +
+                val depotArrival = maxOf(arrivalTime, node.readyTime) +
                         node.serviceTime +
                         calculateTravelTime(node.id, instance.depot.id)
                 if (depotArrival > instance.depot.dueTime)
@@ -120,17 +119,18 @@ class Ant(
             }
 
             fun addNextNode(node: Node) {
+                if (node !== instance.depot && !isValidNextNode(node))
+                    throw RuntimeException("¡Ay, caramba!")  // TODO comment out
+
                 // TODO Extract method for arrivalTime?
                 val lastNodeMeta = route.last()
                 val arrivalTime = lastNodeMeta.departureTime + calculateTravelTime(lastNodeMeta.node.id, node.id)
-                val departureTime = max(arrivalTime, node.readyTime) + node.serviceTime
+                val departureTime = maxOf(arrivalTime, node.readyTime) + node.serviceTime  // TODO extract maxOf?
                 route.add(NodeMeta(node, arrivalTime, departureTime))
                 totalDistance += distances[lastNodeMeta.node.id, node.id]
 
                 if (node === instance.depot)
                     return
-
-                if (!isValidNextNode(node)) throw RuntimeException("¡Ay, caramba!")  // TODO comment out
 
                 visitedNodes[node.id] = 1.0
                 unvisitedNodesCount--
