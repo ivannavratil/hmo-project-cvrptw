@@ -5,13 +5,13 @@ data class Config(
     val antColony: AntColony
 ) {
     data class Ant(
-        val count: Int,
-        val alpha: Double,
-        val beta: Double,
-        val lambda: Double,
-        val theta: Double,
-        val q0: Double,
-        val rho: Double
+        var count: Int,
+        var alpha: Double,
+        var beta: Double,
+        var lambda: Double,
+        var theta: Double,
+        var q0: Double,
+        var rho: Double
     )
 
     data class AntColony(
