@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-    <configuration default="false" name="Draw" type="JetRunConfigurationType" singleton="false">
+    <configuration default="false" name="ACO" type="JetRunConfigurationType" singleton="false">
         <option name="MAIN_CLASS_NAME" value="MainKt"/>
         <module name="hmo-project.main"/>
         <shortenClasspath name="NONE"/>
