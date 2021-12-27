@@ -2,11 +2,10 @@ import org.jetbrains.bio.viktor.F64Array
 
 class AntColony(
     val instance: Instance,
-    val tauZero: Double = 1e-3,  // TODO set to 1/L for random first try?
-    startingTemperature: Double
+    val antColonyConfig: Config.AntColony,  // TODO set to 1/L for random first try?
 ) {
-    val pheromones: F64Array = F64Array(instance.nodes.size, instance.nodes.size) { _, _ -> tauZero }
-    var currentTemperature = startingTemperature
+    val pheromones: F64Array = F64Array(instance.nodes.size, instance.nodes.size) { _, _ -> antColonyConfig.tauZero }
+    var currentTemperature = antColonyConfig.startingTemperature
     var incumbentSolution: Ant.SolutionBuilder? = null
 
     init {
@@ -14,19 +13,13 @@ class AntColony(
     }
 
     fun performSingleIteration(
-        antCount: Int = 69,
-        alpha: Double = 1.0,
-        beta: Double = 2.0,
-        lambda: Double = 3.0,
-        theta: Double = 0.75,
-        q0: Double = 0.75,
-        rho: Double = 0.1
+        antConfig: Config.Ant
     ): Ant.SolutionBuilder? {
         // TODO Simulated annealing
 
         val solutions = mutableListOf<Ant.SolutionBuilder>()
-        repeat(antCount) {  // TODO parallelize or use local pheromones (ACS)
-            val ant = Ant(instance, pheromones, alpha, beta, lambda, theta, q0)
+        repeat(antConfig.count) {  // TODO parallelize or use local pheromones (ACS)
+            val ant = Ant(instance, pheromones, antConfig)
             ant.traverse()?.let(solutions::add)
         }
 
@@ -34,12 +27,12 @@ class AntColony(
         val bestSolution = solutions.minOfOrNull { it } ?: return null
 
         val pheromoneDelta = 1.0 / bestSolution.totalDistance
-        pheromones *= (1 - rho)
+        pheromones *= (1 - antConfig.rho)
         bestSolution.routes.forEach {
             it.route.zipWithNext().forEach { pair ->
                 val id1 = pair.first.node.id
                 val id2 = pair.second.node.id
-                pheromones[id1, id2] += rho * pheromoneDelta
+                pheromones[id1, id2] += antConfig.rho * pheromoneDelta
             }
         }
 
@@ -52,10 +45,12 @@ class AntColony(
         return bestSolution
     }
 
-    fun run(iters: Int = 1000) {
+    fun run(iters: Int = 1000, config: Config) {
         repeat(iters) {
-            if (it % 50 == 0) println(it)
-            performSingleIteration()
+            if (it % 50 == 0) {
+                println(it)
+            }
+            performSingleIteration(config.ant)
         }
     }
 }

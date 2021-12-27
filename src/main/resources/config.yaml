@@ -1,0 +1,15 @@
+instance: 1
+iterations: 1000
+
+ant:
+    count: 69
+    alpha: 1.0
+    beta: 2.0
+    lambda: 3.0
+    theta: 0.75
+    q0: 0.75
+    rho: 0.1
+
+antColony:
+    tauZero: 0.001
+    startingTemperature: 100

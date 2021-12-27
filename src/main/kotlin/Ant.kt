@@ -12,11 +12,7 @@ import kotlin.random.Random
 class Ant(
     private val instance: Instance,
     private val pheromones: F64Array,
-    private val alpha: Double,
-    private val beta: Double,
-    private val lambda: Double,
-    private val theta: Double,
-    private val q0: Double
+    private val antConfig: Config.Ant
 ) {
     // TODO Update local pheromones etc
     fun traverse(): SolutionBuilder? {
@@ -47,7 +43,7 @@ class Ant(
             numerators[i] = calculateNumerators(sourceMeta, node)
         }
 
-        val chosenIndex = if (Random.nextDouble() <= q0) {
+        val chosenIndex = if (Random.nextDouble() <= antConfig.q0) {
             numerators.asIterable().argmax()!!
         } else {
             //TODO: SimpleIntWeightedLottery doesn't throw but total solution is worse :(
@@ -63,10 +59,10 @@ class Ant(
     }
 
     private fun calculateNumerators(sourceMeta: NodeMeta, destination: Node): Double {
-        return pheromones[sourceMeta.node.id, destination.id].pow(alpha) *
-                inverseDistances[sourceMeta.node.id, destination.id].pow(beta) *
-                calculateSavings(sourceMeta.node.id, destination.id).pow(lambda) *
-                calculateWaitTime(sourceMeta, destination).pow(theta)
+        return pheromones[sourceMeta.node.id, destination.id].pow(antConfig.alpha) *
+                inverseDistances[sourceMeta.node.id, destination.id].pow(antConfig.beta) *
+                calculateSavings(sourceMeta.node.id, destination.id).pow(antConfig.lambda) *
+                calculateWaitTime(sourceMeta, destination).pow(antConfig.theta)
     }
 
     // TODO look for neighbors only in set of unvisited nodes?

@@ -1,13 +1,24 @@
+import com.sksamuel.hoplite.ConfigLoader
+
 // TODO Remove all F64Array if calculations are not vectorized.
 // TODO Array / ArrayList / List ?
 // TODO Sparse structures?
 
 fun main() {
-    val instanceId = 6
-    val instance = Instance.fromInstanceId(instanceId)
 
-    val aco = AntColony(instance, startingTemperature = 100.0)
+    val config = try {
+        ConfigLoader().loadConfigOrThrow("/config.yaml")
+    } catch (ex: Exception) {
+        println("Using values set programmatically!")
+        Config(1, 1000, Config.Ant(69, 1.0, 2.0, 3.0, 0.75, 0.75, 0.1), Config.AntColony(0.001, 100.0))
+    }
+    println("Config setup: $config")
 
-    aco.run(100)
-    Solution.fromSolutionBuilder(aco.incumbentSolution!!).exportToFile("src/main/resources/results/i$instanceId.txt")
+    val instance = Instance.fromInstanceId(config.instance)
+
+    val aco = AntColony(instance, config.antColony)
+
+    aco.run(config.iterations, config)
+    Solution.fromSolutionBuilder(aco.incumbentSolution!!)
+        .exportToFile("src/main/resources/results/i${config.instance}.txt")
 }
