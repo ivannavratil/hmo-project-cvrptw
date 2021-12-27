@@ -7,8 +7,8 @@ fun main() {
     val aco = AntColony(1.0, instance)
     val (distances, inverseDistances) = AntColony.calculateDistances(instance)
 
-    for (i in 0 until instance.nodes.size) {
-        for (j in 0 until instance.nodes.size)
+    for (i in instance.nodes.indices) {
+        for (j in instance.nodes.indices)
             print(String.format("%6.2f", inverseDistances[i, j]))
         println()
     }
