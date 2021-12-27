@@ -18,7 +18,7 @@ fun main() {
 
     val aco = AntColony(instance, config.antColony)
 
-    aco.run(config.iterations, config)
+    aco.run(config)
     Solution.fromSolutionBuilder(aco.incumbentSolution!!)
         .exportToFile("src/main/resources/results/i${config.instanceId}.txt")
 }

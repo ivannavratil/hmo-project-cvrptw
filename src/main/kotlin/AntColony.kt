@@ -45,8 +45,8 @@ class AntColony(
         return bestSolution
     }
 
-    fun run(iters: Int = 1000, config: Config) {
-        repeat(iters) {
+    fun run(config: Config) {
+        repeat(config.iterations) {
             if (it % 50 == 0) {
                 println(it)
             }
