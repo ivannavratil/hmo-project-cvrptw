@@ -5,6 +5,7 @@ import SavingsHeuristic.calculateSavings
 import WaitHeuristic.calculateWaitTime
 import com.wl.SimpleIntWeightedLottery
 import org.jetbrains.bio.viktor.F64Array
+import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.random.Random
 
@@ -49,6 +50,13 @@ class Ant(
         val chosenIndex = if (Random.nextDouble() <= q0) {
             numerators.asIterable().argmax()!!
         } else {
+            //TODO: SimpleIntWeightedLottery doesn't throw but total solution is worse :(
+            val min = numerators.minOf { it }
+            if (min < 0) {
+                numerators.forEachIndexed { index, value ->
+                    numerators[index] = value + abs(min)
+                }
+            }
             SimpleIntWeightedLottery(numerators).draw()
         }
         return neighbors[chosenIndex]
@@ -60,7 +68,6 @@ class Ant(
                 calculateSavings(sourceMeta.node.id, destination.id).pow(lambda) *
                 calculateWaitTime(sourceMeta, destination).pow(theta)
     }
-
 
     // TODO look for neighbors only in set of unvisited nodes?
     inner class SolutionBuilder : Comparable<SolutionBuilder> {
@@ -83,7 +90,6 @@ class Ant(
 
         override fun compareTo(other: SolutionBuilder) =
             compareValuesBy(this, other, { it.vehiclesUsed }, { it.totalDistance })
-
 
         inner class RouteBuilder {
             var remainingCapacity = instance.capacity

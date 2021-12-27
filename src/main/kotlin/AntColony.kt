@@ -14,7 +14,7 @@ class AntColony(
     }
 
     fun performSingleIteration(
-        antCount: Int = 10,
+        antCount: Int = 69,
         alpha: Double = 1.0,
         beta: Double = 2.0,
         lambda: Double = 3.0,
