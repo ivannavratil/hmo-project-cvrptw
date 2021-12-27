@@ -31,6 +31,7 @@ class Ant(
             // TODO Do not call this with depot as node!
             // TODO Can this be vectorized?
             fun isValidNextNode(node: Node): Boolean {
+                //has this node been visited before
                 if (visitedNodes[node.id] > 0.5)
                     return false
 
@@ -39,12 +40,14 @@ class Ant(
 
                 val lastNodeMeta = route.last()
                 val arrivalTime = lastNodeMeta.departureTime + calculateTravelTime(lastNodeMeta.node.id, node.id)
+                //will the vehicle arrive before customer is closed
                 if (arrivalTime > node.dueTime)
                     return false
 
                 val depotArrival = max(arrivalTime, node.readyTime) +
                         node.serviceTime +
                         calculateTravelTime(node.id, instance.depot.id)
+                //will the vehicle manage to return to the depot
                 if (depotArrival > instance.depot.dueTime)
                     return false
 
