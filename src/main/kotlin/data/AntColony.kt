@@ -2,6 +2,8 @@ package data
 
 import helpers.Config
 import helpers.Distances
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import org.jetbrains.bio.viktor.F64Array
 
 class AntColony(
@@ -12,6 +14,7 @@ class AntColony(
     val pheromones: F64Array = F64Array(instance.nodes.size, instance.nodes.size) { _, _ -> antColonyConfig.tauZero }
     var currentTemperature = antColonyConfig.startingTemperature
     var incumbentSolution: Ant.SolutionBuilder? = null
+    var logger: Logger = LogManager.getLogger(this::class.java.simpleName)
 
     init {
         Distances.initDistances(instance)
@@ -42,8 +45,7 @@ class AntColony(
         }
 
         if (incumbentSolution == null || bestSolution < incumbentSolution!!) {
-            println("Found new best solution")
-            println("${bestSolution.vehiclesUsed} ${bestSolution.totalDistance}")
+            logger.info("Found new best solution - vehicles: ${bestSolution.vehiclesUsed}, distance: ${bestSolution.totalDistance}")
             incumbentSolution = bestSolution
         }
 
@@ -53,7 +55,7 @@ class AntColony(
     fun run(config: Config) {
         repeat(config.iterations) {
             if (it % 50 == 0) {
-                println("iter #$it")
+                logger.trace("iter #$it")
             }
             performSingleIteration(config.ant)
         }

@@ -3,12 +3,16 @@ import data.AntColony
 import data.Instance
 import data.Solution
 import helpers.Config
+import org.apache.logging.log4j.Level
+import org.apache.logging.log4j.core.config.Configurator
 
 // TODO Remove all F64Array if calculations are not vectorized.
 // TODO Array / ArrayList / List ?
 // TODO Sparse structures?
 
 fun main() {
+    Configurator.setRootLevel(Level.TRACE)
+
     val config = try {
         ConfigLoader().loadConfigOrThrow("/config.yaml")
     } catch (ex: Exception) {
