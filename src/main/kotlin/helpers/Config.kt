@@ -4,14 +4,12 @@ import kotlinx.serialization.Serializable
 import sa.DecrementInterface
 import sa.FinalTemperatureTermination
 import sa.GeometricDecrement
-import sa.GeometricDecrementTermination
 import sa.LinearDecrement
 import sa.SolutionAcceptanceInterface
 import sa.Standard2Acceptance
 import sa.StandardAcceptance
 import sa.TerminationCriteriaInterface
 import sa.VerySlowDecrease
-import sa.VerySlowDecreaseTermination
 
 @Serializable
 data class Config(
@@ -74,16 +72,6 @@ data class Config(
                 }
                 termination = when (terminationCriteria) {
                     0 -> FinalTemperatureTermination(terminationFinalTemperature!!)
-                    1 -> GeometricDecrementTermination(
-                        startingTemperature,
-                        terminationFinalTemperature!!,
-                        terminationParameter!!
-                    )
-                    2 -> VerySlowDecreaseTermination(
-                        startingTemperature,
-                        terminationFinalTemperature!!,
-                        terminationParameter!!
-                    )
                     else -> {
                         throw IllegalArgumentException("Wrong termination value!")
                     }
