@@ -12,7 +12,7 @@ data class Instance(
         fun fromFile(file: File): Instance {
             val buffer = file.readLines()
             val (numberOfVehicles, capacity) = buffer[2].parseInts()
-            val nodes = IntRange(7, buffer.size - 1).map { Node.fromLine(buffer[it].parseDoubles()) }.toList()
+            val nodes = IntRange(7, buffer.size - 1).map { Node.fromLine(buffer[it].parseDoubles()) }
             return Instance(numberOfVehicles, capacity, nodes)
         }
 

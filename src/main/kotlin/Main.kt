@@ -5,7 +5,6 @@ import com.sksamuel.hoplite.ConfigLoader
 // TODO Sparse structures?
 
 fun main() {
-
     val config = try {
         ConfigLoader().loadConfigOrThrow("/config.yaml")
     } catch (ex: Exception) {

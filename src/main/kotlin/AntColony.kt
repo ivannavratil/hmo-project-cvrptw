@@ -49,7 +49,7 @@ class AntColony(
     fun run(config: Config) {
         repeat(config.iterations) {
             if (it % 50 == 0) {
-                println(it)
+                println("iter #$it")
             }
             performSingleIteration(config.ant)
         }
