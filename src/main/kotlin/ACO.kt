@@ -8,6 +8,7 @@ import org.apache.logging.log4j.core.config.Configurator
 import shared.Instance
 import shared.Solution
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 // TODO Remove all F64Array if calculations are not vectorized.
 // TODO Array / ArrayList / List ?
@@ -45,10 +46,10 @@ fun main() {
 
     aco.run(config)
 
-    val timeStamp = LocalDateTime.now()
+    val formattedTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"))
 
     Solution.fromSolutionBuilder(aco.incumbentSolution!!)
-        .exportToFile("src/main/resources/results/i${config.instanceId}-$timeStamp.txt")
+        .exportToFile("src/main/resources/results/i${config.instanceId}-${formattedTimestamp}.txt")
 
     //File("src/main/resources/results/i${config.instanceId}-$timeStamp.json").writeText(Json.encodeToString(config))
 
