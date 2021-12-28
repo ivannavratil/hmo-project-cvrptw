@@ -1,3 +1,7 @@
+package data
+
+import helpers.Config
+import helpers.Distances
 import org.jetbrains.bio.viktor.F64Array
 
 class AntColony(
@@ -13,7 +17,7 @@ class AntColony(
         Distances.initDistances(instance)
     }
 
-    fun performSingleIteration(
+    private fun performSingleIteration(
         antConfig: Config.Ant
     ): Ant.SolutionBuilder? {
         // TODO Simulated annealing

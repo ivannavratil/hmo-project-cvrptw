@@ -1,3 +1,7 @@
+package data
+
+import helpers.parseDoubles
+import helpers.parseInts
 import java.io.File
 
 data class Instance(

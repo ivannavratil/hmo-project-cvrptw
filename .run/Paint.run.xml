@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
     <configuration default="false" name="Paint" type="JetRunConfigurationType">
-        <option name="MAIN_CLASS_NAME" value="paint.MainKt"/>
+        <option name="MAIN_CLASS_NAME" value="paint.PaintKt"/>
         <module name="hmo-project.main"/>
         <shortenClasspath name="NONE"/>
         <method v="2">

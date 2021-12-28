@@ -1,3 +1,5 @@
+package helpers
+
 fun String.parseDoubles(): DoubleArray {
     return this.trim().split("\\s++".toRegex()).map { it.toDouble() }.toDoubleArray()
 }

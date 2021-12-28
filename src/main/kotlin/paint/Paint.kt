@@ -1,8 +1,13 @@
 package paint
 
-import Instance
-import Solution
-import java.awt.*
+import data.Instance
+import data.Solution
+import java.awt.Color
+import java.awt.Dimension
+import java.awt.Graphics
+import java.awt.Graphics2D
+import java.awt.RenderingHints
+import java.awt.Toolkit
 import java.io.File
 import javax.swing.JFrame
 import javax.swing.JPanel
@@ -13,12 +18,12 @@ fun main() {
     val screenSize: Dimension = Toolkit.getDefaultToolkit().screenSize
     val height = screenSize.getHeight().toInt()
 
-    val instanceId = 6
+    val instanceId = 1
     val instance = Instance.fromInstanceId(instanceId)
 
     val solution: Solution = Solution.fromFile(File("src/main/resources/results/i$instanceId.txt"))
-//    val solution: Solution = Solution.fromFile(File("src/main/resources/results/fake-res-1m-i${instanceId}.txt"))
-//    val solution: Solution? = null
+//    val solution: data.Solution = data.Solution.fromFile(File("src/main/resources/results/fake-res-1m-i${instanceId}.txt"))
+//    val solution: data.Solution? = null
 
     val max = instance.nodes.maxByOrNull { it.yCoordinate }!!.yCoordinate
     val multiplier = height * 0.9 / max

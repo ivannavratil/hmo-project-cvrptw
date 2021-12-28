@@ -1,3 +1,5 @@
+package data
+
 data class Node(
     val id: Int,
     val xCoordinate: Double,

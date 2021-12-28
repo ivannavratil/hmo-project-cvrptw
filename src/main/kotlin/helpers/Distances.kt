@@ -1,3 +1,6 @@
+package helpers
+
+import data.Instance
 import org.jetbrains.bio.viktor.F64Array
 import org.jetbrains.bio.viktor.div
 import kotlin.math.ceil

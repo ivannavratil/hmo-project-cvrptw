@@ -1,3 +1,5 @@
+package data
+
 data class NodeMeta(
     val node: Node,
     val arrivalTime: Int,  // when vehicle arrived, might have to wait until ready time

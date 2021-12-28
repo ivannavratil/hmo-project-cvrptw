@@ -1,4 +1,6 @@
-import Distances.distances
+package heuristics
+
+import helpers.Distances.distances
 import kotlin.math.abs
 
 object SavingsHeuristic {

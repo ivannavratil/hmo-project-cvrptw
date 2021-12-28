@@ -1,3 +1,5 @@
+package helpers
+
 data class Config(
     val instanceId: Int,
     val iterations: Int,
