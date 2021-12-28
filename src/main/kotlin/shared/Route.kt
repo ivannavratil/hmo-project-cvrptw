@@ -1,4 +1,6 @@
-package data
+package shared
+
+import aco.Ant
 
 data class Route(
     val nodes: List<Pair<Int, Int>>

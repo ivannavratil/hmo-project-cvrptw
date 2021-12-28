@@ -1,7 +1,7 @@
 package paint
 
-import data.Instance
-import data.Solution
+import shared.Instance
+import shared.Solution
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.Graphics
@@ -22,8 +22,8 @@ fun main() {
     val instance = Instance.fromInstanceId(instanceId)
 
     val solution: Solution = Solution.fromFile(File("src/main/resources/results/i$instanceId.txt"))
-//    val solution: data.Solution = data.Solution.fromFile(File("src/main/resources/results/fake-res-1m-i${instanceId}.txt"))
-//    val solution: data.Solution? = null
+//    val solution: shared.Solution = shared.Solution.fromFile(File("src/main/resources/results/fake-res-1m-i${instanceId}.txt"))
+//    val solution: shared.Solution? = null
 
     val max = instance.nodes.maxByOrNull { it.yCoordinate }!!.yCoordinate
     val multiplier = height * 0.9 / max

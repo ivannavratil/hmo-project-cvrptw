@@ -1,4 +1,4 @@
-package data
+package shared
 
 data class NodeMeta(
     val node: Node,

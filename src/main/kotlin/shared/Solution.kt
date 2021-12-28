@@ -1,5 +1,6 @@
-package data
+package shared
 
+import aco.Ant
 import java.io.File
 
 data class Solution(

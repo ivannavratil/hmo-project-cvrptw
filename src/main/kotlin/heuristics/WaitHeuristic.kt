@@ -1,8 +1,8 @@
 package heuristics
 
-import data.Node
-import data.NodeMeta
 import helpers.Distances.calculateTravelTime
+import shared.Node
+import shared.NodeMeta
 
 object WaitHeuristic {
 

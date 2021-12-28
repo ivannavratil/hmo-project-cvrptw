@@ -1,4 +1,4 @@
-package data
+package shared
 
 data class Node(
     val id: Int,

@@ -1,5 +1,5 @@
 instanceId: 1
-iterations: 1000
+iterations: 100
 
 ant:
     count: 69
@@ -12,4 +12,11 @@ ant:
 
 antColony:
     tauZero: 0.001
-    startingTemperature: 100
+    simulatedAnnealing:
+        startingTemperature: 100
+        decrementFunction: 0 # Linear, Geometric, VerySlow,
+        decrementParameter: 0.5 #  alpha / beta
+        solutionAcceptance: 0 # Take best, Probability4All
+        terminationCriteria: 0 # FinalTemperature, GeometricDecrement, VerySlowDecrease
+        terminationFinalTemperature: 100 # final temperature (if needed)
+        terminationParametar: 0.5 # alpha / beta (if needed)

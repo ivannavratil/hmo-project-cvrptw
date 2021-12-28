@@ -1,10 +1,11 @@
-package data
+package aco
 
 import helpers.Config
 import helpers.Distances
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.jetbrains.bio.viktor.F64Array
+import shared.Instance
 
 class AntColony(
     val instance: Instance,
@@ -12,7 +13,7 @@ class AntColony(
 ) {
     // TODO Set tauZero to 1/L for random first try?
     val pheromones: F64Array = F64Array(instance.nodes.size, instance.nodes.size) { _, _ -> antColonyConfig.tauZero }
-    var currentTemperature = antColonyConfig.startingTemperature
+    var currentTemperature = antColonyConfig.simulatedAnnealing.startingTemperature
     var incumbentSolution: Ant.SolutionBuilder? = null
     var logger: Logger = LogManager.getLogger(this::class.java.simpleName)
 

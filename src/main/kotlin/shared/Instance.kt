@@ -1,4 +1,4 @@
-package data
+package shared
 
 import helpers.parseDoubles
 import helpers.parseInts

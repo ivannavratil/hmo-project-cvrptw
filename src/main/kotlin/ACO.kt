@@ -1,12 +1,12 @@
+import aco.AntColony
 import com.sksamuel.hoplite.ConfigLoader
-import data.AntColony
-import data.Instance
-import data.Solution
 import helpers.Config
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.apache.logging.log4j.core.config.Configurator
+import shared.Instance
+import shared.Solution
 import java.time.LocalDateTime
 
 // TODO Remove all F64Array if calculations are not vectorized.
@@ -21,7 +21,21 @@ fun main() {
         ConfigLoader().loadConfigOrThrow("/config.yaml")
     } catch (ex: Exception) {
         logger.warn("Using values set programmatically!")
-        Config(1, 1000, Config.Ant(69, 1.0, 2.0, 3.0, 0.75, 0.75, 0.1), Config.AntColony(0.001, 100.0))
+        Config(
+            1, 100,
+            Config.Ant(69, 1.0, 2.0, 3.0, 0.75, 0.75, 0.1),
+            Config.AntColony(
+                tauZero = 0.001,
+                Config.AntColony.SimulatedAnnealing(
+                    startingTemperature = 100.0,
+                    decrementFunction = 1,
+                    decrementParameter = 0.99,
+                    solutionAcceptance = 0,
+                    terminationCriteria = 0,
+                    terminationFinalTemperature = 0.01
+                )
+            )
+        )
     }
     println("helpers.Config setup: $config")
 

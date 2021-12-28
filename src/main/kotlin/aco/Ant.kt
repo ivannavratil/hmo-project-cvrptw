@@ -1,4 +1,4 @@
-package data
+package aco
 
 import com.wl.SimpleIntWeightedLottery
 import helpers.Config
@@ -9,6 +9,9 @@ import helpers.argmax
 import heuristics.SavingsHeuristic.calculateSavings
 import heuristics.WaitHeuristic.calculateWaitTime
 import org.jetbrains.bio.viktor.F64Array
+import shared.Instance
+import shared.Node
+import shared.NodeMeta
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.random.Random

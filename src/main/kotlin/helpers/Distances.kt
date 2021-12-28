@@ -1,8 +1,8 @@
 package helpers
 
-import data.Instance
 import org.jetbrains.bio.viktor.F64Array
 import org.jetbrains.bio.viktor.div
+import shared.Instance
 import kotlin.math.ceil
 import kotlin.math.hypot
 
