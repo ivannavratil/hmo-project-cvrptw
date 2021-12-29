@@ -15,7 +15,7 @@ class AntColony(
     val pheromones: F64Array = F64Array(instance.nodes.size, instance.nodes.size) { _, _ -> antColonyConfig.tauZero }
     var currentTemperature = antColonyConfig.simulatedAnnealing.startingTemperature
     var incumbentSolution: Ant.SolutionBuilder? = null
-    var logger: Logger = LogManager.getLogger(this::class.java.simpleName)
+    private val logger: Logger = LogManager.getLogger(this::class.java.simpleName)
 
     init {
         Distances.initDistances(instance)

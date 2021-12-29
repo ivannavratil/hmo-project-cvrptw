@@ -9,6 +9,7 @@ import shared.Instance
 import shared.Solution
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.system.measureTimeMillis
 
 // TODO Remove all F64Array if calculations are not vectorized.
 // TODO Array / ArrayList / List ?
@@ -44,7 +45,10 @@ fun main() {
 
     val aco = AntColony(instance, config.antColony)
 
-    aco.run(config)
+    val runtime = measureTimeMillis {
+        aco.run(config)
+    }
+    logger.info("RUNTIME: $runtime ms")
 
     val formattedTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"))
 
