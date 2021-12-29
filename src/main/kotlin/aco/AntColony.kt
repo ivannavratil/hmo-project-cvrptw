@@ -27,7 +27,6 @@ class AntColony(
         antConfig: Config.Ant
     ): Boolean {
         // TODO Simulated annealing
-
         val pheromonesLocal = pheromones.copy()
 
         val solutions = mutableListOf<Ant.SolutionBuilder>()
@@ -71,6 +70,8 @@ class AntColony(
 
             exp(ds / currentTemperature) > q
         }
+
+        currentTemperature = antColonyConfig.simulatedAnnealing.decrement!!.decrement(currentTemperature)
 
         antsThatCanLayPheromones.forEach {
             val pheromoneDelta = 1.0 / it.totalDistance
