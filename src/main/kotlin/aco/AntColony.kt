@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.jetbrains.bio.viktor.F64Array
 import shared.Instance
+import shared.Solution
 
 class AntColony(
     val instance: Instance,
@@ -47,6 +48,7 @@ class AntColony(
 
         if (incumbentSolution == null || bestSolution < incumbentSolution!!) {
             logger.info("Found new best solution - vehicles: ${bestSolution.vehiclesUsed}, distance: ${bestSolution.totalDistance}")
+            logger.trace(Solution.fromSolutionBuilder(bestSolution).formatOutput())
             incumbentSolution = bestSolution
         }
 
