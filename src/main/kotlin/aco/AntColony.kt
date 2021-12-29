@@ -63,19 +63,6 @@ class AntColony(
                 return@filter true
             }
 
-            // želim VELIKI S za LOŠA rješenja
-
-            //     INCUMB     CAND
-            //npr 10,1000 vs 12,800 => tempD = 200 ; 800 + 200 * (2) * 0.2 =
-
-            //npr 10,1000 vs 11,800 => tempD = 200 ; 800 + 200 * (1) * 0.2 =
-
-            //npr 10,1000 vs 11,1500 => tempD = 200 ; 1500 + (-500) * (1) * 0.2 =
-
-            //npr 10,1000 vs 10,1500 => tempD = 200 ; 1500 + (-500) * 0 * 0.2 =
-
-            //npr 10,1000 vs 10,800 => tempD = 200 ; 800 + (200) * 0 * 0.2 =
-
             val ds = incumbentDistance - it.totalDistance * (1 + vehicleDifference * 0.2)
 
             if (ds > 0) {
