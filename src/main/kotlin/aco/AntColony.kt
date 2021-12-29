@@ -4,20 +4,20 @@ import helpers.Config
 import helpers.Distances
 import helpers.seededRandom
 import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
 import org.jetbrains.bio.viktor.F64Array
 import shared.Instance
 import kotlin.math.exp
 
 class AntColony(
-    val instance: Instance,
-    val antColonyConfig: Config.AntColony
+    private val instance: Instance,
+    private val antColonyConfig: Config.AntColony
 ) {
-    // TODO Set tauZero to 1/L for random first try?
-    val pheromones: F64Array = F64Array(instance.nodes.size, instance.nodes.size) { _, _ -> antColonyConfig.tauZero }
-    var currentTemperature = antColonyConfig.simulatedAnnealing.startingTemperature
     var incumbentSolution: Ant.SolutionBuilder? = null
-    private val logger: Logger = LogManager.getLogger(this::class.java.simpleName)
+
+    // TODO Set tauZero to 1/L for random first try?
+    private val pheromones = F64Array(instance.nodes.size, instance.nodes.size) { _, _ -> antColonyConfig.tauZero }
+    private var currentTemperature = antColonyConfig.simulatedAnnealing.startingTemperature
+    private val logger = LogManager.getLogger(this::class.java.simpleName)
 
     init {
         Distances.initDistances(instance)
@@ -26,7 +26,6 @@ class AntColony(
     private fun performSingleIteration(
         antConfig: Config.Ant
     ): Boolean {
-        // TODO Simulated annealing
         val pheromonesLocal = pheromones.copy()
 
         val solutions = mutableListOf<Ant.SolutionBuilder>()
