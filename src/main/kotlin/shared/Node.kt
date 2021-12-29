@@ -9,6 +9,17 @@ data class Node(
     val dueTime: Int,
     val serviceTime: Int
 ) {
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as Node
+        return id == other.id
+    }
+
     companion object {
         fun fromLine(array: DoubleArray): Node {
             return Node(

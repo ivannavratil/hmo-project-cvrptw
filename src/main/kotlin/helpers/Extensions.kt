@@ -11,3 +11,5 @@ fun String.parseInts(): IntArray {
 fun <T : Comparable<T>> Iterable<T>.argmax(): Int? {
     return withIndex().maxByOrNull { it.value }?.index
 }
+
+fun Array<DoubleArray>.deepCopy() = Array(size) { get(it).clone() }
