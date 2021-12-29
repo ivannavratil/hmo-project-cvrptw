@@ -29,7 +29,7 @@ fun main() {
             Config.AntColony(
                 tauZero = 0.001,
                 Config.AntColony.SimulatedAnnealing(
-                    startingTemperature = 100.0,
+                    startingTemperature = 1000.0,
                     decrementFunction = 1,
                     decrementParameter = 0.99,
                     solutionAcceptance = 0,
