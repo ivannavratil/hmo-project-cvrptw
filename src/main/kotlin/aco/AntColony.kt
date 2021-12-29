@@ -46,7 +46,7 @@ class AntColony(
 
         //for the first iteration
         if (incumbentSolution == null) {
-            logger.trace("Incumbent solution set: " + Solution.fromSolutionBuilder(bestAnt).formatOutput())
+            logger.info("Found new best solution - vehicles: ${bestAnt.vehiclesUsed}, distance: ${bestAnt.totalDistance}")
             incumbentSolution = bestAnt
         }
 
