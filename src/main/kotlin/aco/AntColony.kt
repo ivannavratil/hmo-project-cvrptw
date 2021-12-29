@@ -77,9 +77,9 @@ class AntColony(
 
             //npr 10,1000 vs 10,800 => tempD = 200 ; 800 + (200) * 0 * 0.2 =
 
-            val ds = distanceDifference * (1 + (vehicleDifference) * 0.2)
+            val ds = incumbentDistance - it.totalDistance * (1 + vehicleDifference * 0.2)
 
-            exp(-ds / currentTemperature) > q
+            exp(ds / currentTemperature) > q
         }
 
         antsThatCanLayPheromones.forEach {
