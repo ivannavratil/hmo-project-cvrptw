@@ -71,7 +71,7 @@ class AntColony(
     }
 
     fun run(config: Config) {
-        val timeTerm = TotalTimeTermination(60.0)
+        val timeTerm = TotalTimeTermination(120.0)
         repeat(config.iterations) {
             if (timeTerm.terminate(Double.NaN)) {
                 return@repeat

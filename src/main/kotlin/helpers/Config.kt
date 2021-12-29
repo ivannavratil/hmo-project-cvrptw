@@ -22,6 +22,6 @@ data class Config(
 
     @Serializable
     data class AntColony(
-        val tauZero: Double
+        var tauZero: Double
     )
 }
