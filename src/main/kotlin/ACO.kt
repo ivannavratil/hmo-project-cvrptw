@@ -38,7 +38,7 @@ fun main() {
 //    INSTANCE 6
     val base = Config(
         6, Int.MAX_VALUE,
-        Config.Ant(5, 1.0, 1.35, 3.0, 0.6, 0.4, 0.3),
+        Config.Ant(6, 0.9, 1.25, 3.0, 0.6, 0.4, 0.2),
         Config.AntColony(tauZero = 1E-6)
     )
 
@@ -50,7 +50,7 @@ fun main() {
 
         thread(name = "alpha") {
             val cAlpha = copy(base)
-            for (alpha in mutableListOf(0.7, 0.8, 0.9, 1.0, 1.1)) {
+            for (alpha in mutableListOf(0.6, 0.7, 0.8, 0.9, 1.0)) {
                 cAlpha.ant.alpha = alpha
                 main2(cAlpha, "alpha", alpha)
             }
@@ -66,7 +66,7 @@ fun main() {
 
         thread(name = "count") {
             val cCount = copy(base)
-            for (count in (1..10 step 2)) {
+            for (count in (2..10 step 2)) {
                 cCount.ant.count = count
                 main2(cCount, "count", count.toDouble())
             }
@@ -82,7 +82,7 @@ fun main() {
 
         thread(name = "rho") {
             val cRho = copy(base)
-            for (rho in mutableListOf(0.1, 0.2, 0.3, 0.4, 0.5)) {
+            for (rho in mutableListOf(0.05, 0.1, 0.2, 0.3, 0.4)) {
                 cRho.ant.rho = rho
                 main2(cRho, "rho", rho)
             }
