@@ -39,18 +39,6 @@ fun main() {
                 )
             )
 
-            instance.nodes.forEachIndexed { i, node ->
-                g.color = if (i == 0) Color.red else Color.black
-                val pointSize = if (i == 0) depotPointSize else customerPointSize
-
-                g.fillOval(
-                    (node.xCoordinate * multiplier - pointSize / 2).toInt(),
-                    (node.yCoordinate * multiplier - pointSize / 2).toInt(),
-                    pointSize,
-                    pointSize
-                )
-            }
-
             val colorStep = 1.0f / solution.routes.size
 
             @Suppress(
@@ -72,6 +60,18 @@ fun main() {
                         (customer2.yCoordinate * multiplier).toInt()
                     )
                 }
+            }
+
+            instance.nodes.forEachIndexed { i, node ->
+                g.color = if (i == 0) Color.red else Color.black
+                val pointSize = if (i == 0) depotPointSize else customerPointSize
+
+                g.fillOval(
+                    (node.xCoordinate * multiplier - pointSize / 2).toInt(),
+                    (node.yCoordinate * multiplier - pointSize / 2).toInt(),
+                    pointSize,
+                    pointSize
+                )
             }
         }
     }
