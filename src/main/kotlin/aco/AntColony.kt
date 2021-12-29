@@ -31,8 +31,11 @@ class AntColony(
 
         val solutions = mutableListOf<Ant.SolutionBuilder>()
         repeat(antConfig.count) {  // TODO parallelize or use local pheromones (ACS)
-            val ant = Ant(instance, pheromones, antConfig)
-            ant.traverse()?.let(solutions::add)
+            val ant = Ant(instance, pheromonesLocal, antConfig)
+            ant.traverse()?.let { solution ->
+                solutions.add(solution)
+                updatePheromones(solution, antConfig, pheromonesLocal)
+            }
         }
 
         //all ants failed to found a solution
@@ -70,16 +73,8 @@ class AntColony(
 
         currentTemperature = antColonyConfig.simulatedAnnealing.decrement!!.decrement(currentTemperature)
 
-        antsThatCanLayPheromones.forEach {
-            val pheromoneDelta = 1.0 / it.totalDistance
-            pheromones *= (1 - antConfig.rho)
-            it.routes.forEach { antTraversal ->
-                antTraversal.route.zipWithNext().forEach { pair ->
-                    val id1 = pair.first.node.id
-                    val id2 = pair.second.node.id
-                    pheromones[id1, id2] += antConfig.rho * pheromoneDelta
-                }
-            }
+        antsThatCanLayPheromones.forEach { solution ->
+            updatePheromones(solution, antConfig, pheromones)
         }
 
         if (bestAnt < incumbentSolution!!) {
@@ -89,6 +84,18 @@ class AntColony(
         }
 
         return true
+    }
+
+    private fun updatePheromones(solution: Ant.SolutionBuilder, antConfig: Config.Ant, pheromones: F64Array) {
+        val pheromoneDelta = 1.0 / solution.totalDistance
+        pheromones *= (1 - antConfig.rho)
+        solution.routes.forEach { antTraversal ->
+            antTraversal.route.zipWithNext().forEach { pair ->
+                val id1 = pair.first.node.id
+                val id2 = pair.second.node.id
+                pheromones[id1, id2] += antConfig.rho * pheromoneDelta
+            }
+        }
     }
 
     fun run(config: Config) {
