@@ -13,7 +13,7 @@ ant:
 antColony:
     tauZero: 0.001
     simulatedAnnealing:
-        startingTemperature: 1000
+        startingTemperature: 50
         decrementFunction: 1 # Linear, Geometric, VerySlow
         decrementParameter: 0.99 # alpha or beta
         solutionAcceptance: 0 # Take best, Probability4All
