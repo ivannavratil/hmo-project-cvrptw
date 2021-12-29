@@ -1,11 +1,12 @@
 package aco
 
-import com.wl.SimpleIntWeightedLottery
 import helpers.Config
 import helpers.Distances.calculateTravelTime
 import helpers.Distances.distances
 import helpers.Distances.inverseDistances
+import helpers.WeightedLottery
 import helpers.argmax
+import helpers.seededRandom
 import heuristics.SavingsHeuristic.calculateSavings
 import heuristics.WaitHeuristic.calculateWaitTime
 import org.jetbrains.bio.viktor.F64Array
@@ -14,7 +15,6 @@ import shared.Node
 import shared.NodeMeta
 import kotlin.math.abs
 import kotlin.math.pow
-import kotlin.random.Random
 
 class Ant(
     private val instance: Instance,
@@ -50,16 +50,16 @@ class Ant(
             numerators[i] = calculateNumerators(sourceMeta, node)
         }
 
-        val chosenIndex = if (Random.nextDouble() <= antConfig.q0) {
+        val chosenIndex = if (seededRandom.nextDouble() <= antConfig.q0) {
             numerators.asIterable().argmax()!!
         } else {
-            //TODO: SimpleIntWeightedLottery doesn't throw but total solution is worse :(
+            //TODO: WeightedLottery doesn't throw but total solution is worse :(
             val min = numerators.minOf { it }
             if (min < 0) {
                 val absMin = abs(min)
                 numerators.indices.forEach { numerators[it] += absMin }
             }
-            SimpleIntWeightedLottery(numerators).draw()
+            WeightedLottery(numerators).draw()
         }
         return neighbors[chosenIndex]
     }

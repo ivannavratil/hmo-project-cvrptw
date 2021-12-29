@@ -1,5 +1,6 @@
 package sa
 
+import helpers.seededRandom
 import kotlin.math.exp
 
 interface SolutionAcceptanceInterface {
@@ -11,13 +12,13 @@ class StandardAcceptance : SolutionAcceptanceInterface {
         if (neighbor < current)
             return true
         val probabilityToAccept = exp((current - neighbor) / temperature)
-        return Math.random() < probabilityToAccept
+        return seededRandom.nextDouble() < probabilityToAccept
     }
 }
 
 class Standard2Acceptance : SolutionAcceptanceInterface {
     override fun acceptSolution(current: Double, neighbor: Double, temperature: Double): Boolean {
         val probabilityToAccept = 1.0 / (1 + exp((neighbor - current) / temperature))
-        return Math.random() < probabilityToAccept
+        return seededRandom.nextDouble() < probabilityToAccept
     }
 }
