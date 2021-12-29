@@ -45,10 +45,7 @@ class Ant(
     }
 
     private fun pickNextCustomer(sourceMeta: NodeMeta, neighbors: List<Node>): Node {
-        val numerators = DoubleArray(neighbors.size)
-        neighbors.forEachIndexed { i, node ->
-            numerators[i] = calculateNumerators(sourceMeta, node)
-        }
+        val numerators = DoubleArray(neighbors.size) { calculateNumerators(sourceMeta, neighbors[it]) }
 
         val chosenIndex = if (seededRandom.nextDouble() <= antConfig.q0) {
             numerators.asIterable().argmax()!!
@@ -65,10 +62,11 @@ class Ant(
     }
 
     private fun calculateNumerators(sourceMeta: NodeMeta, destination: Node): Double {
-        return pheromones[sourceMeta.node.id, destination.id].pow(antConfig.alpha) *
-                inverseDistances[sourceMeta.node.id, destination.id].pow(antConfig.beta) *
-                calculateSavings(sourceMeta.node.id, destination.id).pow(antConfig.lambda) *
-                calculateWaitTime(sourceMeta, destination).pow(antConfig.theta)
+        val pheromones = pheromones[sourceMeta.node.id, destination.id].pow(antConfig.alpha)
+        val visibility = inverseDistances[sourceMeta.node.id, destination.id].pow(antConfig.beta)
+        val savings = 1.0  // calculateSavings(sourceMeta.node.id, destination.id).pow(antConfig.lambda)
+        val waitTime = calculateWaitTime(sourceMeta, destination).pow(antConfig.theta)
+        return pheromones * visibility * savings * waitTime
     }
 
     // TODO look for neighbors only in set of unvisited nodes?
