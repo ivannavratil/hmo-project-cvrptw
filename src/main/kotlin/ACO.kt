@@ -26,17 +26,7 @@ fun main() {
         Config(
             1, 100,
             Config.Ant(69, 1.0, 2.0, 3.0, 0.75, 0.75, 0.1),
-            Config.AntColony(
-                tauZero = 0.001,
-                Config.AntColony.SimulatedAnnealing(
-                    startingTemperature = 1000.0,
-                    decrementFunction = 1,
-                    decrementParameter = 0.99,
-                    solutionAcceptance = 0,
-                    terminationCriteria = 0,
-                    terminationFinalTemperature = 10.0
-                )
-            )
+            Config.AntColony(tauZero = 0.001)
         )
     }
     println("helpers.Config setup: $config")
