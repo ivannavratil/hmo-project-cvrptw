@@ -18,78 +18,92 @@ import kotlin.system.measureTimeMillis
 // TODO Remove all F64Array if calculations are not vectorized.
 // TODO Array / ArrayList / List ?
 // TODO Sparse structures?
+
+// TODO For instance 6:
+// TODO alpha [0.7, 1.1] makes almost no difference
+// TODO large beta significantly reduces distances at the cost of more cars
+// TODO large theta results in longer distances, roughly same #cars
+
 fun copy(c: Config): Config = c.copy(ant = c.ant.copy(), antColony = c.antColony.copy())
 
 fun main() {
 
+//    INSTANCE 1
+//    val base = Config(
+//        6, Int.MAX_VALUE,
+//        Config.Ant(69, 0.7, 1.1, 3.0, 0.5, 0.25, 0.08),
+//        Config.AntColony(tauZero = 0.001)
+//    )
+
+//    INSTANCE 6
     val base = Config(
         6, Int.MAX_VALUE,
-        Config.Ant(69, 0.7, 1.1, 3.0, 0.5, 0.25, 0.08),
-        Config.AntColony(tauZero = 0.0001)
+        Config.Ant(5, 1.0, 1.35, 3.0, 0.6, 0.4, 0.3),
+        Config.AntColony(tauZero = 1E-6)
     )
 
     File("src/main/resources/graph/i${base.instanceId}").appendText(
         Json.encodeToString(base) + System.lineSeparator()
     )
 
-    //TODO: i1 - tau= 0.001
+    for (i in 1..2) {
 
-    thread {
-        val cAlpha = copy(base)
-        for (alpha in mutableListOf(0.6, 0.65, 0.7, 0.75, 0.8)) {
-            cAlpha.ant.alpha = alpha
-            main2(cAlpha, "alpha", alpha)
+        thread(name = "alpha") {
+            val cAlpha = copy(base)
+            for (alpha in mutableListOf(0.7, 0.8, 0.9, 1.0, 1.1)) {
+                cAlpha.ant.alpha = alpha
+                main2(cAlpha, "alpha", alpha)
+            }
+        }
+
+        thread(name = "beta") {
+            val cBeta = copy(base)
+            for (beta in mutableListOf(1.0, 1.25, 1.5, 1.75, 2.0)) {
+                cBeta.ant.beta = beta
+                main2(cBeta, "beta", beta)
+            }
+        }
+
+        thread(name = "count") {
+            val cCount = copy(base)
+            for (count in (1..10 step 2)) {
+                cCount.ant.count = count
+                main2(cCount, "count", count.toDouble())
+            }
+        }
+
+        thread(name = "q0") {
+            val cq0 = copy(base)
+            for (q0 in mutableListOf(0.25, 0.35, 0.4, 0.45, 0.5)) {
+                cq0.ant.q0 = q0
+                main2(cq0, "q0", q0)
+            }
+        }
+
+        thread(name = "rho") {
+            val cRho = copy(base)
+            for (rho in mutableListOf(0.1, 0.2, 0.3, 0.4, 0.5)) {
+                cRho.ant.rho = rho
+                main2(cRho, "rho", rho)
+            }
+        }
+
+        thread(name = "tau") {
+            val cTau = copy(base)
+            for (tau in mutableListOf(1E-7, 5E-7, 1E-6, 5E-6, 1E-5)) {
+                cTau.antColony.tauZero = tau
+                main2(cTau, "tau", tau)
+            }
+        }
+
+        thread(name = "theta") {
+            val cTheta = copy(base)
+            for (theta in mutableListOf(0.4, 0.5, 0.6, 0.7, 0.75)) {
+                cTheta.ant.theta = theta
+                main2(cTheta, "theta", theta)
+            }
         }
     }
-
-    thread {
-        val cBeta = copy(base)
-        for (beta in mutableListOf(0.5, 1.0, 1.25, 1.5, 1.75, 2.1, 2.5)) {
-            cBeta.ant.beta = beta
-            main2(cBeta, "beta", beta)
-        }
-    }
-
-    thread {
-        val cCount = copy(base)
-        for (count in (10 until 100 step 10)) {
-            cCount.ant.count = count
-            main2(cCount, "count", count.toDouble())
-        }
-    }
-
-    thread {
-        val cqo = copy(base)
-        for (q0 in mutableListOf(0.05, 0.10, 0.15, 0.20, 0.25, 0.35)) {
-            cqo.ant.q0 = q0
-            main2(cqo, "q0", q0)
-        }
-    }
-
-    thread {
-        val cRho = copy(base)
-        for (rho in mutableListOf(0.001, 0.01, 0.03, 0.05, 0.1, 0.2)) {
-            cRho.ant.rho = rho
-            main2(cRho, "rho", rho)
-        }
-    }
-
-    thread {
-        val cTau = copy(base)
-        for (tau in mutableListOf(1E-6, 1E-5, 1E-4, 5E-3, 1E-3, 1E-2, 1E-1)) {
-            cTau.antColony.tauZero = tau
-            main2(cTau, "tau", tau)
-        }
-    }
-
-    thread {
-        val cTheta = copy(base)
-        for (theta in mutableListOf(0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8)) {
-            cTheta.ant.theta = theta
-            main2(cTheta, "theta", theta)
-        }
-    }
-
 }
 
 fun main2(config: Config, param: String, paramValue: Double) {
