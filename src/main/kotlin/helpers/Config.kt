@@ -36,14 +36,14 @@ data class Config(
     ) {
         @Serializable
         data class SimulatedAnnealing(
-            var startingTemperature: Double,
+            val startingTemperature: Double,
 
-            var decrementFunction: Int,
+            val decrementFunction: Int,
             @kotlinx.serialization.Transient
             var decrement: DecrementInterface? = null,
             var decrementParameter: Double,
 
-            var solutionAcceptance: Int,
+            val solutionAcceptance: Int,
             @kotlinx.serialization.Transient
             var solution: SolutionAcceptanceInterface? = null,
 
@@ -52,7 +52,6 @@ data class Config(
             var termination: TerminationCriteriaInterface? = null,
             var terminationFinalTemperature: Double? = null,
             var terminationParameter: Double? = null
-
         ) {
             init {
                 decrement = when (decrementFunction) {
