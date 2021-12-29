@@ -4,6 +4,7 @@ import helpers.Config
 import helpers.Distances
 import org.apache.logging.log4j.LogManager
 import org.jetbrains.bio.viktor.F64Array
+import sa.TotalTimeTermination
 import shared.Instance
 
 class AntColony(
@@ -70,7 +71,11 @@ class AntColony(
     }
 
     fun run(config: Config) {
+        val timeTerm = TotalTimeTermination(60.0)
         repeat(config.iterations) {
+            if (timeTerm.terminate(Double.NaN)) {
+                return@repeat
+            }
             if (it % 50 == 0) {
                 logger.trace("iter #$it")
             }
