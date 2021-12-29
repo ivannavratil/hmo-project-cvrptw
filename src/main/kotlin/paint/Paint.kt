@@ -21,7 +21,7 @@ fun main() {
     val instanceId = 1
     val instance = Instance.fromInstanceId(instanceId)
 
-    val solution: Solution = Solution.fromFile(File("src/main/resources/results/i$instanceId.txt"))
+    val solution: Solution = Solution.fromFile(File("src/main/resources/results/best/i$instanceId.txt"))
 //    val solution: Solution = shared.Solution.fromFile(File("src/main/resources/results/fake-res-1m-i${instanceId}.txt"))
 //    val solution: Solution? = null
 
