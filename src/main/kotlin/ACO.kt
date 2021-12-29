@@ -31,7 +31,14 @@ fun main() {
 //    val base = Config(
 //        1, Int.MAX_VALUE,
 //        Config.Ant(80, 0.7, 1.2, 3.0, 0.55, 0.2, 0.08),
-//        Config.AntColony(tauZero = 0.001)
+//        Config.AntColony(tauZero = 1E-3)
+//    )
+
+    //    INSTANCE 2
+//    val base = Config(
+//        2, Int.MAX_VALUE,
+//        Config.Ant(80, 1.0, 1.25, 3.0, 0.45, 0.4, 0.2),
+//        Config.AntColony(tauZero = 2E-4)
 //    )
 
 //    INSTANCE 6
@@ -49,7 +56,7 @@ fun main() {
 
         thread(name = "alpha") {
             val cAlpha = copy(base)
-            for (alpha in mutableListOf(0.6, 0.7, 0.8, 0.9, 1.0)) {
+            for (alpha in mutableListOf(0.7, 0.8, 0.9, 1.0, 1.1)) {
                 cAlpha.ant.alpha = alpha
                 main2(cAlpha, "alpha", alpha)
             }
