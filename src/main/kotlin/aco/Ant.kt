@@ -7,9 +7,7 @@ import helpers.Distances.inverseDistances
 import helpers.WeightedLottery
 import helpers.argmax
 import helpers.seededRandom
-import heuristics.SavingsHeuristic.calculateSavings
 import heuristics.WaitHeuristic.calculateWaitTime
-import org.jetbrains.bio.viktor.F64Array
 import shared.Instance
 import shared.Node
 import shared.NodeMeta
@@ -18,7 +16,7 @@ import kotlin.math.pow
 
 class Ant(
     private val instance: Instance,
-    private val pheromones: F64Array,
+    private val pheromones: Array<DoubleArray>,
     private val antConfig: Config.Ant
 ) {
     // TODO Update local pheromones etc
@@ -62,8 +60,8 @@ class Ant(
     }
 
     private fun calculateNumerators(sourceMeta: NodeMeta, destination: Node): Double {
-        val pheromones = pheromones[sourceMeta.node.id, destination.id].pow(antConfig.alpha)
-        val visibility = inverseDistances[sourceMeta.node.id, destination.id].pow(antConfig.beta)
+        val pheromones = pheromones[sourceMeta.node.id][destination.id].pow(antConfig.alpha)
+        val visibility = inverseDistances[sourceMeta.node.id][destination.id].pow(antConfig.beta)
         val savings = 1.0  // calculateSavings(sourceMeta.node.id, destination.id).pow(antConfig.lambda)
         val waitTime = calculateWaitTime(sourceMeta, destination).pow(antConfig.theta)
         return pheromones * visibility * savings * waitTime
@@ -72,20 +70,20 @@ class Ant(
     // TODO look for neighbors only in set of unvisited nodes?
     inner class SolutionBuilder : Comparable<SolutionBuilder> {
         val routes = mutableListOf(RouteBuilder())
-        val visitedNodes = F64Array(instance.nodes.size) { 0.0 }  // TODO Switch to set or regular array?
-        var unvisitedNodesCount = instance.nodes.size - 1  // do not count depot
+        private val unvisitedNodes: MutableSet<Node> = HashSet<Node>(instance.nodes.size).also {
+            it.addAll(instance.nodes)
+            it.remove(instance.depot)  // do not count depot
+        }
 
         val currentRoute get() = routes.last()
         val vehiclesUsed get() = routes.size
-        val isFinished get() = unvisitedNodesCount <= 0
+        val isFinished get() = unvisitedNodes.isEmpty()
         val totalDistance get() = routes.sumOf { it.totalDistance }  // TODO recalculated many times
 
         fun createNewRoute() = routes.add(RouteBuilder())
 
         fun findNeighboringCustomers(): List<Node> {
-            return instance.nodes.filter { node ->
-                node !== instance.depot && currentRoute.isValidNextNode(node)
-            }
+            return unvisitedNodes.filter { node -> currentRoute.isValidNextNode(node) }
         }
 
         override fun compareTo(other: SolutionBuilder) =
@@ -99,10 +97,9 @@ class Ant(
             })
 
             // TODO Do not call this with depot as node! -- if (node === instance.depot) return false ? (findNeighboringCustomers)
-            // TODO Can this be vectorized?
             fun isValidNextNode(node: Node): Boolean {
-                // Has this node been visited before
-                if (visitedNodes[node.id] > 0.5)
+                // Has this node been visited before  // TODO not needed
+                if (!unvisitedNodes.contains(node))
                     return false
 
                 if (remainingCapacity < node.demand)
@@ -133,13 +130,12 @@ class Ant(
                 val arrivalTime = lastNodeMeta.departureTime + calculateTravelTime(lastNodeMeta.node.id, node.id)
                 val departureTime = maxOf(arrivalTime, node.readyTime) + node.serviceTime  // TODO extract maxOf?
                 route.add(NodeMeta(node, arrivalTime, departureTime))
-                totalDistance += distances[lastNodeMeta.node.id, node.id]
+                totalDistance += distances[lastNodeMeta.node.id][node.id]
 
                 if (node === instance.depot)
                     return
 
-                visitedNodes[node.id] = 1.0
-                unvisitedNodesCount--
+                unvisitedNodes.remove(node)
 
                 remainingCapacity -= node.demand
             }

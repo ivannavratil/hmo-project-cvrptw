@@ -2,10 +2,11 @@ package aco
 
 import helpers.Config
 import helpers.Distances
+import helpers.deepCopy
 import org.apache.logging.log4j.LogManager
-import org.jetbrains.bio.viktor.F64Array
 import sa.TotalTimeTermination
 import shared.Instance
+import shared.Solution
 
 class AntColony(
     private val instance: Instance,
@@ -14,7 +15,9 @@ class AntColony(
     var incumbentSolution: Ant.SolutionBuilder? = null
 
     // TODO Set tauZero to 1/L for random first try?
-    private val pheromones = F64Array(instance.nodes.size, instance.nodes.size) { _, _ -> antColonyConfig.tauZero }
+    private val pheromones = Array(instance.nodes.size) {
+        DoubleArray(instance.nodes.size) { antColonyConfig.tauZero }
+    }
     private val logger = LogManager.getLogger(this::class.java.simpleName)
 
     init {
@@ -24,7 +27,7 @@ class AntColony(
     private fun performSingleIteration(
         antConfig: Config.Ant
     ): Boolean {
-        val pheromonesLocal = pheromones.copy()
+        val pheromonesLocal = pheromones.deepCopy()
 
         val solutions = mutableListOf<Ant.SolutionBuilder>()
         repeat(antConfig.count) {  // TODO parallelize or use local pheromones (ACS)
@@ -55,17 +58,27 @@ class AntColony(
         return true
     }
 
-    private fun evaporatePheromones(pheromones: F64Array, rho: Double) {
-        pheromones *= (1 - rho)
+    private fun evaporatePheromones(pheromones: Array<DoubleArray>, rho: Double) {
+        val factor = 1 - rho
+        pheromones.forEach { row ->
+            row.indices.forEach { col ->
+                row[col] *= factor
+            }
+        }
     }
 
-    private fun updatePheromones(pheromones: F64Array, solution: Ant.SolutionBuilder, rho: Double, antCount: Int) {
+    private fun updatePheromones(
+        pheromones: Array<DoubleArray>,
+        solution: Ant.SolutionBuilder,
+        rho: Double,
+        antCount: Int
+    ) {
         val pheromoneDelta = 1.0 / (solution.totalDistance * antCount)
         solution.routes.forEach { antTraversal ->
             antTraversal.route.zipWithNext().forEach { pair ->
                 val id1 = pair.first.node.id
                 val id2 = pair.second.node.id
-                pheromones[id1, id2] += rho * pheromoneDelta
+                pheromones[id1][id2] += rho * pheromoneDelta
             }
         }
     }

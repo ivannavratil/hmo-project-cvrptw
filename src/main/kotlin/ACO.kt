@@ -15,7 +15,6 @@ import kotlin.concurrent.thread
 import kotlin.random.Random
 import kotlin.system.measureTimeMillis
 
-// TODO Remove all F64Array if calculations are not vectorized.
 // TODO Array / ArrayList / List ?
 // TODO Sparse structures?
 
