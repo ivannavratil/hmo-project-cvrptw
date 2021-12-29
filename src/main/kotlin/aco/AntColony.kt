@@ -48,10 +48,7 @@ class AntColony(
             incumbentSolution = bestAnt
         }
 
-        val q = seededRandom.nextDouble()
-
         val antsThatCanLayPheromones: List<Ant.SolutionBuilder> = solutions.filter {
-
             val incumbentVehicles = incumbentSolution!!.vehiclesUsed
             val incumbentDistance = incumbentSolution!!.totalDistance
 
@@ -68,7 +65,7 @@ class AntColony(
                 logger.error("ds: ${ds / currentTemperature}")
             }
 
-            exp(ds / currentTemperature) > q
+            return@filter seededRandom.nextDouble() < exp(ds / currentTemperature)
         }
 
         currentTemperature = antColonyConfig.simulatedAnnealing.decrement!!.decrement(currentTemperature)
