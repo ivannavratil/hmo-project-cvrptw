@@ -14,9 +14,9 @@ antColony:
     tauZero: 0.001
     simulatedAnnealing:
         startingTemperature: 1000
-        decrementFunction: 0 # Linear, Geometric, VerySlow
-        decrementParameter: 0.5 # alpha or beta
+        decrementFunction: 1 # Linear, Geometric, VerySlow
+        decrementParameter: 0.99 # alpha or beta
         solutionAcceptance: 0 # Take best, Probability4All
         terminationCriteria: 0 # FinalTemperature
-        terminationFinalTemperature: 100 # final temperature (if needed)
+        terminationFinalTemperature: 10 # final temperature (if needed)
         terminationParameter: 0.5

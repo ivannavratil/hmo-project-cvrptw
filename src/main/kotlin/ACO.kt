@@ -34,7 +34,7 @@ fun main() {
                     decrementParameter = 0.99,
                     solutionAcceptance = 0,
                     terminationCriteria = 0,
-                    terminationFinalTemperature = 0.01
+                    terminationFinalTemperature = 10.0
                 )
             )
         )
