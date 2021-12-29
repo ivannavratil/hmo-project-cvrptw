@@ -22,8 +22,8 @@ fun main() {
     val instance = Instance.fromInstanceId(instanceId)
 
     val solution: Solution = Solution.fromFile(File("src/main/resources/results/i$instanceId.txt"))
-//    val solution: shared.Solution = shared.Solution.fromFile(File("src/main/resources/results/fake-res-1m-i${instanceId}.txt"))
-//    val solution: shared.Solution? = null
+//    val solution: Solution = shared.Solution.fromFile(File("src/main/resources/results/fake-res-1m-i${instanceId}.txt"))
+//    val solution: Solution? = null
 
     val max = instance.nodes.maxByOrNull { it.yCoordinate }!!.yCoordinate
     val multiplier = height * 0.9 / max
@@ -39,15 +39,13 @@ fun main() {
                 )
             )
 
-            val colorStep = 1.0f / solution.routes.size
-
             @Suppress(
                 "UNREACHABLE_CODE",
                 "UNNECESSARY_SAFE_CALL",
                 "UNUSED_ANONYMOUS_PARAMETER"
             )
             solution?.routes?.forEachIndexed { i, route ->
-                g.color = Color.getHSBColor(colorStep * i, 1f, 1f)
+                g.color = Color.getHSBColor(i.toFloat() / solution.routes.size, 1f, 1f)
 
                 route.nodes.zipWithNext().forEach {
                     val customer1 = instance.nodes[it.first.first]
