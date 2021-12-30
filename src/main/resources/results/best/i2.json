@@ -1,0 +1,16 @@
+{
+  "instanceId": 2,
+  "iterations": 2147483647,
+  "ant": {
+    "count": 70,
+    "alpha": 0.9,
+    "beta": 1.25,
+    "lambda": 3.0,
+    "theta": 0.6,
+    "q0": 0.4,
+    "rho": 0.1
+  },
+  "antColony": {
+    "tauZero": 1.0E-6
+  }
+}
