@@ -6,7 +6,6 @@ import helpers.deepCopy
 import org.apache.logging.log4j.LogManager
 import sa.TotalTimeTermination
 import shared.Instance
-import shared.Solution
 
 class AntColony(
     private val instance: Instance,
