@@ -1,9 +1,9 @@
 package aco
 
 import helpers.*
-import helpers.Distances.calculateTravelTime
 import helpers.Distances.distances
 import helpers.Distances.inverseDistances
+import helpers.Distances.travelTime
 import heuristics.WaitHeuristic.calculateWaitTime
 import shared.Instance
 import shared.Node
@@ -104,14 +104,14 @@ class Ant(
 
                 // Will the vehicle arrive before customer is closed
                 val lastNodeMeta = route.last()
-                val arrivalTime = lastNodeMeta.departureTime + calculateTravelTime(lastNodeMeta.node.id, node.id)
+                val arrivalTime = lastNodeMeta.departureTime + travelTime[lastNodeMeta.node.id, node.id]
                 if (arrivalTime > node.dueTime)
                     return false
 
                 // Will the vehicle manage to return to the depot
                 val depotArrival = maxOf(arrivalTime, node.readyTime) +
                         node.serviceTime +
-                        calculateTravelTime(node.id, instance.depot.id)
+                        travelTime[node.id, instance.depot.id]
                 if (depotArrival > instance.depot.dueTime)
                     return false
 
@@ -124,7 +124,7 @@ class Ant(
 
                 // TODO Extract method for arrivalTime?
                 val lastNodeMeta = route.last()
-                val arrivalTime = lastNodeMeta.departureTime + calculateTravelTime(lastNodeMeta.node.id, node.id)
+                val arrivalTime = lastNodeMeta.departureTime + travelTime[lastNodeMeta.node.id, node.id]
                 val departureTime = maxOf(arrivalTime, node.readyTime) + node.serviceTime  // TODO extract maxOf?
                 route.add(NodeMeta(node, arrivalTime, departureTime))
                 totalDistance += distances[lastNodeMeta.node.id, node.id]

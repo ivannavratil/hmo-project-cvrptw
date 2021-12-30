@@ -39,3 +39,12 @@ class FlatSquareMatrix {
     }
 
 }
+
+
+class FlatSquareMatrixInt(private val stride: Int, initializer: (row: Int, col: Int) -> Int) {
+
+    private val data = IntArray(stride * stride) { initializer(it / stride, it % stride) }
+
+    operator fun get(r: Int, c: Int) = data[r * stride + c]
+
+}
