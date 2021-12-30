@@ -10,11 +10,9 @@ fun String.parseInts(): IntArray {
 
 fun DoubleArray.argmax(): Int {
     var maxIndex = 0
-    var i = 1
-    while (i < size) {
-        if (get(i) > get(maxIndex)) maxIndex = i
-        i++
-    }
+    for (i in 1 until size)
+        if (get(i) > get(maxIndex))
+            maxIndex = i
     return maxIndex
 }
 
