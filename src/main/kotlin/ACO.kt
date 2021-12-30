@@ -34,11 +34,25 @@ fun main() {
 //        Config.AntColony(tauZero = 1E-3)
 //    )
 
-    //    INSTANCE 2
+//    INSTANCE 2
 //    val base = Config(
 //        2, Int.MAX_VALUE,
 //        Config.Ant(80, 1.0, 1.25, 3.0, 0.45, 0.4, 0.2),
 //        Config.AntColony(tauZero = 2E-4)
+//    )
+
+//    INSTANCE 3
+//    val base = Config(
+//        3, Int.MAX_VALUE,
+//        Config.Ant(20, 1.0, 1.4, 3.0, 0.5, 0.4, 0.2),
+//        Config.AntColony(tauZero = 7E-5)
+//    )
+
+//    INSTANCE 4
+//    val base = Config(
+//        4, Int.MAX_VALUE,
+//        Config.Ant(20, 1.1, 1.25, 3.0, 0.7, 0.4, 0.15),
+//        Config.AntColony(tauZero = 6E-5)
 //    )
 
 //    INSTANCE 6
@@ -72,7 +86,7 @@ fun main() {
 
         thread(name = "count") {
             val cCount = copy(base)
-            for (count in (2..10 step 2)) {
+            for (count in (2..25 step 5)) {
                 cCount.ant.count = count
                 main2(cCount, "count", count.toDouble())
             }
