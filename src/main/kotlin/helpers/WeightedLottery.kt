@@ -31,7 +31,7 @@ class WeightedLottery(private val weights: DoubleArray) {
 
     private fun Double.validate(): Double {
         if (isNaN() || this < 0.0) {
-            throw IllegalArgumentException("$weights contains invalid weight: $this")
+            throw IllegalArgumentException("${weights.joinToString()} contains invalid weight: $this")
         }
         return this
     }

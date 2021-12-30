@@ -65,7 +65,7 @@ fun main() {
 //    INSTANCE 6
     val base = Config(
         6, Int.MAX_VALUE,
-        Config.Ant(6, 0.9, 1.25, 3.0, 0.6, 0.4, 0.2),
+        Config.Ant(6, 0.9, 1.25, 0.03, 0.6, 0.4, 0.2),
         Config.AntColony(tauZero = 1E-6)
     )
 
