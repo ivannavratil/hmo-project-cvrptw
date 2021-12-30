@@ -46,7 +46,7 @@ class Ant(
         val numerators = DoubleArray(neighbors.size) { calculateNumerators(sourceMeta, neighbors[it]) }
 
         val chosenIndex = if (seededRandom.nextDouble() <= antConfig.q0) {
-            numerators.asIterable().argmax()!!
+            numerators.argmax()
         } else {
             //TODO: WeightedLottery doesn't throw but total solution is worse :(
             val min = numerators.minOf { it }
