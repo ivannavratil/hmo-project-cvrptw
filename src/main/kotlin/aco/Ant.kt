@@ -1,12 +1,9 @@
 package aco
 
-import helpers.Config
+import helpers.*
 import helpers.Distances.calculateTravelTime
 import helpers.Distances.distances
 import helpers.Distances.inverseDistances
-import helpers.WeightedLottery
-import helpers.argmax
-import helpers.seededRandom
 import heuristics.WaitHeuristic.calculateWaitTime
 import shared.Instance
 import shared.Node
@@ -16,7 +13,7 @@ import kotlin.math.pow
 
 class Ant(
     private val instance: Instance,
-    private val pheromones: Array<DoubleArray>,
+    private val pheromones: FlatSquareMatrix,
     private val antConfig: Config.Ant
 ) {
     // TODO Update local pheromones etc
@@ -60,8 +57,8 @@ class Ant(
     }
 
     private fun calculateNumerators(sourceMeta: NodeMeta, destination: Node): Double {
-        val pheromones = pheromones[sourceMeta.node.id][destination.id].pow(antConfig.alpha)
-        val visibility = inverseDistances[sourceMeta.node.id][destination.id].pow(antConfig.beta)
+        val pheromones = pheromones[sourceMeta.node.id, destination.id].pow(antConfig.alpha)
+        val visibility = inverseDistances[sourceMeta.node.id, destination.id].pow(antConfig.beta)
         val savings = 1.0  // calculateSavings(sourceMeta.node.id, destination.id).pow(antConfig.lambda)
         val waitTime = calculateWaitTime(sourceMeta, destination).pow(antConfig.theta)
         return pheromones * visibility * savings * waitTime
@@ -130,7 +127,7 @@ class Ant(
                 val arrivalTime = lastNodeMeta.departureTime + calculateTravelTime(lastNodeMeta.node.id, node.id)
                 val departureTime = maxOf(arrivalTime, node.readyTime) + node.serviceTime  // TODO extract maxOf?
                 route.add(NodeMeta(node, arrivalTime, departureTime))
-                totalDistance += distances[lastNodeMeta.node.id][node.id]
+                totalDistance += distances[lastNodeMeta.node.id, node.id]
 
                 if (node === instance.depot)
                     return

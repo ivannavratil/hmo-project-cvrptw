@@ -15,5 +15,3 @@ fun DoubleArray.argmax(): Int {
             maxIndex = i
     return maxIndex
 }
-
-fun Array<DoubleArray>.deepCopy() = Array(size) { get(it).clone() }
