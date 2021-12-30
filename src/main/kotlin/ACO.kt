@@ -58,7 +58,7 @@ fun main() {
 //    INSTANCE 5
 //    val base = Config(
 //        5, Int.MAX_VALUE,
-//        Config.Ant(14, 1.25, 1.15, 3.0, 0.7, 0.4, 0.15),
+//        Config.Ant(14, 1.25, 1.2, 3.0, 0.72, 0.4, 0.15),
 //        Config.AntColony(tauZero = 2E-5)
 //    )
 
