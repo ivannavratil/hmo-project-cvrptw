@@ -1,12 +1,12 @@
 {
   "instanceId": 3,
-  "iterations": 2147483647,
+  "iterations": 781,
   "ant": {
     "count": 20,
-    "alpha": 0.9,
-    "beta": 1.5,
+    "alpha": 1.0,
+    "beta": 1.4,
     "lambda": 3.0,
-    "theta": 0.6,
+    "theta": 0.5,
     "q0": 0.4,
     "rho": 0.2
   },
