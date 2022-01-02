@@ -1,6 +1,7 @@
 <component name="ProjectRunConfigurationManager">
-    <configuration default="false" name="ACO" type="JetRunConfigurationType">
-        <option name="MAIN_CLASS_NAME" value="AcoParameterVariationsKt"/>
+    <configuration default="false" name="AcoOneInstanceMultipleThreadsKt" type="JetRunConfigurationType"
+                   singleton="false" nameIsGenerated="true">
+        <option name="MAIN_CLASS_NAME" value="AcoOneInstanceMultipleThreadsKt"/>
         <module name="hmo-project.main"/>
         <shortenClasspath name="NONE"/>
         <method v="2">

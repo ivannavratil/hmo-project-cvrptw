@@ -1,5 +1,6 @@
 import aco.AntColony
 import helpers.Config
+import helpers.ConfigChooser
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.apache.logging.log4j.Level
@@ -17,20 +18,16 @@ import kotlin.system.measureTimeMillis
 
 fun main() {
 
-    val instance = 6
+    val instanceId = 6
 
-    val base = Config(
-        instance, 1000,
-        Config.Ant(6, 0.9, 1.25, 3.0, 0.6, 0.4, 0.2),
-        Config.AntColony(tauZero = 1E-6)
-    )
+    val base = ConfigChooser.getConfig(instanceId)
 
     File("src/main/resources/graph/config.json").appendText(
         Json.encodeToString(base) + System.lineSeparator()
     )
 
     for (i in 0 until 10) {
-        thread(name = "instance = $instance, thread = $i") {
+        thread(name = "instance = $instanceId, thread = $i") {
             main2(base.copy())
         }
     }
