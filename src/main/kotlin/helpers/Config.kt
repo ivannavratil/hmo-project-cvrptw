@@ -9,6 +9,8 @@ data class Config(
     val ant: Ant,
     val antColony: AntColony,
 ) {
+    fun deepCopy(): Config = this.copy(ant = this.ant.copy(), antColony = this.antColony.copy())
+
     @Serializable
     data class Ant(
         var count: Int,
@@ -22,6 +24,7 @@ data class Config(
 
     @Serializable
     data class AntColony(
-        var tauZero: Double
+        var tauZero: Double,
+        val estimateTauZero: Boolean
     )
 }

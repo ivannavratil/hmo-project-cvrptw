@@ -12,3 +12,4 @@ ant:
 
 antColony:
     tauZero: 0.001
+    estimateTauZero: true

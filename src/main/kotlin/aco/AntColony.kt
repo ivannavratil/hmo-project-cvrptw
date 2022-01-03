@@ -3,19 +3,19 @@ package aco
 import helpers.Config
 import helpers.Distances
 import helpers.FlatSquareMatrix
+import local.LocalSearch
 import org.apache.logging.log4j.LogManager
 import sa.TotalTimeTermination
 import shared.Instance
-import kotlin.math.min
 
 class AntColony(
     private val instance: Instance,
-    private val antColonyConfig: Config.AntColony
+    config: Config
 ) {
     var incumbentSolution: Ant.SolutionBuilder? = null
 
-    // TODO Set tauZero to 1/L for random first try?
-    private val pheromones = FlatSquareMatrix(instance.nodes.size) { _, _ -> antColonyConfig.tauZero }
+    private lateinit var pheromones: FlatSquareMatrix
+    private val config = config.deepCopy()
     private val logger = LogManager.getLogger(this::class.java.simpleName)
 
     init {
@@ -76,9 +76,12 @@ class AntColony(
         }
     }
 
-    fun run(config: Config) {
-        config.antColony.tauZero = calculateTauZero(config)
-        logger.info("Tau zero set to ${config.antColony.tauZero}")
+    fun run() {
+        if (config.antColony.estimateTauZero) {
+            config.antColony.tauZero = calculateTauZero()
+            logger.info("Tau zero set to ${config.antColony.tauZero}")
+        }
+        pheromones = FlatSquareMatrix(instance.nodes.size) { _, _ -> config.antColony.tauZero }
 
         val timeTerm = TotalTimeTermination(120.0)
         repeat(config.iterations) {
@@ -92,17 +95,17 @@ class AntColony(
         }
     }
 
-    private fun calculateTauZero(config: Config): Double {
-        var minDistance: Double = Double.MAX_VALUE
+    private fun calculateTauZero(): Double {
+        val ant = Ant(instance, FlatSquareMatrix(instance.nodes.size) { _, _ -> config.antColony.tauZero }, config.ant)
 
-        val ant = Ant(instance, FlatSquareMatrix(instance.nodes.size) { _, _ -> antColonyConfig.tauZero }, config.ant)
-
-        (1..20).forEach { _ ->
+        repeat(50) {
             ant.traverse()?.let {
-                minDistance = min(minDistance, it.totalDistance)
+                LocalSearch(instance, it).search(iterLimit = 500)
+                return 1 / it.totalDistance
             }
         }
 
-        return 3.0 / (minDistance)
+        logger.info("Failed to estimate tau zero!")
+        return config.antColony.tauZero
     }
 }

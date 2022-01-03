@@ -28,7 +28,7 @@ fun main() {
 
     for (i in 0 until 10) {
         thread(name = "instance = $instanceId, thread = $i") {
-            main2(base.copy())
+            main2(base.deepCopy())
         }
     }
 }
@@ -41,10 +41,10 @@ fun main2(config: Config) {
 
     val instance = Instance.fromInstanceId(config.instanceId)
 
-    val aco = AntColony(instance, config.antColony)
+    val aco = AntColony(instance, config)
 
     val runtime = measureTimeMillis {
-        aco.run(config)
+        aco.run()
     }
     logger.info("RUNTIME: $runtime ms")
 

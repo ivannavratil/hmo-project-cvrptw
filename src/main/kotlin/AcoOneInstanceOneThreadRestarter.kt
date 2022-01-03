@@ -14,7 +14,6 @@ fun main() {
     )
 
     while (true) {
-        main2(base.copy())
+        main2(base.deepCopy())
     }
 }
-
