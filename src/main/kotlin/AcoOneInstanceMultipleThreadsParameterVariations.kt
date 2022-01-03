@@ -14,6 +14,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.concurrent.thread
 import kotlin.random.Random
+import kotlin.random.nextULong
 import kotlin.system.measureTimeMillis
 
 // TODO Array / ArrayList / List ?
@@ -111,7 +112,7 @@ fun main2(config: Config, param: String, paramValue: Double) {
     val formattedTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"))
 
     Solution.fromSolutionBuilder(aco.incumbentSolution!!)
-        .exportToFile("src/main/resources/results/i${config.instanceId}-${formattedTimestamp}-${Random.nextLong()}.txt")
+        .exportToFile("src/main/resources/results/i${config.instanceId}-${formattedTimestamp}-${Random.nextULong()}.txt")
 
 //    File("src/main/resources/results/i${config.instanceId}-$formattedTimestamp.json").writeText(Json.encodeToString(config))
 

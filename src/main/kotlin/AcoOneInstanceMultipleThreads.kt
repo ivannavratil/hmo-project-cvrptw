@@ -14,6 +14,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.concurrent.thread
 import kotlin.random.Random
+import kotlin.random.nextULong
 import kotlin.system.measureTimeMillis
 
 fun main() {
@@ -51,7 +52,7 @@ fun main2(config: Config) {
     val formattedTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"))
 
     Solution.fromSolutionBuilder(aco.incumbentSolution!!)
-        .exportToFile("src/main/resources/results/i${config.instanceId}-${formattedTimestamp}-${Random.nextLong()}.txt")
+        .exportToFile("src/main/resources/results/i${config.instanceId}-${formattedTimestamp}-${Random.nextULong()}.txt")
 
     File("src/main/resources/graph/results.txt").appendText(
         "${config.instanceId};${aco.incumbentSolution!!.vehiclesUsed};${aco.incumbentSolution!!.totalDistance}" + System.lineSeparator()
