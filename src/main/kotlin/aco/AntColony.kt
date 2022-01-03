@@ -6,6 +6,7 @@ import helpers.FlatSquareMatrix
 import org.apache.logging.log4j.LogManager
 import sa.TotalTimeTermination
 import shared.Instance
+import kotlin.math.min
 
 class AntColony(
     private val instance: Instance,
@@ -14,7 +15,7 @@ class AntColony(
     var incumbentSolution: Ant.SolutionBuilder? = null
 
     // TODO Set tauZero to 1/L for random first try?
-    private val pheromones = FlatSquareMatrix(instance.nodes.size) {_, _ -> antColonyConfig.tauZero }
+    private val pheromones = FlatSquareMatrix(instance.nodes.size) { _, _ -> antColonyConfig.tauZero }
     private val logger = LogManager.getLogger(this::class.java.simpleName)
 
     init {
@@ -76,6 +77,9 @@ class AntColony(
     }
 
     fun run(config: Config) {
+        config.antColony.tauZero = calculateTauZero(config)
+        logger.info("Tau zero set to ${config.antColony.tauZero}")
+
         val timeTerm = TotalTimeTermination(120.0)
         repeat(config.iterations) {
             if (timeTerm.terminate(Double.NaN)) {
@@ -86,5 +90,19 @@ class AntColony(
             }
             performSingleIteration(config.ant)
         }
+    }
+
+    private fun calculateTauZero(config: Config): Double {
+        var minDistance: Double = Double.MAX_VALUE
+
+        val ant = Ant(instance, FlatSquareMatrix(instance.nodes.size) { _, _ -> antColonyConfig.tauZero }, config.ant)
+
+        (1..20).forEach { _ ->
+            ant.traverse()?.let {
+                minDistance = min(minDistance, it.totalDistance)
+            }
+        }
+
+        return 3.0 / (minDistance)
     }
 }
