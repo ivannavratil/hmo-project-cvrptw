@@ -21,15 +21,15 @@ fun main() {
     val instanceId = 1
     val instance = Instance.fromInstanceId(instanceId)
 
-    val solution: Solution = Solution.fromFile(File("src/main/resources/results/best/i$instanceId.txt"))
+    val solution: Solution = Solution.fromFile(File("src/main/resources/results/best/i$instanceId-LS.txt"))
 //    val solution: Solution = shared.Solution.fromFile(File("src/main/resources/results/fake-res-1m-i${instanceId}.txt"))
 //    val solution: Solution? = null
 
     val max = instance.nodes.maxByOrNull { it.yCoordinate }!!.yCoordinate
     val multiplier = height * 0.9 / max
 
-    val depotPointSize = 10
-    val customerPointSize = 3
+    val depotPointSize = 15
+    val customerPointSize = 8
 
     val pane: JPanel = object : JPanel() {
         override fun paintComponent(g: Graphics) {
@@ -39,6 +39,9 @@ fun main() {
                 )
             )
 
+            val maxReadyTime = instance.nodes.maxOf { it.readyTime }
+            println(maxReadyTime)
+
             @Suppress(
                 "UNREACHABLE_CODE",
                 "UNNECESSARY_SAFE_CALL",
@@ -47,9 +50,18 @@ fun main() {
             solution?.routes?.forEachIndexed { i, route ->
                 g.color = Color.getHSBColor(i.toFloat() / solution.routes.size, 1f, 1f)
 
-                route.nodes.zipWithNext().forEach {
+                route.nodes.zipWithNext().forEachIndexed { j, it ->
+
                     val customer1 = instance.nodes[it.first.first]
                     val customer2 = instance.nodes[it.second.first]
+
+                    if (j == 0) {
+                        g.drawString(
+                            "R$i",
+                            ((customer1.xCoordinate + customer2.xCoordinate) * multiplier / 2).toFloat(),
+                            ((customer1.yCoordinate + customer2.yCoordinate) * multiplier / 2).toFloat()
+                        )
+                    }
 
                     g.drawLine(
                         (customer1.xCoordinate * multiplier).toInt(),
@@ -60,8 +72,12 @@ fun main() {
                 }
             }
 
+            //NOTE: manji b => svjetlija boja => raniji ready time
+            //NOTE: veći b => tamija boja => kasniji ready time
+
             instance.nodes.forEachIndexed { i, node ->
-                g.color = if (i == 0) Color.red else Color.black
+                //g.color = if (i == 0) Color.red else Color.black
+                g.color = Color.getHSBColor(225.0F, 1.0F, 1 - (node.readyTime / maxReadyTime.toFloat()))
                 val pointSize = if (i == 0) depotPointSize else customerPointSize
 
                 g.fillOval(
