@@ -192,8 +192,7 @@ class LocalSearch(
         for (nodeMeta in nodesToAdd)
             route.add(route.last().calculateNext(nodeMeta.node, instance))
 
-        updateTotalDistance(routeBuilder)
-        updateRemainingCapacity(routeBuilder)
+        updateDistanceAndCapacity(routeBuilder)
     }
 
     private fun calculateTwoOptSwapDistanceSavings(
@@ -254,6 +253,17 @@ class LocalSearch(
         routeBuilder.remainingCapacity = instance.capacity - routeBuilder.route.sumOf { it.node.demand }
     }
 
+    private fun updateDistanceAndCapacity(routeBuilder: RouteBuilder) {
+        updateTotalDistance(routeBuilder)
+        updateRemainingCapacity(routeBuilder)
+    }
+
+    private fun updateNodeMetas(route: MutableList<NodeMeta>, lastGoodPos: Int) {
+        for (i in lastGoodPos until route.size) {
+            route[i] = route[i - 1].calculateNext(route[i].node, instance)
+        }
+    }
+
     private fun sumDemand(routePart1: List<NodeMeta>, routePart2: List<NodeMeta>): Int {
         return routePart1.sumOf { it.node.demand } + routePart2.sumOf { it.node.demand }
     }
@@ -296,9 +306,7 @@ class LocalSearch(
             route[nodeOrdinal] = route[nodeOrdinal + step]
             route[nodeOrdinal + step] = tmp
 
-            for (i in nodeOrdinal until route.size) {
-                route[i] = route[i - 1].calculateNext(route[i].node, instance)
-            }
+            updateNodeMetas(route, nodeOrdinal)
 
             // remainingCapacity is unchanged
             updateTotalDistance(routeBuilder)
@@ -330,6 +338,34 @@ class LocalSearch(
             } else if (routeBuilder2.route.size == 2) {
                 solution.routes.removeAt(routeId2)
             }
+        }
+    }
+
+    private inner class NodeTransferContainer(
+        val routeId1: Int,  // removed from here
+        val routeId2: Int,  // transferred to here
+        val nodeOrdinal1: Int,
+        val nodeOrdinal2: Int,
+        override val distanceSavings: Double
+    ) : ISwap {
+        override fun performSwap(solution: SolutionBuilder) {
+            val routeBuilder1 = solution.routes[routeId1]
+            val routeBuilder2 = solution.routes[routeId2]
+
+            val route1 = routeBuilder1.route
+            val transferredNodeMeta = route1[nodeOrdinal1]
+
+            route1.removeAt(nodeOrdinal1)
+            updateNodeMetas(route1, nodeOrdinal1 - 1)
+            if (route1.size == 2) {
+                solution.routes.removeAt(routeId1)
+            }
+
+            routeBuilder2.route.add(nodeOrdinal2, transferredNodeMeta)
+            updateNodeMetas(routeBuilder2.route, nodeOrdinal2)
+
+            updateDistanceAndCapacity(routeBuilder1)
+            updateDistanceAndCapacity(routeBuilder2)
         }
     }
 }
