@@ -28,7 +28,7 @@ fun main() {
     for (route in solution.routes) {
         solutionBuilder.createNewRoute()
         for (i in 1 until route.nodes.size) {
-            solutionBuilder.currentRoute.addNextNode(instance.nodes[route.nodes[i].first])
+            solutionBuilder.addNextNode(instance.nodes[route.nodes[i].first])
         }
     }
 

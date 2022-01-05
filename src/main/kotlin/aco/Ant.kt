@@ -23,7 +23,7 @@ class Ant(
         while (true) {
             val neighbors = solutionBuilder.findNeighboringCustomers()
             if (neighbors.isEmpty()) {
-                solutionBuilder.currentRoute.addNextNode(instance.depot)
+                solutionBuilder.addNextNode(instance.depot)
                 if (solutionBuilder.isFinished) {
                     return solutionBuilder  // TODO local search
                 }
@@ -34,7 +34,7 @@ class Ant(
                 }
             } else {
                 val nextCustomer = pickNextCustomer(solutionBuilder.currentRoute.route.last(), neighbors)
-                solutionBuilder.currentRoute.addNextNode(nextCustomer)
+                solutionBuilder.addNextNode(nextCustomer)
             }
         }
     }

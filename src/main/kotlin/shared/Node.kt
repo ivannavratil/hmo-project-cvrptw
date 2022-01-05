@@ -1,5 +1,6 @@
 package shared
 
+// Must be immutable.
 data class Node(
     val id: Int,
     val xCoordinate: Double,

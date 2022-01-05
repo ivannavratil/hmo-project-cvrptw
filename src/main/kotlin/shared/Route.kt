@@ -14,7 +14,7 @@ data class Route(
             return Route(nodes)
         }
 
-        fun fromRouteBuilder(builder: SolutionBuilder.RouteBuilder): Route {
+        fun fromRouteBuilder(builder: RouteBuilder): Route {
             val nodes = builder.route.map {
                 Pair(it.node.id, it.serviceStartTime)
             }

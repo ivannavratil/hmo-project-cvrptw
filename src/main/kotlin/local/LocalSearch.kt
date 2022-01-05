@@ -3,6 +3,7 @@ package local
 import org.apache.logging.log4j.LogManager
 import shared.Instance
 import shared.NodeMeta
+import shared.RouteBuilder
 import shared.SolutionBuilder
 import kotlin.math.abs
 
@@ -180,7 +181,7 @@ class LocalSearch(
         return improvements
     }
 
-    private fun merge(nodeOrdinal: Int, routeBuilder: SolutionBuilder.RouteBuilder, nodesToAdd: List<NodeMeta>) {
+    private fun merge(nodeOrdinal: Int, routeBuilder: RouteBuilder, nodesToAdd: List<NodeMeta>) {
         val route = routeBuilder.route
 
         while (route.size > nodeOrdinal + 1)
@@ -194,8 +195,8 @@ class LocalSearch(
     }
 
     private fun calculateTwoOptSwapDistanceSavings(
-        route1: SolutionBuilder.RouteBuilder, nodeOrdinal1: Int,
-        route2: SolutionBuilder.RouteBuilder, nodeOrdinal2: Int
+        route1: RouteBuilder, nodeOrdinal1: Int,
+        route2: RouteBuilder, nodeOrdinal2: Int
     ): Double {
         val nodeMeta1 = route1.route[nodeOrdinal1]
         val nodeMeta1Next = route1.route[nodeOrdinal1 + 1]
@@ -213,8 +214,8 @@ class LocalSearch(
     }
 
     private fun twoOptSwapSaving(
-        route1: SolutionBuilder.RouteBuilder, nodeOrdinal1: Int,
-        route2: SolutionBuilder.RouteBuilder, nodeOrdinal2: Int,
+        route1: RouteBuilder, nodeOrdinal1: Int,
+        route2: RouteBuilder, nodeOrdinal2: Int,
         isNonImprovingAllowed: Boolean
     ): Double {
         val nodeMeta1 = route1.route[nodeOrdinal1]
@@ -243,13 +244,14 @@ class LocalSearch(
         return distanceSavings
     }
 
-    private fun updateTotalDistance(routeBuilder: SolutionBuilder.RouteBuilder) {
+
+    private fun updateTotalDistance(routeBuilder: RouteBuilder) {
         routeBuilder.totalDistance = routeBuilder.route.zipWithNext { nm1, nm2 ->
             instance.distances[nm1.node.id, nm2.node.id]
         }.sum()
     }
 
-    private fun updateRemainingCapacity(routeBuilder: SolutionBuilder.RouteBuilder) {
+    private fun updateRemainingCapacity(routeBuilder: RouteBuilder) {
         routeBuilder.remainingCapacity = instance.capacity - routeBuilder.route.sumOf { it.node.demand }
     }
 
@@ -287,7 +289,6 @@ class LocalSearch(
             this.step = step
         }
 
-        // TODO optimize
         override fun performSwap(solution: SolutionBuilder) {
             val routeBuilder = solution.routes[routeId]
             val route = routeBuilder.route

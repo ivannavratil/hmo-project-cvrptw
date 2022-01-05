@@ -1,5 +1,6 @@
 package shared
 
+// Must be immutable.
 data class NodeMeta(
     val node: Node,
     val serviceStartTime: Int,
