@@ -1,4 +1,3 @@
-import helpers.Distances
 import local.LocalSearch
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
@@ -23,8 +22,6 @@ fun main() {
 
     val solution = Solution.fromFile(File("src/main/resources/results/best/i$instanceId.txt"))
     val instance = Instance.fromInstanceId(instanceId)
-
-    Distances.initDistances(instance)
 
     val solutionBuilder = SolutionBuilder(instance)
 

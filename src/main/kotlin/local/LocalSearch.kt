@@ -1,7 +1,5 @@
 package local
 
-import helpers.Distances.distances
-import helpers.Distances.travelTime
 import org.apache.logging.log4j.LogManager
 import shared.Instance
 import shared.NodeMeta
@@ -126,7 +124,7 @@ class LocalSearch(
         for (nodeMeta in nodesToAdd) {
             val node = nodeMeta.node
             val lastNodeMeta = route.last()
-            val arrivalTime = lastNodeMeta.departureTime + travelTime[lastNodeMeta.node.id, node.id]
+            val arrivalTime = lastNodeMeta.departureTime + instance.travelTime[lastNodeMeta.node.id, node.id]
             val departureTime = maxOf(arrivalTime, node.readyTime) + node.serviceTime
             route.add(NodeMeta(node, arrivalTime, departureTime))
         }
@@ -147,11 +145,11 @@ class LocalSearch(
         val nodeMeta2 = route2.route[nodeOrdinal2]
         val nodeMeta2Next = route2.route[nodeOrdinal2 + 1]
 
-        val currentDistance = distances[nodeMeta1.node.id, nodeMeta1Next.node.id] +
-                distances[nodeMeta2.node.id, nodeMeta2Next.node.id]
+        val currentDistance = instance.distances[nodeMeta1.node.id, nodeMeta1Next.node.id] +
+                instance.distances[nodeMeta2.node.id, nodeMeta2Next.node.id]
 
-        val swappedDistance = distances[nodeMeta1.node.id, nodeMeta2Next.node.id] +
-                distances[nodeMeta2.node.id, nodeMeta1Next.node.id]
+        val swappedDistance = instance.distances[nodeMeta1.node.id, nodeMeta2Next.node.id] +
+                instance.distances[nodeMeta2.node.id, nodeMeta1Next.node.id]
 
         return currentDistance - swappedDistance
     }

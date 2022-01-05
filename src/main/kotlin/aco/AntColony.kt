@@ -1,7 +1,6 @@
 package aco
 
 import helpers.Config
-import helpers.Distances
 import helpers.FlatSquareMatrix
 import local.LocalSearch
 import org.apache.logging.log4j.LogManager
@@ -18,10 +17,6 @@ class AntColony(
     private lateinit var pheromones: FlatSquareMatrix
     private val config = config.deepCopy()
     private val logger = LogManager.getLogger(this::class.java.simpleName)
-
-    init {
-        Distances.initDistances(instance)
-    }
 
     private fun performSingleIteration(
         antConfig: Config.Ant

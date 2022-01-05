@@ -1,10 +1,11 @@
 package heuristics
 
-import helpers.Distances.travelTime
+import shared.Instance
 import shared.Node
 import shared.NodeMeta
 
-object WaitHeuristic {
+class WaitHeuristic(instance: Instance) {
+    private val travelTime = instance.travelTime
 
     fun calculateWaitTime(sourceNodeMeta: NodeMeta, destination: Node): Double {
         val arrivalTime = sourceNodeMeta.departureTime + travelTime[sourceNodeMeta.node.id, destination.id]

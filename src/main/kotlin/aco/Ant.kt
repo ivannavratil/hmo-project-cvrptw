@@ -1,8 +1,7 @@
 package aco
 
 import helpers.*
-import helpers.Distances.inverseDistances
-import heuristics.WaitHeuristic.calculateWaitTime
+import heuristics.WaitHeuristic
 import shared.Instance
 import shared.Node
 import shared.NodeMeta
@@ -15,6 +14,9 @@ class Ant(
     private val pheromones: FlatSquareMatrix,
     private val antConfig: Config.Ant
 ) {
+    private val waitHeuristic = WaitHeuristic(instance)
+//    private val savingsHeuristic = SavingsHeuristic(instance)
+
     // TODO Update local pheromones etc
     fun traverse(): SolutionBuilder? {
         val solutionBuilder = SolutionBuilder(instance)
@@ -58,10 +60,12 @@ class Ant(
 
     private fun calculateNumerators(sourceMeta: NodeMeta, destination: Node): Double {
         val pheromones = pheromones[sourceMeta.node.id, destination.id].pow(antConfig.alpha)
-        val visibility = inverseDistances[sourceMeta.node.id, destination.id].pow(antConfig.beta)
-        val savings = 1.0  // (calculateSavings(sourceMeta.node.id, destination.id) + 1).pow(antConfig.lambda)
-        val waitTime = calculateWaitTime(sourceMeta, destination).pow(antConfig.theta)
-        return pheromones * visibility * savings * waitTime
+        val visibility = instance.inverseDistances[sourceMeta.node.id, destination.id].pow(antConfig.beta)
+        val waitTime = waitHeuristic.calculateWaitTime(sourceMeta, destination).pow(antConfig.theta)
+        return pheromones * visibility * waitTime
+
+//        val savings = (savingsHeuristic.calculateSavings(sourceMeta.node.id, destination.id) + 1).pow(antConfig.lambda)
+//        return pheromones * visibility * savings * waitTime
     }
 
 }

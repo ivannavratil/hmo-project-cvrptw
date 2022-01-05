@@ -1,7 +1,5 @@
 package shared
 
-import helpers.Distances
-
 class SolutionBuilder(private val instance: Instance) : Comparable<SolutionBuilder> {
     val routes = mutableListOf<RouteBuilder>()
     private val unvisitedNodes: MutableSet<Node> = HashSet<Node>(instance.nodes.size).also {
@@ -41,14 +39,14 @@ class SolutionBuilder(private val instance: Instance) : Comparable<SolutionBuild
 
             // Will the vehicle arrive before customer is closed
             val lastNodeMeta = route.last()
-            val arrivalTime = lastNodeMeta.departureTime + Distances.travelTime[lastNodeMeta.node.id, node.id]
+            val arrivalTime = lastNodeMeta.departureTime + instance.travelTime[lastNodeMeta.node.id, node.id]
             if (arrivalTime > node.dueTime)
                 return false
 
             // Will the vehicle manage to return to the depot
             val depotArrival = maxOf(arrivalTime, node.readyTime) +
                     node.serviceTime +
-                    Distances.travelTime[node.id, instance.depot.id]
+                    instance.travelTime[node.id, instance.depot.id]
             if (depotArrival > instance.depot.dueTime)
                 return false
 
@@ -61,10 +59,10 @@ class SolutionBuilder(private val instance: Instance) : Comparable<SolutionBuild
 
             // TODO Extract method for arrivalTime?
             val lastNodeMeta = route.last()
-            val arrivalTime = lastNodeMeta.departureTime + Distances.travelTime[lastNodeMeta.node.id, node.id]
+            val arrivalTime = lastNodeMeta.departureTime + instance.travelTime[lastNodeMeta.node.id, node.id]
             val departureTime = maxOf(arrivalTime, node.readyTime) + node.serviceTime  // TODO extract maxOf?
             route.add(NodeMeta(node, arrivalTime, departureTime))
-            totalDistance += Distances.distances[lastNodeMeta.node.id, node.id]
+            totalDistance += instance.distances[lastNodeMeta.node.id, node.id]
 
             if (node === instance.depot)
                 return
