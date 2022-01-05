@@ -6,6 +6,12 @@ import shared.NodeMeta
 import shared.SolutionBuilder
 import kotlin.math.abs
 
+private interface ISwap : Comparable<ISwap> {
+    val distanceSavings: Double
+    fun performSwap(solution: SolutionBuilder)
+    override fun compareTo(other: ISwap) = distanceSavings.compareTo(other.distanceSavings)
+}
+
 class LocalSearch(
     private val instance: Instance,
     private val solution: SolutionBuilder  // modified in-place!
@@ -26,15 +32,43 @@ class LocalSearch(
     private fun iteration(): Boolean {
         val originalDistance = solution.totalDistance
 
+        var bestSwap: ISwap?
         val routeRemoval = findRouteRemoval()
-        val bestSwap = if (routeRemoval.isNotEmpty()) {
+        if (routeRemoval.isNotEmpty()) {
             logger.trace("Removed a vehicle")
-            routeRemoval.maxOrNull()!!
+            bestSwap = routeRemoval.maxOrNull()!!
         } else {
-            findImprovements().maxOrNull() ?: return false
+            bestSwap = findTwoOptImprovements().maxOrNull()
+
+            //////
+
+//            val step = if (seededRandom.nextBoolean()) 1 else 2
+//            val otherStep = if (step == 1) 2 else 1
+//            if (bestSwap == null) bestSwap = findInternalSwapImprovements(step).maxOrNull()
+//            if (bestSwap == null) bestSwap = findInternalSwapImprovements(otherStep).maxOrNull()
+
+            //////
+
+            // TODO gives best results for a single i6 solution
+            if (bestSwap == null) {
+                bestSwap = findInternalSwapImprovements(1).maxOrNull()
+                val bestSwap2 = findInternalSwapImprovements(2).maxOrNull()
+                if (bestSwap == null || bestSwap2 != null && bestSwap2 > bestSwap)
+                    bestSwap = bestSwap2
+            }
+
+            //////
+
+            // TODO try taking best of all types - not that good tbh
+//            val bestSwap1 = findInternalSwapImprovements(1).maxOrNull()
+//            if (bestSwap == null || bestSwap1 != null && bestSwap1 > bestSwap)
+//                bestSwap = bestSwap1
+//            val bestSwap2 = findInternalSwapImprovements(2).maxOrNull()
+//            if (bestSwap == null || bestSwap2 != null && bestSwap2 > bestSwap)
+//                bestSwap = bestSwap2
         }
 
-        performSwap(bestSwap)
+        bestSwap?.performSwap(solution) ?: return false
 
         logger.trace(bestSwap.toString())
         logger.trace("Saved distance: ${bestSwap.distanceSavings}")
@@ -47,8 +81,53 @@ class LocalSearch(
         return true
     }
 
-    private fun findRouteRemoval(): List<TwoOptContainer> {
-        val routeRemoval = mutableListOf<TwoOptContainer>()
+    private fun findInternalSwapImprovements(step: Int): List<InternalSwapContainer> {
+        val internalSwaps = mutableListOf<InternalSwapContainer>()
+        val routes = solution.routes
+
+        for (routeId in 0 until routes.size) {
+            val route = routes[routeId].route
+            for (nodeOrdinal in 1 until (route.size - step - 1)) {
+                val distanceSavings = internalSwapSaving(route, nodeOrdinal, step)
+                if (!distanceSavings.isNaN()) {
+                    internalSwaps.add(InternalSwapContainer(routeId, nodeOrdinal, step, distanceSavings))
+                }
+            }
+        }
+
+        return internalSwaps
+    }
+
+    private fun internalSwapSaving(route: MutableList<NodeMeta>, nodeOrdinal: Int, step: Int): Double {
+        // swapping nm1 and nm2 or nm1 and nm3
+        val nmPrev = route[nodeOrdinal - 1]
+        val nm1 = route[nodeOrdinal]
+        val nm2 = route[nodeOrdinal + 1]
+        val nm3 = route[nodeOrdinal + 2]
+        val nmLast = route[nodeOrdinal + step]
+        val nmNext = route[nodeOrdinal + step + 1]
+
+        val distances = instance.distances
+        val prevDist = distances[nmPrev.node.id, nm1.node.id] + distances[nmLast.node.id, nmNext.node.id]
+        val newDist = distances[nmPrev.node.id, nmLast.node.id] + distances[nm1.node.id, nmNext.node.id]
+        val distanceSavings = prevDist - newDist
+        if (distanceSavings <= 0)
+            return Double.NaN
+
+        // Demand will not be an issue.
+
+        // TODO optimize?
+        val swappingPart = if (step == 1) arrayListOf(nm2, nm1, nm3) else arrayListOf(nm3, nm2, nm1)
+        val routeSecondPart = swappingPart + route.subList(nodeOrdinal + 3, route.size)
+        if (!validateTimeWindows(nmPrev, routeSecondPart))
+            return Double.NaN
+
+        return distanceSavings
+    }
+
+    // TODO possible to remove car by injecting a route with a single customer?
+    private fun findRouteRemoval(): List<TwoOptSwapContainer> {
+        val routeRemoval = mutableListOf<TwoOptSwapContainer>()
         val routes = solution.routes
 
         for (routeId1 in 0 until routes.size) {
@@ -62,8 +141,11 @@ class LocalSearch(
                 val nodeOrdinal2 = route2.route.size - 2
 
                 val distanceSavings = twoOptSwapSaving(route1, nodeOrdinal1, route2, nodeOrdinal2, true)
-                if (!distanceSavings.isNaN())
-                    routeRemoval.add(TwoOptContainer(routeId1, routeId2, nodeOrdinal1, nodeOrdinal2, distanceSavings))
+                if (!distanceSavings.isNaN()) {
+                    routeRemoval.add(
+                        TwoOptSwapContainer(routeId1, routeId2, nodeOrdinal1, nodeOrdinal2, distanceSavings)
+                    )
+                }
             }
         }
 
@@ -71,8 +153,8 @@ class LocalSearch(
         return routeRemoval
     }
 
-    private fun findImprovements(): List<TwoOptContainer> {
-        val improvements = mutableListOf<TwoOptContainer>()
+    private fun findTwoOptImprovements(): List<TwoOptSwapContainer> {
+        val improvements = mutableListOf<TwoOptSwapContainer>()
         val routes = solution.routes
 
         for (routeId1 in 0 until (routes.size - 1)) {
@@ -87,7 +169,7 @@ class LocalSearch(
                             continue
 
                         improvements.add(
-                            TwoOptContainer(routeId1, routeId2, nodeOrdinal1, nodeOrdinal2, distanceSavings)
+                            TwoOptSwapContainer(routeId1, routeId2, nodeOrdinal1, nodeOrdinal2, distanceSavings)
                         )
                     }
                 }
@@ -98,24 +180,7 @@ class LocalSearch(
         return improvements
     }
 
-    private fun performSwap(bestSwap: TwoOptContainer) {
-        val routeBuilder1 = solution.routes[bestSwap.routeId1]
-        val routeBuilder2 = solution.routes[bestSwap.routeId2]
-
-        val route1SecondPart = routeBuilder1.route.subList(bestSwap.nodeOrdinal1 + 1, routeBuilder1.route.size).toList()
-        val route2SecondPart = routeBuilder2.route.subList(bestSwap.nodeOrdinal2 + 1, routeBuilder2.route.size).toList()
-
-        merge(bestSwap.nodeOrdinal1, routeBuilder1, route2SecondPart)
-        merge(bestSwap.nodeOrdinal2, routeBuilder2, route1SecondPart)
-
-        if (routeBuilder1.route.size == 2) {
-            solution.routes.removeAt(bestSwap.routeId1)
-        } else if (routeBuilder2.route.size == 2) {
-            solution.routes.removeAt(bestSwap.routeId2)
-        }
-    }
-
-    private fun merge(nodeOrdinal: Int, routeBuilder: Ant.SolutionBuilder.RouteBuilder, nodesToAdd: List<NodeMeta>) {
+    private fun merge(nodeOrdinal: Int, routeBuilder: SolutionBuilder.RouteBuilder, nodesToAdd: List<NodeMeta>) {
         val route = routeBuilder.route
 
         while (route.size > nodeOrdinal + 1)
@@ -124,15 +189,13 @@ class LocalSearch(
         for (nodeMeta in nodesToAdd)
             route.add(route.last().calculateNext(nodeMeta.node, instance))
 
-        // routeBuilder.remainingCapacity not updated because it is not used
-        routeBuilder.totalDistance = routeBuilder.route.zipWithNext { nm1, nm2 ->
-            distances[nm1.node.id, nm2.node.id]
-        }.sum()
+        updateTotalDistance(routeBuilder)
+        updateRemainingCapacity(routeBuilder)
     }
 
-    private fun calculateDistanceSavings(
-        route1: Ant.SolutionBuilder.RouteBuilder, nodeOrdinal1: Int,
-        route2: Ant.SolutionBuilder.RouteBuilder, nodeOrdinal2: Int
+    private fun calculateTwoOptSwapDistanceSavings(
+        route1: SolutionBuilder.RouteBuilder, nodeOrdinal1: Int,
+        route2: SolutionBuilder.RouteBuilder, nodeOrdinal2: Int
     ): Double {
         val nodeMeta1 = route1.route[nodeOrdinal1]
         val nodeMeta1Next = route1.route[nodeOrdinal1 + 1]
@@ -157,7 +220,7 @@ class LocalSearch(
         val nodeMeta1 = route1.route[nodeOrdinal1]
         val nodeMeta2 = route2.route[nodeOrdinal2]
 
-        val distanceSavings = calculateDistanceSavings(route1, nodeOrdinal1, route2, nodeOrdinal2)
+        val distanceSavings = calculateTwoOptSwapDistanceSavings(route1, nodeOrdinal1, route2, nodeOrdinal2)
         if (!isNonImprovingAllowed && distanceSavings <= 1e-8)
             return Double.NaN
 
@@ -180,36 +243,91 @@ class LocalSearch(
         return distanceSavings
     }
 
-    companion object {
-        data class TwoOptContainer(
-            val routeId1: Int,
-            val routeId2: Int,
-            val nodeOrdinal1: Int,
-            val nodeOrdinal2: Int,
-            val distanceSavings: Double
-        ) : Comparable<TwoOptContainer> {
-            override fun compareTo(other: TwoOptContainer) = this.distanceSavings.compareTo(other.distanceSavings)
+    private fun updateTotalDistance(routeBuilder: SolutionBuilder.RouteBuilder) {
+        routeBuilder.totalDistance = routeBuilder.route.zipWithNext { nm1, nm2 ->
+            instance.distances[nm1.node.id, nm2.node.id]
+        }.sum()
+    }
+
+    private fun updateRemainingCapacity(routeBuilder: SolutionBuilder.RouteBuilder) {
+        routeBuilder.remainingCapacity = instance.capacity - routeBuilder.route.sumOf { it.node.demand }
+    }
+
+    private fun sumDemand(routePart1: List<NodeMeta>, routePart2: List<NodeMeta>): Int {
+        return routePart1.sumOf { it.node.demand } + routePart2.sumOf { it.node.demand }
+    }
+
+    private fun validateTimeWindows(startingNodeMeta: NodeMeta, routePart: List<NodeMeta>): Boolean {
+        var previousNodeId = startingNodeMeta.node.id
+        var previousDepartureTime = startingNodeMeta.departureTime
+        for (nodeMeta in routePart) {
+            val node = nodeMeta.node
+
+            val arrivalTime = previousDepartureTime + instance.travelTime[previousNodeId, node.id]
+            if (arrivalTime > node.dueTime)
+                return false
+
+            previousNodeId = node.id
+            previousDepartureTime = maxOf(arrivalTime, node.readyTime) + node.serviceTime
+        }
+        return true
+    }
+
+    private inner class InternalSwapContainer(
+        val routeId: Int,
+        val nodeOrdinal: Int,
+        step: Int,
+        override val distanceSavings: Double
+    ) : ISwap {
+        val step: Int
+
+        init {
+            if (step != 1 && step != 2)
+                throw IllegalArgumentException("bad step value: $step")
+            this.step = step
         }
 
-        private fun sumDemand(routePart1: List<NodeMeta>, routePart2: List<NodeMeta>) =
-            routePart1.sumOf { it.node.demand } + routePart2.sumOf { it.node.demand }
+        // TODO optimize
+        override fun performSwap(solution: SolutionBuilder) {
+            val routeBuilder = solution.routes[routeId]
+            val route = routeBuilder.route
 
-        private fun validateTimeWindows(startingNodeMeta: NodeMeta, routePart: List<NodeMeta>): Boolean {
-            var previousNodeId = startingNodeMeta.node.id
-            var previousDepartureTime = startingNodeMeta.departureTime
-            for (nodeMeta in routePart) {
-                val node = nodeMeta.node
+            val tmp = route[nodeOrdinal]
+            route[nodeOrdinal] = route[nodeOrdinal + step]
+            route[nodeOrdinal + step] = tmp
 
-                val arrivalTime = previousDepartureTime + travelTime[previousNodeId, node.id]
-                if (arrivalTime > node.dueTime)
-                    return false
-                if (arrivalTime <= node.serviceTime)
-                    return true  // terminate early because we know the rest of the route must be valid
-
-                previousNodeId = node.id
-                previousDepartureTime = maxOf(arrivalTime, node.readyTime) + node.serviceTime
+            for (i in nodeOrdinal until route.size) {
+                route[i] = route[i - 1].calculateNext(route[i].node, instance)
             }
-            return true
+
+            // remainingCapacity is unchanged
+            updateTotalDistance(routeBuilder)
+        }
+    }
+
+    private inner class TwoOptSwapContainer(
+        val routeId1: Int,
+        val routeId2: Int,
+        val nodeOrdinal1: Int,
+        val nodeOrdinal2: Int,
+        override val distanceSavings: Double
+    ) : ISwap {
+
+        override fun performSwap(solution: SolutionBuilder) {
+            val routeBuilder1 = solution.routes[routeId1]
+            val routeBuilder2 = solution.routes[routeId2]
+
+            val route1SecondPart = routeBuilder1.route.subList(nodeOrdinal1 + 1, routeBuilder1.route.size).toList()
+            val route2SecondPart = routeBuilder2.route.subList(nodeOrdinal2 + 1, routeBuilder2.route.size).toList()
+
+            merge(nodeOrdinal1, routeBuilder1, route2SecondPart)
+            merge(nodeOrdinal2, routeBuilder2, route1SecondPart)
+
+            if (routeBuilder1.route.size == 2) {
+                solution.routes.removeAt(routeId1)
+            } else if (routeBuilder2.route.size == 2) {
+                solution.routes.removeAt(routeId2)
+            }
         }
     }
 }
