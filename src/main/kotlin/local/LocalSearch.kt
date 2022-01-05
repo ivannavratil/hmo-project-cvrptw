@@ -25,9 +25,9 @@ class LocalSearch(
         while (iters++ < iterLimit) {
             if (!iteration())
                 break
-            logger.info("Found new best solution - vehicles: ${solution.vehiclesUsed}, distance: ${solution.totalDistance}")
+//            logger.info("Found new best solution - vehicles: ${solution.vehiclesUsed}, distance: ${solution.totalDistance}")
         }
-        logger.info("Iterations: $iters")
+//        logger.info("Iterations: $iters")
     }
 
     private fun iteration(): Boolean {
@@ -71,9 +71,9 @@ class LocalSearch(
 
         bestSwap?.performSwap(solution) ?: return false
 
-        logger.trace(bestSwap.toString())
-        logger.trace("Saved distance: ${bestSwap.distanceSavings}")
-        logger.trace(Solution.fromSolutionBuilder(solution).formatOutput())
+//        logger.trace(bestSwap.toString())
+//        logger.trace("Saved distance: ${bestSwap.distanceSavings}")
+//        logger.trace(Solution.fromSolutionBuilder(solution).formatOutput())
 
         val finalDistance = solution.totalDistance
         if (abs(originalDistance - finalDistance - bestSwap.distanceSavings) > 1e-5)
@@ -152,7 +152,7 @@ class LocalSearch(
             }
         }
 
-        logger.trace("Valid route removals count: ${routeRemoval.size}")
+//        logger.trace("Valid route removals count: ${routeRemoval.size}")
         return routeRemoval
     }
 
@@ -179,7 +179,7 @@ class LocalSearch(
             }
         }
 
-        logger.trace("Valid swaps count: ${improvements.size}")
+//        logger.trace("Valid swaps count: ${improvements.size}")
         return improvements
     }
 
