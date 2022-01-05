@@ -6,7 +6,6 @@ import shared.Instance
 import shared.Node
 import shared.NodeMeta
 import shared.SolutionBuilder
-import kotlin.math.abs
 import kotlin.math.pow
 
 class Ant(
@@ -17,7 +16,6 @@ class Ant(
     private val waitHeuristic = WaitHeuristic(instance)
 //    private val savingsHeuristic = SavingsHeuristic(instance)
 
-    // TODO Update local pheromones etc
     fun traverse(): SolutionBuilder? {
         val solutionBuilder = SolutionBuilder(instance)
 
@@ -47,12 +45,6 @@ class Ant(
         val chosenIndex = if (seededRandom.nextDouble() <= antConfig.q0) {
             numerators.argmax()
         } else {
-            //TODO: WeightedLottery doesn't throw but total solution is worse :(
-            val min = numerators.minOf { it }
-            if (min < 0) {
-                val absMin = abs(min)
-                numerators.indices.forEach { numerators[it] += absMin }
-            }
             WeightedLottery(numerators).draw()
         }
         return neighbors[chosenIndex]
