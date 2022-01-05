@@ -15,7 +15,6 @@ import java.time.format.DateTimeFormatter
 import kotlin.concurrent.thread
 import kotlin.random.Random
 import kotlin.random.nextULong
-import kotlin.system.measureTimeMillis
 
 // TODO Array / ArrayList / List ?
 // TODO Sparse structures?
@@ -104,14 +103,14 @@ fun main2(config: Config, param: String, paramValue: Double) {
 
     val aco = AntColony(instance, config)
 
-    val runtime = measureTimeMillis {
-        aco.run()
-    }
+    val startTime = System.currentTimeMillis()
+    val incumbentSolution = aco.run()
+    val runtime = System.currentTimeMillis() - startTime
     logger.info("RUNTIME: $runtime ms")
 
     val formattedTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"))
 
-    Solution.fromSolutionBuilder(aco.incumbentSolution!!)
+    Solution.fromSolutionBuilder(incumbentSolution)
         .exportToFile("src/main/resources/results/i${config.instanceId}-${formattedTimestamp}-${Random.nextULong()}.txt")
 
 //    File("src/main/resources/results/i${config.instanceId}-$formattedTimestamp.json").writeText(Json.encodeToString(config))
@@ -119,7 +118,7 @@ fun main2(config: Config, param: String, paramValue: Double) {
     val path = "src/main/resources/graph/i${config.instanceId}-$param.txt"
 
     File(path).appendText(
-        "$paramValue;${aco.incumbentSolution!!.vehiclesUsed};${aco.incumbentSolution!!.totalDistance}" + System.lineSeparator()
+        "$paramValue;${incumbentSolution.vehiclesUsed};${incumbentSolution.totalDistance}" + System.lineSeparator()
     )
 
     //deserialization

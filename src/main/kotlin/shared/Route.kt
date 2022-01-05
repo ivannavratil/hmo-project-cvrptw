@@ -16,7 +16,7 @@ data class Route(
 
         fun fromRouteBuilder(builder: SolutionBuilder.RouteBuilder): Route {
             val nodes = builder.route.map {
-                Pair(it.node.id, maxOf(it.arrivalTime, it.node.readyTime))
+                Pair(it.node.id, it.serviceStartTime)
             }
             return Route(nodes)
         }

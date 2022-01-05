@@ -121,13 +121,8 @@ class LocalSearch(
         while (route.size > nodeOrdinal + 1)
             route.removeLast()
 
-        for (nodeMeta in nodesToAdd) {
-            val node = nodeMeta.node
-            val lastNodeMeta = route.last()
-            val arrivalTime = lastNodeMeta.departureTime + instance.travelTime[lastNodeMeta.node.id, node.id]
-            val departureTime = maxOf(arrivalTime, node.readyTime) + node.serviceTime
-            route.add(NodeMeta(node, arrivalTime, departureTime))
-        }
+        for (nodeMeta in nodesToAdd)
+            route.add(route.last().calculateNext(nodeMeta.node, instance))
 
         // routeBuilder.remainingCapacity not updated because it is not used
         routeBuilder.totalDistance = routeBuilder.route.zipWithNext { nm1, nm2 ->

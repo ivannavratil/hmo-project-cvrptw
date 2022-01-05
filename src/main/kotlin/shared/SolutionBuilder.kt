@@ -44,8 +44,7 @@ class SolutionBuilder(private val instance: Instance) : Comparable<SolutionBuild
                 return false
 
             // Will the vehicle manage to return to the depot
-            val depotArrival = maxOf(arrivalTime, node.readyTime) +
-                    node.serviceTime +
+            val depotArrival = maxOf(arrivalTime, node.readyTime) + node.serviceTime +
                     instance.travelTime[node.id, instance.depot.id]
             if (depotArrival > instance.depot.dueTime)
                 return false
@@ -57,11 +56,8 @@ class SolutionBuilder(private val instance: Instance) : Comparable<SolutionBuild
             if (node !== instance.depot && !isValidNextNode(node))
                 throw RuntimeException("¡Ay, caramba!")  // TODO comment out
 
-            // TODO Extract method for arrivalTime?
             val lastNodeMeta = route.last()
-            val arrivalTime = lastNodeMeta.departureTime + instance.travelTime[lastNodeMeta.node.id, node.id]
-            val departureTime = maxOf(arrivalTime, node.readyTime) + node.serviceTime  // TODO extract maxOf?
-            route.add(NodeMeta(node, arrivalTime, departureTime))
+            route.add(lastNodeMeta.calculateNext(node, instance))
             totalDistance += instance.distances[lastNodeMeta.node.id, node.id]
 
             if (node === instance.depot)

@@ -12,10 +12,10 @@ class AntColony(
     private val instance: Instance,
     config: Config
 ) {
-    var incumbentSolution: SolutionBuilder? = null
-
+    private var incumbentSolution: SolutionBuilder? = null
     private lateinit var pheromones: FlatSquareMatrix
     private val config = config.deepCopy()
+
     private val logger = LogManager.getLogger(this::class.java.simpleName)
 
     private fun performSingleIteration(
@@ -72,7 +72,7 @@ class AntColony(
         }
     }
 
-    fun run() {
+    fun run(): SolutionBuilder? {
         if (config.antColony.estimateTauZero) {
             config.antColony.tauZero = calculateTauZero()
             logger.info("Tau zero set to ${config.antColony.tauZero}")
@@ -89,6 +89,8 @@ class AntColony(
             }
             performSingleIteration(config.ant)
         }
+
+        return incumbentSolution
     }
 
     private fun calculateTauZero(): Double {
