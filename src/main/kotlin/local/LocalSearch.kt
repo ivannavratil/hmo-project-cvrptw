@@ -312,14 +312,16 @@ class LocalSearch(
         val nodeOrdinal2: Int,
         override val distanceSavings: Double
     ) : ISwap {
+        private fun copySecondPart(routeBuilder: RouteBuilder, nodeOrdinal: Int) =
+            routeBuilder.route.subList(nodeOrdinal + 1, routeBuilder.route.size).toList()
 
         override fun performSwap(solution: SolutionBuilder) {
             val routeBuilder1 = solution.routes[routeId1]
             val routeBuilder2 = solution.routes[routeId2]
 
-            val route1SecondPart = routeBuilder1.route.subList(nodeOrdinal1 + 1, routeBuilder1.route.size).toList()
-            val route2SecondPart = routeBuilder2.route.subList(nodeOrdinal2 + 1, routeBuilder2.route.size).toList()
-
+            val route1SecondPart = copySecondPart(routeBuilder1, nodeOrdinal1)
+            val route2SecondPart = copySecondPart(routeBuilder2, nodeOrdinal2)
+            // Do not reorder copy and merge.
             merge(nodeOrdinal1, routeBuilder1, route2SecondPart)
             merge(nodeOrdinal2, routeBuilder2, route1SecondPart)
 
