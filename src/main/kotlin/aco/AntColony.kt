@@ -7,12 +7,13 @@ import local.LocalSearch
 import org.apache.logging.log4j.LogManager
 import sa.TotalTimeTermination
 import shared.Instance
+import shared.SolutionBuilder
 
 class AntColony(
     private val instance: Instance,
     config: Config
 ) {
-    var incumbentSolution: Ant.SolutionBuilder? = null
+    var incumbentSolution: SolutionBuilder? = null
 
     private lateinit var pheromones: FlatSquareMatrix
     private val config = config.deepCopy()
@@ -27,7 +28,7 @@ class AntColony(
     ): Boolean {
         val pheromonesLocal = pheromones.copy()
 
-        val solutions = mutableListOf<Ant.SolutionBuilder>()
+        val solutions = mutableListOf<SolutionBuilder>()
         repeat(antConfig.count) {  // TODO parallelize or use local pheromones (ACS)
             val ant = Ant(instance, pheromonesLocal, antConfig)
             ant.traverse()?.let { solution ->
@@ -62,7 +63,7 @@ class AntColony(
 
     private fun updatePheromones(
         pheromones: FlatSquareMatrix,
-        solution: Ant.SolutionBuilder,
+        solution: SolutionBuilder,
         rho: Double,
         antCount: Int
     ) {

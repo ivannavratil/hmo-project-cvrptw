@@ -1,7 +1,4 @@
-import aco.Ant
-import helpers.Config
 import helpers.Distances
-import helpers.FlatSquareMatrix
 import local.LocalSearch
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
@@ -9,6 +6,7 @@ import org.apache.logging.log4j.Logger
 import org.apache.logging.log4j.core.config.Configurator
 import shared.Instance
 import shared.Solution
+import shared.SolutionBuilder
 import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -28,13 +26,8 @@ fun main() {
 
     Distances.initDistances(instance)
 
-    val solutionBuilder = Ant(  // fake ant
-        instance,
-        FlatSquareMatrix(instance.nodes.size) { _, _ -> 0.0 },
-        Config.Ant(0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
-    ).SolutionBuilder()
+    val solutionBuilder = SolutionBuilder(instance)
 
-    solutionBuilder.routes.removeLast()
     for (route in solution.routes) {
         solutionBuilder.createNewRoute()
         for (i in 1 until route.nodes.size) {

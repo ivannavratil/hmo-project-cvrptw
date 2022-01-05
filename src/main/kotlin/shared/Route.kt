@@ -1,7 +1,5 @@
 package shared
 
-import aco.Ant
-
 data class Route(
     val nodes: List<Pair<Int, Int>>
 ) {
@@ -16,7 +14,7 @@ data class Route(
             return Route(nodes)
         }
 
-        fun fromRouteBuilder(builder: Ant.SolutionBuilder.RouteBuilder): Route {
+        fun fromRouteBuilder(builder: SolutionBuilder.RouteBuilder): Route {
             val nodes = builder.route.map {
                 Pair(it.node.id, maxOf(it.arrivalTime, it.node.readyTime))
             }

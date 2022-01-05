@@ -1,6 +1,5 @@
 package shared
 
-import aco.Ant
 import java.io.File
 
 data class Solution(
@@ -29,7 +28,7 @@ data class Solution(
             return Solution(routes, distance)
         }
 
-        fun fromSolutionBuilder(builder: Ant.SolutionBuilder): Solution {
+        fun fromSolutionBuilder(builder: SolutionBuilder): Solution {
             return Solution(
                 builder.routes.map { Route.fromRouteBuilder(it) },
                 builder.totalDistance

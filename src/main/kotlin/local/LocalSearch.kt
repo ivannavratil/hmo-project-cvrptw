@@ -1,17 +1,16 @@
 package local
 
-import aco.Ant
 import helpers.Distances.distances
 import helpers.Distances.travelTime
 import org.apache.logging.log4j.LogManager
 import shared.Instance
 import shared.NodeMeta
-import shared.Solution
+import shared.SolutionBuilder
 import kotlin.math.abs
 
 class LocalSearch(
     private val instance: Instance,
-    private val solution: Ant.SolutionBuilder  // modified in-place!
+    private val solution: SolutionBuilder  // modified in-place!
 ) {
     private val logger = LogManager.getLogger(this::class.java.simpleName)
 
@@ -158,8 +157,8 @@ class LocalSearch(
     }
 
     private fun twoOptSwapSaving(
-        route1: Ant.SolutionBuilder.RouteBuilder, nodeOrdinal1: Int,
-        route2: Ant.SolutionBuilder.RouteBuilder, nodeOrdinal2: Int,
+        route1: SolutionBuilder.RouteBuilder, nodeOrdinal1: Int,
+        route2: SolutionBuilder.RouteBuilder, nodeOrdinal2: Int,
         isNonImprovingAllowed: Boolean
     ): Double {
         val nodeMeta1 = route1.route[nodeOrdinal1]
