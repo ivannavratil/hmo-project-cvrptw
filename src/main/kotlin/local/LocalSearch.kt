@@ -108,10 +108,12 @@ class LocalSearch(
         val nmLast = route[nodeOrdinal + step]
         val nmNext = route[nodeOrdinal + step + 1]
 
-        val distances = instance.distances
-        val prevDist = distances[nmPrev.node.id, nm1.node.id] + distances[nmLast.node.id, nmNext.node.id]
-        val newDist = distances[nmPrev.node.id, nmLast.node.id] + distances[nm1.node.id, nmNext.node.id]
-        val distanceSavings = prevDist - newDist
+        val distanceSavings = calculateDistanceSavings(
+            node1Id = nmPrev.node.id,
+            node1IdNext = nm1.node.id,
+            node2Id = nmNext.node.id,
+            node2IdNext = nmLast.node.id
+        )
         if (distanceSavings <= 0)
             return Double.NaN
 
@@ -197,21 +199,12 @@ class LocalSearch(
     private fun calculateTwoOptSwapDistanceSavings(
         route1: RouteBuilder, nodeOrdinal1: Int,
         route2: RouteBuilder, nodeOrdinal2: Int
-    ): Double {
-        val nodeMeta1 = route1.route[nodeOrdinal1]
-        val nodeMeta1Next = route1.route[nodeOrdinal1 + 1]
-
-        val nodeMeta2 = route2.route[nodeOrdinal2]
-        val nodeMeta2Next = route2.route[nodeOrdinal2 + 1]
-
-        val currentDistance = instance.distances[nodeMeta1.node.id, nodeMeta1Next.node.id] +
-                instance.distances[nodeMeta2.node.id, nodeMeta2Next.node.id]
-
-        val swappedDistance = instance.distances[nodeMeta1.node.id, nodeMeta2Next.node.id] +
-                instance.distances[nodeMeta2.node.id, nodeMeta1Next.node.id]
-
-        return currentDistance - swappedDistance
-    }
+    ) = calculateDistanceSavings(
+        node1Id = route1.route[nodeOrdinal1].node.id,
+        node1IdNext = route1.route[nodeOrdinal1 + 1].node.id,
+        node2Id = route2.route[nodeOrdinal2].node.id,
+        node2IdNext = route2.route[nodeOrdinal2 + 1].node.id
+    )
 
     private fun twoOptSwapSaving(
         route1: RouteBuilder, nodeOrdinal1: Int,
@@ -244,6 +237,12 @@ class LocalSearch(
         return distanceSavings
     }
 
+    private fun calculateDistanceSavings(node1Id: Int, node1IdNext: Int, node2Id: Int, node2IdNext: Int): Double {
+        val distances = instance.distances
+        val currentDistance = distances[node1Id, node1IdNext] + distances[node2Id, node2IdNext]
+        val swappedDistance = distances[node1Id, node2IdNext] + distances[node2Id, node1IdNext]
+        return currentDistance - swappedDistance
+    }
 
     private fun updateTotalDistance(routeBuilder: RouteBuilder) {
         routeBuilder.totalDistance = routeBuilder.route.zipWithNext { nm1, nm2 ->
