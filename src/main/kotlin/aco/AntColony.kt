@@ -12,7 +12,10 @@ class AntColony(
     private val instance: Instance,
     config: Config
 ) {
-    private var incumbentSolution: SolutionBuilder? = null
+    var incumbentSolution: SolutionBuilder? = null
+        private set
+    var iterations = 0
+        private set
     private lateinit var pheromones: FlatSquareMatrix
     private val config = config.deepCopy()
 
@@ -23,13 +26,14 @@ class AntColony(
     ): Boolean {
         val pheromonesLocal = pheromones.copy()
 
-        val solutions = mutableListOf<SolutionBuilder>()
-        repeat(antConfig.count) {  // TODO parallelize or use local pheromones (ACS)
+        val solutions = ArrayList<SolutionBuilder>()
+        repeat(antConfig.count) {
+            iterations++
             val ant = Ant(instance, pheromonesLocal, antConfig)
             ant.traverse()?.let { solution ->
                 solutions.add(solution)
                 evaporatePheromones(pheromonesLocal, antConfig.rho)
-                updatePheromones(pheromonesLocal, solution, antConfig.rho, 1)
+                updatePheromones(pheromonesLocal, solution, antConfig.rho)
             }
         }
 
@@ -47,7 +51,7 @@ class AntColony(
         }
 
         evaporatePheromones(pheromones, antConfig.rho)
-        updatePheromones(pheromones, bestAnt, antConfig.rho, 1)
+        updatePheromones(pheromones, bestAnt, antConfig.rho)
 
         return true
     }
@@ -56,13 +60,8 @@ class AntColony(
         pheromones *= 1 - rho
     }
 
-    private fun updatePheromones(
-        pheromones: FlatSquareMatrix,
-        solution: SolutionBuilder,
-        rho: Double,
-        antCount: Int
-    ) {
-        val pheromoneDelta = 1.0 / (solution.totalDistance * antCount)
+    private fun updatePheromones(pheromones: FlatSquareMatrix, solution: SolutionBuilder, rho: Double) {
+        val pheromoneDelta = 1.0 / solution.totalDistance
         solution.routes.forEach { antTraversal ->
             antTraversal.route.zipWithNext().forEach { pair ->
                 val id1 = pair.first.node.id
@@ -97,9 +96,10 @@ class AntColony(
         val ant = Ant(instance, FlatSquareMatrix(instance.nodes.size) { _, _ -> config.antColony.tauZero }, config.ant)
 
         repeat(50) {
-            ant.traverse()?.let {
-                LocalSearch(instance, it).search(iterLimit = 500)
-                return 1 / it.totalDistance
+            iterations++
+            ant.traverse()?.let { solution ->
+                iterations += LocalSearch(instance, solution).search(iterLimit = 500)
+                return 1 / solution.totalDistance
             }
         }
 

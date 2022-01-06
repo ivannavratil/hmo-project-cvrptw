@@ -11,7 +11,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 import kotlin.random.nextULong
-import kotlin.system.measureTimeMillis
 
 
 const val instanceId = 6
@@ -34,9 +33,9 @@ fun main() {
 
     logger.info("Before:\n" + Solution.fromSolutionBuilder(solutionBuilder).formatOutput())
 
-    val runtime = measureTimeMillis {
-        LocalSearch(instance, solutionBuilder).search()
-    }
+    val startTime = System.currentTimeMillis()
+    val iterations = LocalSearch(instance, solutionBuilder).search()
+    val runtime = System.currentTimeMillis() - startTime
     logger.info("RUNTIME LOCAL SEARCH: $runtime ms")
 
     logger.info("Final:\n" + Solution.fromSolutionBuilder(solutionBuilder).formatOutput())

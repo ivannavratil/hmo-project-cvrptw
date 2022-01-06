@@ -20,7 +20,7 @@ class LocalSearch(
     private val logger = LogManager.getLogger(this::class.java.simpleName)
 
     // TODO Take config as parameter?
-    fun search(iterLimit: Int = 2000) {
+    fun search(iterLimit: Int = 2000): Int {
         var iters = 0
         while (iters++ < iterLimit) {
             if (!iteration())
@@ -28,6 +28,7 @@ class LocalSearch(
 //            logger.info("Found new best solution - vehicles: ${solution.vehiclesUsed}, distance: ${solution.totalDistance}")
         }
 //        logger.info("Iterations: $iters")
+        return iters
     }
 
     private fun iteration(): Boolean {

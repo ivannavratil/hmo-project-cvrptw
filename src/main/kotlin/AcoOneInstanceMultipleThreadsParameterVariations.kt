@@ -17,7 +17,6 @@ import kotlin.random.Random
 import kotlin.random.nextULong
 
 // TODO Array / ArrayList / List ?
-// TODO Sparse structures?
 
 // TODO For instance 6:
 // TODO alpha [0.7, 1.1] makes almost no difference
@@ -36,7 +35,7 @@ fun main() {
     for (i in 1..2) {
 
         thread(name = "alpha") {
-            for (alpha in mutableListOf(0.7, 0.8, 0.9, 1.0, 1.1)) {
+            for (alpha in listOf(0.7, 0.8, 0.9, 1.0, 1.1)) {
                 val cAlpha = base.deepCopy()
                 cAlpha.ant.alpha = alpha
                 main2(cAlpha, "alpha", alpha)
@@ -44,7 +43,7 @@ fun main() {
         }
 
         thread(name = "beta") {
-            for (beta in mutableListOf(1.0, 1.25, 1.5, 1.75, 2.0)) {
+            for (beta in listOf(1.0, 1.25, 1.5, 1.75, 2.0)) {
                 val cBeta = base.deepCopy()
                 cBeta.ant.beta = beta
                 main2(cBeta, "beta", beta)
@@ -60,7 +59,7 @@ fun main() {
         }
 
         thread(name = "q0") {
-            for (q0 in mutableListOf(0.25, 0.35, 0.4, 0.45, 0.5)) {
+            for (q0 in listOf(0.25, 0.35, 0.4, 0.45, 0.5)) {
                 val cq0 = base.deepCopy()
                 cq0.ant.q0 = q0
                 main2(cq0, "q0", q0)
@@ -68,7 +67,7 @@ fun main() {
         }
 
         thread(name = "rho") {
-            for (rho in mutableListOf(0.05, 0.1, 0.2, 0.3, 0.4)) {
+            for (rho in listOf(0.05, 0.1, 0.2, 0.3, 0.4)) {
                 val cRho = base.deepCopy()
                 cRho.ant.rho = rho
                 main2(cRho, "rho", rho)
@@ -76,7 +75,7 @@ fun main() {
         }
 
         thread(name = "tau") {
-            for (tau in mutableListOf(1E-7, 5E-7, 1E-6, 5E-6, 1E-5)) {
+            for (tau in listOf(1E-7, 5E-7, 1E-6, 5E-6, 1E-5)) {
                 val cTau = base.deepCopy()
                 cTau.antColony.tauZero = tau
                 main2(cTau, "tau", tau)
@@ -84,7 +83,7 @@ fun main() {
         }
 
         thread(name = "theta") {
-            for (theta in mutableListOf(0.4, 0.5, 0.6, 0.7, 0.75)) {
+            for (theta in listOf(0.4, 0.5, 0.6, 0.7, 0.75)) {
                 val cTheta = base.deepCopy()
                 cTheta.ant.theta = theta
                 main2(cTheta, "theta", theta)
