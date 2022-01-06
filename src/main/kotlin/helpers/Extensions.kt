@@ -11,8 +11,7 @@ fun String.parseInts(): IntArray {
 fun DoubleArray.argmax(): Int {
     var maxIndex = 0
     for (i in 1 until size)
-        if (this[i] > this[maxIndex]) {
+        if (this[i] > this[maxIndex])
             maxIndex = i
-        }
     return maxIndex
 }
