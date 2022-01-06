@@ -33,10 +33,22 @@ fun main() {
 
     val pane: JPanel = object : JPanel() {
         override fun paintComponent(g: Graphics) {
-            (g as Graphics2D).setRenderingHints(
+
+            val g2 = g as Graphics2D
+
+            g2.setRenderingHints(
                 RenderingHints(
                     RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON
                 )
+            )
+
+            g2.setRenderingHint(
+                RenderingHints.KEY_RENDERING,
+                RenderingHints.VALUE_RENDER_QUALITY
+            )
+            g2.setRenderingHint(
+                RenderingHints.KEY_STROKE_CONTROL,
+                RenderingHints.VALUE_STROKE_PURE
             )
 
             val maxReadyTime = instance.nodes.maxOf { it.readyTime }
