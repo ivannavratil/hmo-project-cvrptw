@@ -10,5 +10,6 @@ ant:
 
 antColony:
     iterations: 100
+    runtimeSeconds: 120.0
     tauZero: 0.001
     estimateTauZero: true

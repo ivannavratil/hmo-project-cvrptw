@@ -17,10 +17,10 @@ import kotlin.random.Random
 import kotlin.random.nextULong
 
 fun main() {
-
     val instanceId = 6
+    val runtimeSeconds = 120.0
 
-    val base = ConfigChooser.getConfig(instanceId)
+    val base = ConfigChooser.getConfig(instanceId, runtimeSeconds)
 
     File("src/main/resources/graph/config.json").appendText(
         Json.encodeToString(base) + System.lineSeparator()

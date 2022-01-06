@@ -72,15 +72,16 @@ class AntColony(
     }
 
     fun run(): SolutionBuilder? {
+        val timeTermination = TotalTimeTermination(config.antColony.runtimeSeconds)
+
         if (config.antColony.estimateTauZero) {
             config.antColony.tauZero = calculateTauZero()
             logger.info("Tau zero set to ${config.antColony.tauZero}")
         }
         pheromones = FlatSquareMatrix(instance.nodes.size) { _, _ -> config.antColony.tauZero }
 
-        val timeTerm = TotalTimeTermination(120.0)
         repeat(config.antColony.iterations) {
-            if (timeTerm.terminate(Double.NaN)) {
+            if (timeTermination.terminate()) {
                 return@repeat
             }
             if (it % 50 == 0) {

@@ -23,6 +23,7 @@ data class Config(
     @Serializable
     data class AntColony(
         val iterations: Int,
+        val runtimeSeconds: Double,
         var tauZero: Double,
         val estimateTauZero: Boolean
     )
