@@ -1,6 +1,8 @@
 package helpers
 
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import java.time.Duration
 
 @Serializable
 data class Config(
@@ -23,8 +25,14 @@ data class Config(
     @Serializable
     data class AntColony(
         val iterations: Int,
-        val runtimeSeconds: Double,
+        @Contextual
+        val runtime: Duration,
         var tauZero: Double,
         val estimateTauZero: Boolean
-    )
+    ) {
+        override fun toString(): String {
+            return "AntColony(iterations=$iterations, runtime=${runtime.toSeconds()}s, " +
+                    "tauZero=$tauZero, estimateTauZero=$estimateTauZero)"
+        }
+    }
 }

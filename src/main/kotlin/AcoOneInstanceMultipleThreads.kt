@@ -10,6 +10,7 @@ import org.apache.logging.log4j.core.config.Configurator
 import shared.Instance
 import shared.Solution
 import java.io.File
+import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.concurrent.thread
@@ -18,9 +19,9 @@ import kotlin.random.nextULong
 
 fun main() {
     val instanceId = 6
-    val runtimeSeconds = 120.0
+    val runtime = Duration.ofSeconds(120)
 
-    val base = ConfigChooser.getConfig(instanceId, runtimeSeconds)
+    val base = ConfigChooser.getConfig(instanceId, runtime)
 
     File("src/main/resources/graph/config.json").appendText(
         Json.encodeToString(base) + System.lineSeparator()

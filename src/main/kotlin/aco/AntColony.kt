@@ -2,9 +2,9 @@ package aco
 
 import helpers.Config
 import helpers.FlatSquareMatrix
+import helpers.TotalTimeTermination
 import local.LocalSearch
 import org.apache.logging.log4j.LogManager
-import sa.TotalTimeTermination
 import shared.Instance
 import shared.SolutionBuilder
 
@@ -72,7 +72,7 @@ class AntColony(
     }
 
     fun run(): SolutionBuilder? {
-        val timeTermination = TotalTimeTermination(config.antColony.runtimeSeconds)
+        val timeTermination = TotalTimeTermination(config.antColony.runtime)
 
         if (config.antColony.estimateTauZero) {
             config.antColony.tauZero = calculateTauZero()
