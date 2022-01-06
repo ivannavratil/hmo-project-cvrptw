@@ -122,7 +122,7 @@ fun main() {
             }
 
             if (!saved.get()) {
-                saved = AtomicBoolean(true)
+                saved.set(true)
                 save()
             }
 
