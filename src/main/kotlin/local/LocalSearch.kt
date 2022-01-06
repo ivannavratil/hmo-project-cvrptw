@@ -50,13 +50,13 @@ class LocalSearch(
 
             //////
 
-            // TODO gives best results for a single i6 solution
-            if (bestSwap == null) {
-                bestSwap = findInternalSwapImprovements(1).maxOrNull()
-                val bestSwap2 = findInternalSwapImprovements(2).maxOrNull()
-                if (bestSwap == null || bestSwap2 != null && bestSwap2 > bestSwap)
-                    bestSwap = bestSwap2
-            }
+            // TODO gives best results for a single i6 solution (when NodeTransferContainer is not in play)
+//            if (bestSwap == null) {
+//                bestSwap = findInternalSwapImprovements(1).maxOrNull()
+//                val bestSwap2 = findInternalSwapImprovements(2).maxOrNull()
+//                if (bestSwap == null || bestSwap2 != null && bestSwap2 > bestSwap)
+//                    bestSwap = bestSwap2
+//            }
 
             //////
 
@@ -67,6 +67,18 @@ class LocalSearch(
 //            val bestSwap2 = findInternalSwapImprovements(2).maxOrNull()
 //            if (bestSwap == null || bestSwap2 != null && bestSwap2 > bestSwap)
 //                bestSwap = bestSwap2
+
+            //////
+
+            if (bestSwap == null) {
+                bestSwap = findInternalSwapImprovements(1).maxOrNull()
+                val bestSwap2 = findInternalSwapImprovements(2).maxOrNull()
+                if (bestSwap == null || bestSwap2 != null && bestSwap2 > bestSwap)
+                    bestSwap = bestSwap2
+            }
+            val bestSwap3 = findNodeTransferImprovements().maxOrNull()
+            if (bestSwap == null || bestSwap3 != null && bestSwap3 > bestSwap)
+                bestSwap = bestSwap3
         }
 
         bestSwap?.performSwap(solution) ?: return false
@@ -236,6 +248,70 @@ class LocalSearch(
         return distanceSavings
     }
 
+    private fun findNodeTransferImprovements(): List<NodeTransferContainer> {
+        val improvements = mutableListOf<NodeTransferContainer>()
+        val routes = solution.routes
+
+        for (routeId1 in 0 until routes.size) {
+            for (routeId2 in 0 until routes.size) {
+                if (routeId1 == routeId2)
+                    continue
+
+                val route1 = routes[routeId1]
+                val route2 = routes[routeId2]
+
+                for (nodeOrdinal1 in 1 until (route1.route.size - 1)) {
+                    val demand = route1.route[nodeOrdinal1].node.demand
+                    if (route2.remainingCapacity < demand)
+                        continue
+
+                    for (nodeOrdinal2 in 1 until route2.route.size) {
+                        val distanceSavings = nodeTransferSaving(route1, nodeOrdinal1, route2, nodeOrdinal2)
+                        if (!distanceSavings.isNaN()) {
+                            improvements.add(
+                                NodeTransferContainer(routeId1, routeId2, nodeOrdinal1, nodeOrdinal2, distanceSavings)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        return improvements
+    }
+
+    private fun nodeTransferSaving(
+        route1: RouteBuilder, nodeOrdinal1: Int,
+        route2: RouteBuilder, nodeOrdinal2: Int
+    ): Double {
+        // We know route2 has enough capacity to accept the node.
+
+        val nodeMeta2 = route1.route[nodeOrdinal1]
+        val nodeMeta4 = route2.route[nodeOrdinal2 - 1]
+        val n1 = route1.route[nodeOrdinal1 - 1].node.id
+        val n2 = nodeMeta2.node.id
+        val n3 = route1.route[nodeOrdinal1 + 1].node.id
+        val n4 = nodeMeta4.node.id
+        val n5 = route2.route[nodeOrdinal2].node.id
+
+        val distances = instance.distances
+        val currentDistance = distances[n1, n2] + distances[n2, n3] + distances[n4, n5]
+        val swappedDistance = distances[n1, n3] + distances[n4, n2] + distances[n2, n5]
+
+        val distanceSavings = currentDistance - swappedDistance
+        if (distanceSavings <= 0)
+            return Double.NaN
+
+        // Because of the triangle inequality, route1 must already have valid time windows.
+
+        // TODO optimize?
+        val route2SecondPart = arrayListOf(nodeMeta2) + route2.route.subList(nodeOrdinal2, route2.route.size)
+        if (!validateTimeWindows(nodeMeta4, route2SecondPart))
+            return Double.NaN
+
+        return distanceSavings
+    }
+
     private fun calculateDistanceSavings(node1Id: Int, node1IdNext: Int, node2Id: Int, node2IdNext: Int): Double {
         val distances = instance.distances
         val currentDistance = distances[node1Id, node1IdNext] + distances[node2Id, node2IdNext]
@@ -258,8 +334,8 @@ class LocalSearch(
         updateRemainingCapacity(routeBuilder)
     }
 
-    private fun updateNodeMetas(route: MutableList<NodeMeta>, lastGoodPos: Int) {
-        for (i in lastGoodPos until route.size) {
+    private fun updateNodeMetas(route: MutableList<NodeMeta>, firstBadPos: Int) {
+        for (i in firstBadPos until route.size) {
             route[i] = route[i - 1].calculateNext(route[i].node, instance)
         }
     }
@@ -356,7 +432,7 @@ class LocalSearch(
             val transferredNodeMeta = route1[nodeOrdinal1]
 
             route1.removeAt(nodeOrdinal1)
-            updateNodeMetas(route1, nodeOrdinal1 - 1)
+            updateNodeMetas(route1, nodeOrdinal1)
             if (route1.size == 2) {
                 solution.routes.removeAt(routeId1)
             }
