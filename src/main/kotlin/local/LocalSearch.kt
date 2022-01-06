@@ -129,12 +129,22 @@ class LocalSearch(
         if (distanceSavings <= 0)
             return Double.NaN
 
-        // Demand will not be an issue.
+        // Demand will always be satisfied.
 
-        // TODO optimize?
-        val swappingPart = if (step == 1) arrayListOf(nm2, nm1, nm3) else arrayListOf(nm3, nm2, nm1)
-        val routeSecondPart = swappingPart + route.subList(nodeOrdinal + 3, route.size)
-        if (!validateTimeWindows(nmPrev, routeSecondPart))
+        if (step == 1) {
+            route[nodeOrdinal] = nm2
+            route[nodeOrdinal + 1] = nm1
+        } else {
+            route[nodeOrdinal] = nm3
+            route[nodeOrdinal + 1] = nm2
+            route[nodeOrdinal + 2] = nm1
+        }
+        val isValid = validateTimeWindows(nmPrev, route.subList(nodeOrdinal, route.size))
+        route[nodeOrdinal] = nm1
+        route[nodeOrdinal + 1] = nm2
+        route[nodeOrdinal + 2] = nm3
+
+        if (!isValid)
             return Double.NaN
 
         return distanceSavings
