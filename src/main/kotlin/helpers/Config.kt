@@ -5,7 +5,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Config(
     val instanceId: Int,
-    val iterations: Int,
     val ant: Ant,
     val antColony: AntColony,
 ) {
@@ -16,7 +15,6 @@ data class Config(
         var count: Int,
         var alpha: Double,
         var beta: Double,
-        var lambda: Double,
         var theta: Double,
         var q0: Double,
         var rho: Double
@@ -24,6 +22,7 @@ data class Config(
 
     @Serializable
     data class AntColony(
+        val iterations: Int,
         var tauZero: Double,
         val estimateTauZero: Boolean
     )

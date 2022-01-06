@@ -1,15 +1,14 @@
 instanceId: 1
-iterations: 100
 
 ant:
     count: 69
     alpha: 1.0
     beta: 2.0
-    lambda: 3.0
     theta: 0.75
     q0: 0.75
     rho: 0.1
 
 antColony:
+    iterations: 100
     tauZero: 0.001
     estimateTauZero: true

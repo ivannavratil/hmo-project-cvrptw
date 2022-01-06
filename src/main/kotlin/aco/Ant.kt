@@ -14,7 +14,6 @@ class Ant(
     private val antConfig: Config.Ant
 ) {
     private val waitHeuristic = WaitHeuristic(instance)
-//    private val savingsHeuristic = SavingsHeuristic(instance)
 
     fun traverse(): SolutionBuilder? {
         val solutionBuilder = SolutionBuilder(instance)
@@ -55,9 +54,6 @@ class Ant(
         val visibility = instance.inverseDistances[sourceMeta.node.id, destination.id].pow(antConfig.beta)
         val waitTime = waitHeuristic.calculateWaitTime(sourceMeta, destination).pow(antConfig.theta)
         return pheromones * visibility * waitTime
-
-//        val savings = (savingsHeuristic.calculateSavings(sourceMeta.node.id, destination.id) + 1).pow(antConfig.lambda)
-//        return pheromones * visibility * savings * waitTime
     }
 
 }

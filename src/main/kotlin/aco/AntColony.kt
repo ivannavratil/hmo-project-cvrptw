@@ -79,7 +79,7 @@ class AntColony(
         pheromones = FlatSquareMatrix(instance.nodes.size) { _, _ -> config.antColony.tauZero }
 
         val timeTerm = TotalTimeTermination(120.0)
-        repeat(config.iterations) {
+        repeat(config.antColony.iterations) {
             if (timeTerm.terminate(Double.NaN)) {
                 return@repeat
             }
