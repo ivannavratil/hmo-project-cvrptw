@@ -1,12 +1,12 @@
 package aco
 
-import helpers.Config
-import helpers.FlatSquareMatrix
-import helpers.TotalTimeTermination
+import helpers.*
 import local.LocalSearch
 import org.apache.logging.log4j.LogManager
 import shared.Instance
 import shared.SolutionBuilder
+import java.time.Duration
+import java.time.Instant
 
 class AntColony(
     private val instance: Instance,
@@ -14,21 +14,31 @@ class AntColony(
 ) {
     var incumbentSolution: SolutionBuilder? = null
         private set
-    var iterations = 0
+    var incumbentEvaluations = 0
         private set
+    lateinit var incumbentTime: Duration
+        private set
+    var evaluations = 0
+        private set
+    var evaluationsTauZero = 0
+        private set
+
+    private var iteration = 0
     private lateinit var pheromones: FlatSquareMatrix
     private val config = config.deepCopy()
 
+    private lateinit var startTime: Instant
     private val logger = LogManager.getLogger(this::class.java.simpleName)
 
     private fun performSingleIteration(
         antConfig: Config.Ant
     ): Boolean {
+        iteration++
         val pheromonesLocal = pheromones.copy()
 
         val solutions = ArrayList<SolutionBuilder>()
         repeat(antConfig.count) {
-            iterations++
+            evaluations++
             val ant = Ant(instance, pheromonesLocal, antConfig)
             ant.traverse()?.let { solution ->
                 solutions.add(solution)
@@ -48,6 +58,8 @@ class AntColony(
             logger.info("Found new best solution - vehicles: ${bestAnt.vehiclesUsed}, distance: ${bestAnt.totalDistance}")
             //logger.trace(Solution.fromSolutionBuilder(bestAnt).formatOutput())
             incumbentSolution = bestAnt
+            incumbentEvaluations = evaluations
+            incumbentTime = Duration.between(startTime, Instant.now())
         }
 
         evaporatePheromones(pheromones, antConfig.rho)
@@ -72,7 +84,10 @@ class AntColony(
     }
 
     fun run(): SolutionBuilder? {
+        startTime = Instant.now()
         val timeTermination = TotalTimeTermination(config.antColony.runtime)
+        val iterationsTermination = TotalIterationsTermination(config.antColony.iterations)
+        val compositeTermination = CompositeTermination(timeTermination, iterationsTermination)
 
         if (config.antColony.estimateTauZero) {
             config.antColony.tauZero = calculateTauZero()
@@ -80,12 +95,9 @@ class AntColony(
         }
         pheromones = FlatSquareMatrix(instance.nodes.size) { _, _ -> config.antColony.tauZero }
 
-        repeat(config.antColony.iterations) {
-            if (timeTermination.terminate()) {
-                return@repeat
-            }
-            if (it % 50 == 0) {
-                logger.trace("iter #$it")
+        while (!compositeTermination.terminate(iteration)) {
+            if (iteration % 50 == 0) {
+                logger.trace("iter #$iteration")
             }
             performSingleIteration(config.ant)
         }
@@ -97,9 +109,9 @@ class AntColony(
         val ant = Ant(instance, FlatSquareMatrix(instance.nodes.size) { _, _ -> config.antColony.tauZero }, config.ant)
 
         repeat(50) {
-            iterations++
+            evaluationsTauZero++
             ant.traverse()?.let { solution ->
-                iterations += LocalSearch(instance, solution).search(iterLimit = 500)
+                evaluationsTauZero += LocalSearch(instance, solution).search(iterLimit = 500)
                 return 1 / solution.totalDistance
             }
         }

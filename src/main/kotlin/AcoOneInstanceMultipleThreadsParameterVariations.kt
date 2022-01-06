@@ -11,6 +11,7 @@ import shared.Instance
 import shared.Solution
 import java.io.File
 import java.time.Duration
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.concurrent.thread
@@ -104,10 +105,10 @@ fun main2(config: Config, param: String, paramValue: Double) {
 
     val aco = AntColony(instance, config)
 
-    val startTime = System.currentTimeMillis()
+    val startTime = Instant.now()
     val incumbentSolution = aco.run()
-    val runtime = System.currentTimeMillis() - startTime
-    logger.info("RUNTIME: $runtime ms")
+    val runtime = Duration.between(startTime, Instant.now())
+    logger.info("RUNTIME: ${runtime.toSeconds()}s ${runtime.toMillisPart()}ms")
 
     val formattedTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"))
 
@@ -121,7 +122,4 @@ fun main2(config: Config, param: String, paramValue: Double) {
     File(path).appendText(
         "$paramValue;${incumbentSolution.vehiclesUsed};${incumbentSolution.totalDistance}" + System.lineSeparator()
     )
-
-    //deserialization
-    //Json.decodeFromString<Config>(File("src/main/resources/results/i${config.instanceId}-$timeStamp.json").readLines().first())
 }

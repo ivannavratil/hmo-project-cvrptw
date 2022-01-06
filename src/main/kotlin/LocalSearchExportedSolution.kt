@@ -7,6 +7,8 @@ import shared.Instance
 import shared.Solution
 import shared.SolutionBuilder
 import java.io.File
+import java.time.Duration
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.random.Random
@@ -33,10 +35,10 @@ fun main() {
 
     logger.info("Before:\n" + Solution.fromSolutionBuilder(solutionBuilder).formatOutput())
 
-    val startTime = System.currentTimeMillis()
+    val startTime = Instant.now()
     val iterations = LocalSearch(instance, solutionBuilder).search()
-    val runtime = System.currentTimeMillis() - startTime
-    logger.info("RUNTIME LOCAL SEARCH: $runtime ms")
+    val runtime = Duration.between(startTime, Instant.now())
+    logger.info("RUNTIME LOCAL SEARCH: ${runtime.toSeconds()}s ${runtime.toMillisPart()}ms")
 
     logger.info("Final:\n" + Solution.fromSolutionBuilder(solutionBuilder).formatOutput())
 

@@ -17,6 +17,12 @@ class LocalSearch(
     private val instance: Instance,
     private val solution: SolutionBuilder  // modified in-place!
 ) {
+    var evaluations = 0
+        private set
+
+    var incumbentEvaluations = 0
+        private set
+
     private val logger = LogManager.getLogger(this::class.java.simpleName)
 
     // TODO Take config as parameter?
@@ -28,6 +34,7 @@ class LocalSearch(
 //            logger.info("Found new best solution - vehicles: ${solution.vehiclesUsed}, distance: ${solution.totalDistance}")
         }
 //        logger.info("Iterations: $iters")
+        evaluations += iters
         return iters
     }
 
