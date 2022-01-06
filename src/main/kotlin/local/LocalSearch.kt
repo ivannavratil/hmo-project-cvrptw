@@ -34,10 +34,10 @@ class LocalSearch(
         val originalDistance = solution.totalDistance
 
         var bestSwap: ISwap?
-        val routeRemoval = findRouteRemoval()
-        if (routeRemoval.isNotEmpty()) {
-            logger.trace("Removed a vehicle")
-            bestSwap = routeRemoval.maxOrNull()!!
+        val routeRemovals = findTwoOptRouteRemoval() + findNodeTransferImprovements(true)
+        if (routeRemovals.isNotEmpty()) {
+            logger.trace("Removed a vehicle!!!")
+            bestSwap = routeRemovals.maxOrNull()!!
         } else {
             bestSwap = findTwoOptImprovements().maxOrNull()
 
@@ -76,7 +76,7 @@ class LocalSearch(
                 if (bestSwap == null || bestSwap2 != null && bestSwap2 > bestSwap)
                     bestSwap = bestSwap2
             }
-            val bestSwap3 = findNodeTransferImprovements().maxOrNull()
+            val bestSwap3 = findNodeTransferImprovements(false).maxOrNull()
             if (bestSwap == null || bestSwap3 != null && bestSwap3 > bestSwap)
                 bestSwap = bestSwap3
         }
@@ -140,22 +140,22 @@ class LocalSearch(
         return distanceSavings
     }
 
-    // TODO possible to remove car by injecting a route with a single customer?
-    private fun findRouteRemoval(): List<TwoOptSwapContainer> {
+    private fun findTwoOptRouteRemoval(): List<TwoOptSwapContainer> {
         val routeRemoval = mutableListOf<TwoOptSwapContainer>()
         val routes = solution.routes
 
         for (routeId1 in 0 until routes.size) {
+            val route1 = routes[routeId1]
+
             for (routeId2 in 0 until routes.size) {
                 if (routeId1 == routeId2)
                     continue
 
-                val route1 = routes[routeId1]
                 val route2 = routes[routeId2]
                 val nodeOrdinal1 = 0
                 val nodeOrdinal2 = route2.route.size - 2
 
-                val distanceSavings = twoOptSwapSaving(route1, nodeOrdinal1, route2, nodeOrdinal2, true)
+                val distanceSavings = twoOptSwapSaving(route1, nodeOrdinal1, route2, nodeOrdinal2, false)
                 if (!distanceSavings.isNaN()) {
                     routeRemoval.add(
                         TwoOptSwapContainer(routeId1, routeId2, nodeOrdinal1, nodeOrdinal2, distanceSavings)
@@ -173,13 +173,14 @@ class LocalSearch(
         val routes = solution.routes
 
         for (routeId1 in 0 until (routes.size - 1)) {
+            val route1 = routes[routeId1]
+
             for (routeId2 in (routeId1 + 1) until routes.size) {
-                val route1 = routes[routeId1]
                 val route2 = routes[routeId2]
 
                 for (nodeOrdinal1 in 0 until (route1.route.size - 1)) {
                     for (nodeOrdinal2 in 1 until (route2.route.size - 1)) {
-                        val distanceSavings = twoOptSwapSaving(route1, nodeOrdinal1, route2, nodeOrdinal2, false)
+                        val distanceSavings = twoOptSwapSaving(route1, nodeOrdinal1, route2, nodeOrdinal2, true)
                         if (distanceSavings.isNaN())
                             continue
 
@@ -220,13 +221,13 @@ class LocalSearch(
     private fun twoOptSwapSaving(
         route1: RouteBuilder, nodeOrdinal1: Int,
         route2: RouteBuilder, nodeOrdinal2: Int,
-        isNonImprovingAllowed: Boolean
+        onlyImproving: Boolean
     ): Double {
         val nodeMeta1 = route1.route[nodeOrdinal1]
         val nodeMeta2 = route2.route[nodeOrdinal2]
 
         val distanceSavings = calculateTwoOptSwapDistanceSavings(route1, nodeOrdinal1, route2, nodeOrdinal2)
-        if (!isNonImprovingAllowed && distanceSavings <= 1e-8)
+        if (onlyImproving && distanceSavings <= 1e-8)
             return Double.NaN
 
         val route1SecondPart = route1.route.subList(nodeOrdinal1 + 1, route1.route.size)
@@ -248,16 +249,20 @@ class LocalSearch(
         return distanceSavings
     }
 
-    private fun findNodeTransferImprovements(): List<NodeTransferContainer> {
+    private fun findNodeTransferImprovements(onlyRouteRemoval: Boolean): List<NodeTransferContainer> {
         val improvements = mutableListOf<NodeTransferContainer>()
         val routes = solution.routes
 
         for (routeId1 in 0 until routes.size) {
+            val route1 = routes[routeId1]
+
+            if (onlyRouteRemoval && route1.route.size != 3)
+                continue
+
             for (routeId2 in 0 until routes.size) {
                 if (routeId1 == routeId2)
                     continue
 
-                val route1 = routes[routeId1]
                 val route2 = routes[routeId2]
 
                 for (nodeOrdinal1 in 1 until (route1.route.size - 1)) {
@@ -266,7 +271,9 @@ class LocalSearch(
                         continue
 
                     for (nodeOrdinal2 in 1 until route2.route.size) {
-                        val distanceSavings = nodeTransferSaving(route1, nodeOrdinal1, route2, nodeOrdinal2)
+                        val distanceSavings = nodeTransferSaving(
+                            route1, nodeOrdinal1, route2, nodeOrdinal2, !onlyRouteRemoval
+                        )
                         if (!distanceSavings.isNaN()) {
                             improvements.add(
                                 NodeTransferContainer(routeId1, routeId2, nodeOrdinal1, nodeOrdinal2, distanceSavings)
@@ -282,7 +289,8 @@ class LocalSearch(
 
     private fun nodeTransferSaving(
         route1: RouteBuilder, nodeOrdinal1: Int,
-        route2: RouteBuilder, nodeOrdinal2: Int
+        route2: RouteBuilder, nodeOrdinal2: Int,
+        onlyImproving: Boolean
     ): Double {
         // We know route2 has enough capacity to accept the node.
 
@@ -299,7 +307,7 @@ class LocalSearch(
         val swappedDistance = distances[n1, n3] + distances[n4, n2] + distances[n2, n5]
 
         val distanceSavings = currentDistance - swappedDistance
-        if (distanceSavings <= 0)
+        if (onlyImproving && distanceSavings <= 0)
             return Double.NaN
 
         // Because of the triangle inequality, route1 must already have valid time windows.
