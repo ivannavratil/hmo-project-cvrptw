@@ -7,8 +7,6 @@ interface ITerminationCriteria {
     fun terminate(iteration: Int = -1): Boolean
 }
 
-// TODO Add termination for N iterations without improvement and for total runtime, and their configs (with composite?)
-
 class TotalTimeTermination(runtime: Duration) : ITerminationCriteria {
     private val endTime = Instant.now() + runtime
 

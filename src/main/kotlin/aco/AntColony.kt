@@ -85,9 +85,10 @@ class AntColony(
 
     fun run(): SolutionBuilder? {
         startTime = Instant.now()
-        val timeTermination = TotalTimeTermination(config.antColony.runtime)
-        val iterationsTermination = TotalIterationsTermination(config.antColony.iterations)
-        val compositeTermination = CompositeTermination(timeTermination, iterationsTermination)
+        val compositeTermination = CompositeTermination(
+            TotalTimeTermination(config.antColony.runtime),
+            TotalIterationsTermination(config.antColony.iterations)
+        )
 
         if (config.antColony.estimateTauZero) {
             config.antColony.tauZero = calculateTauZero()
