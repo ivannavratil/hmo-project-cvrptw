@@ -111,7 +111,7 @@ fun main2(config: Config, param: String, paramValue: Double) {
 
     val formattedTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"))
 
-    Solution.fromSolutionBuilder(incumbentSolution)
+    Solution.fromSolutionBuilder(incumbentSolution!!)
         .exportToFile("src/main/resources/results/i${config.instanceId}-${formattedTimestamp}-${Random.nextULong()}.txt")
 
 //    File("src/main/resources/results/i${config.instanceId}-$formattedTimestamp.json").writeText(Json.encodeToString(config))
