@@ -293,14 +293,16 @@ class LocalSearch(
         onlyImproving: Boolean
     ): Double {
         // We know route2 has enough capacity to accept the node.
+        val route1Raw = route1.route
+        val route2Raw = route2.route
 
-        val nodeMeta2 = route1.route[nodeOrdinal1]
-        val nodeMeta4 = route2.route[nodeOrdinal2 - 1]
-        val n1 = route1.route[nodeOrdinal1 - 1].node.id
+        val nodeMeta2 = route1Raw[nodeOrdinal1]
+        val nodeMeta4 = route2Raw[nodeOrdinal2 - 1]
+        val n1 = route1Raw[nodeOrdinal1 - 1].node.id
         val n2 = nodeMeta2.node.id
-        val n3 = route1.route[nodeOrdinal1 + 1].node.id
+        val n3 = route1Raw[nodeOrdinal1 + 1].node.id
         val n4 = nodeMeta4.node.id
-        val n5 = route2.route[nodeOrdinal2].node.id
+        val n5 = route2Raw[nodeOrdinal2].node.id
 
         val distances = instance.distances
         val currentDistance = distances[n1, n2] + distances[n2, n3] + distances[n4, n5]
@@ -311,10 +313,11 @@ class LocalSearch(
             return Double.NaN
 
         // Because of the triangle inequality, route1 must already have valid time windows.
-
-        // TODO optimize?
-        val route2SecondPart = arrayListOf(nodeMeta2) + route2.route.subList(nodeOrdinal2, route2.route.size)
-        if (!validateTimeWindows(nodeMeta4, route2SecondPart))
+        // Avoid creating new lists.
+        route2Raw[nodeOrdinal2 - 1] = nodeMeta2
+        val isValid = validateTimeWindows(nodeMeta4, route2Raw.subList(nodeOrdinal2 - 1, route2Raw.size))
+        route2Raw[nodeOrdinal2 - 1] = nodeMeta4
+        if (!isValid)
             return Double.NaN
 
         return distanceSavings
