@@ -8,7 +8,11 @@ import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.RenderingHints
 import java.awt.Toolkit
+import java.awt.image.BufferedImage
 import java.io.File
+import java.io.IOException
+import java.util.concurrent.atomic.AtomicBoolean
+import javax.imageio.ImageIO
 import javax.swing.JFrame
 import javax.swing.JPanel
 
@@ -32,9 +36,26 @@ fun main() {
     val customerPointSize = 8
 
     val pane: JPanel = object : JPanel() {
+
+        var saved: AtomicBoolean = AtomicBoolean(false)
+
+        fun save() {
+            val bImg = BufferedImage(this.width, this.height, BufferedImage.TYPE_INT_RGB)
+            val cg = bImg.createGraphics()
+            this.paintAll(cg)
+            try {
+                ImageIO.write(bImg, "png", File("src/main/resources/pics/pic.png"))
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+
         override fun paintComponent(g: Graphics) {
 
             val g2 = g as Graphics2D
+
+            g2.color = Color.WHITE
+            g2.fillRect(0, 0, width, height)
 
             g2.setRenderingHints(
                 RenderingHints(
@@ -99,6 +120,12 @@ fun main() {
                     pointSize
                 )
             }
+
+            if (!saved.get()) {
+                saved = AtomicBoolean(true)
+                save()
+            }
+
         }
     }
 
