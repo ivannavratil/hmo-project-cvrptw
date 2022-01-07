@@ -112,8 +112,10 @@ class AntColony(
         repeat(50) {
             evaluationsTauZero++
             ant.traverse()?.let { solution ->
-                evaluationsTauZero += LocalSearch(instance, solution).search(iterLimit = 500)
-                return 1 / solution.totalDistance
+                val ls = LocalSearch(instance, solution)
+                ls.quickSearch(500, Duration.ofSeconds(7))
+                evaluationsTauZero += ls.incumbentEvaluations
+                return 1 / ls.incumbentSolution.totalDistance
             }
         }
 

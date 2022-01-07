@@ -1,11 +1,15 @@
 package local
 
+import helpers.*
 import org.apache.logging.log4j.LogManager
 import shared.Instance
 import shared.NodeMeta
 import shared.RouteBuilder
 import shared.SolutionBuilder
+import java.time.Duration
+import java.time.Instant
 import kotlin.math.abs
+import kotlin.math.ceil
 
 private interface ISwap : Comparable<ISwap> {
     val distanceSavings: Double
@@ -13,89 +17,160 @@ private interface ISwap : Comparable<ISwap> {
     override fun compareTo(other: ISwap) = distanceSavings.compareTo(other.distanceSavings)
 }
 
+// TODO LOCAL SEARCH TIME max(10s, 10% of total)? Separate Config param?
+// TODO Use evaluations etc. after search
+
 class LocalSearch(
     private val instance: Instance,
-    private val solution: SolutionBuilder  // modified in-place!
+    private val originalSolution: SolutionBuilder  // remains unaltered
 ) {
-    var evaluations = 0
+    private lateinit var currentSolution: SolutionBuilder
+    var incumbentSolution = originalSolution
         private set
 
+    private var evaluations = 0
     var incumbentEvaluations = 0
         private set
+    var incumbentTime: Duration = Duration.ZERO
+        private set
 
+    private val randomChoosers = arrayListOf(::chooseBestSwap3Random, ::chooseBestSwap4Random, ::chooseBestSwap5Random)
+    private val randomChoosersLottery = WeightedLottery(doubleArrayOf(1.3, 2.5, 1.0))
+
+    private lateinit var startTime: Instant
     private val logger = LogManager.getLogger(this::class.java.simpleName)
 
-    // TODO Take config as parameter?
-    fun search(iterLimit: Int = 2000): Int {
-        var iters = 0
-        while (iters++ < iterLimit) {
-            if (!iteration())
-                break
-//            logger.info("Found new best solution - vehicles: ${solution.vehiclesUsed}, distance: ${solution.totalDistance}")
-        }
-//        logger.info("Iterations: $iters")
-        evaluations += iters
-        return iters
+    fun quickSearch(iterLimit: Int = 500, runtime: Duration): SolutionBuilder {
+        startTime = Instant.now()
+        val compositeTermination = CompositeTermination(
+            TotalTimeTermination(startTime + runtime),
+            TotalIterationsTermination(iterLimit)
+        )
+        searchInternal(compositeTermination, ::chooseBestSwap1)
+        return incumbentSolution
     }
 
-    private fun iteration(): Boolean {
-        val originalDistance = solution.totalDistance
+    // TODO Track which chooser found incumbent solution?
+    fun fullSearch(iterLimitPerType: Int = 2000, totalRuntime: Duration): SolutionBuilder {
+        startTime = Instant.now()
+        val timeTermination = TotalTimeTermination(startTime + totalRuntime)
+        val compositeTermination = CompositeTermination(
+            timeTermination, TotalIterationsTermination(iterLimitPerType)
+        )
 
-        var bestSwap: ISwap?
-        val routeRemovals = findTwoOptRouteRemoval() + findNodeTransferImprovements(true)
-        if (routeRemovals.isNotEmpty()) {
-            logger.trace("Removed a vehicle!!!")
-            bestSwap = routeRemovals.maxOrNull()!!
-        } else {
-            bestSwap = findTwoOptImprovements().maxOrNull()
+        // Try in order of quality and predictability, to make the most use of limited runtime.
+        searchInternal(compositeTermination, ::chooseBestSwap1)
+        searchInternal(compositeTermination, ::chooseBestSwap2)
 
-            //////
-
-//            val step = if (seededRandom.nextBoolean()) 1 else 2
-//            val otherStep = if (step == 1) 2 else 1
-//            if (bestSwap == null) bestSwap = findInternalSwapImprovements(step).maxOrNull()
-//            if (bestSwap == null) bestSwap = findInternalSwapImprovements(otherStep).maxOrNull()
-
-            //////
-
-            // TODO gives best results for a single i6 solution (when NodeTransferContainer is not in play)
-//            if (bestSwap == null) {
-//                bestSwap = findInternalSwapImprovements(1).maxOrNull()
-//                val bestSwap2 = findInternalSwapImprovements(2).maxOrNull()
-//                if (bestSwap == null || bestSwap2 != null && bestSwap2 > bestSwap)
-//                    bestSwap = bestSwap2
-//            }
-
-            //////
-
-            // TODO try taking best of all types - not that good tbh
-//            val bestSwap1 = findInternalSwapImprovements(1).maxOrNull()
-//            if (bestSwap == null || bestSwap1 != null && bestSwap1 > bestSwap)
-//                bestSwap = bestSwap1
-//            val bestSwap2 = findInternalSwapImprovements(2).maxOrNull()
-//            if (bestSwap == null || bestSwap2 != null && bestSwap2 > bestSwap)
-//                bestSwap = bestSwap2
-
-            //////
-
-            if (bestSwap == null) {
-                bestSwap = findInternalSwapImprovements(1).maxOrNull()
-                val bestSwap2 = findInternalSwapImprovements(2).maxOrNull()
-                if (bestSwap == null || bestSwap2 != null && bestSwap2 > bestSwap)
-                    bestSwap = bestSwap2
-            }
-            val bestSwap3 = findNodeTransferImprovements(false).maxOrNull()
-            if (bestSwap == null || bestSwap3 != null && bestSwap3 > bestSwap)
-                bestSwap = bestSwap3
+        while (!timeTermination.terminate()) {
+            searchInternal(compositeTermination, randomChoosers[randomChoosersLottery.draw()])
         }
 
-        bestSwap?.performSwap(solution) ?: return false
+        return incumbentSolution
+    }
+
+    private fun searchInternal(terminationCriteria: ITerminationCriteria, chooser: () -> ISwap?) {
+        currentSolution = originalSolution.deepCopy()
+        var iters = 0
+        while (!terminationCriteria.terminate(iters++)) {
+            if (!iteration(chooser))
+                break
+            // currentSolution was improved
+
+            if (currentSolution !== incumbentSolution && currentSolution >= incumbentSolution)
+                continue
+
+            incumbentSolution = currentSolution
+            incumbentEvaluations = evaluations
+            incumbentTime = Duration.between(startTime, Instant.now())
+//            logger.info(
+//                "Found new best solution - " +
+//                        "vehicles: ${incumbentSolution.vehiclesUsed}, distance: ${incumbentSolution.totalDistance}, " +
+//                        "time: ${incumbentTime.toSeconds()}s, evaluations: $incumbentEvaluations"
+//            )
+        }
+//        logger.info("Iterations: $iters")
+    }
+
+    private fun chooseBetter(current: ISwap?, new: ISwap?): ISwap? =
+        if (current == null || new != null && new > current) new else current
+
+    private fun chooseBestSwap1(): ISwap? {
+        // Prefer 2-opt and transfer. Slower but usually better.
+        var bestSwap = findTwoOptImprovements().maxOrNull() as ISwap?
+        if (bestSwap == null) {
+            bestSwap = chooseBetter(
+                findInternalSwapImprovements(1).maxOrNull(),
+                findInternalSwapImprovements(2).maxOrNull()
+            )
+        }
+        return chooseBetter(bestSwap, findNodeTransferImprovements().maxOrNull())
+    }
+
+    private fun chooseBestSwap2(): ISwap? {
+        // Choose the greediest option. Fast but usually worse.
+        var bestSwap = findTwoOptImprovements().maxOrNull() as ISwap?
+        bestSwap = chooseBetter(bestSwap, findInternalSwapImprovements(1).maxOrNull())
+        bestSwap = chooseBetter(bestSwap, findInternalSwapImprovements(2).maxOrNull())
+        bestSwap = chooseBetter(bestSwap, findNodeTransferImprovements().maxOrNull())
+        return bestSwap
+    }
+
+    private fun chooseBestSwap3Random(): ISwap? {
+        // Randomly choose a neighborhood and then the best swap from it.
+        return listOf(
+            { findTwoOptImprovements() },
+            { findInternalSwapImprovements(1) },
+            { findInternalSwapImprovements(2) },
+            { findNodeTransferImprovements() }
+        ).shuffled(seededRandom)
+            .asSequence()
+            .map { it -> it().maxOrNull() }
+            .firstNotNullOfOrNull { it }
+    }
+
+    private fun chooseBestSwap4Random(): ISwap? {
+        // Choose completely randomly from all neighborhoods.
+        return generateAllNeighbors().randomOrNull(seededRandom)
+    }
+
+    private fun chooseBestSwap5Random(): ISwap? {
+        // Choose from a RCL (best 20%).
+        val allSwaps = generateAllNeighbors()
+        if (allSwaps.isEmpty())
+            return null
+        allSwaps.sortByDescending { it }
+        return allSwaps[seededRandom.nextInt(ceil(allSwaps.size * 0.2).toInt())]
+    }
+
+    private fun generateAllNeighbors(): ArrayList<ISwap> {
+        val allSwaps = ArrayList<ISwap>()
+        findTwoOptImprovements().filterNotNullTo(allSwaps)
+        findInternalSwapImprovements(1).filterNotNullTo(allSwaps)
+        findInternalSwapImprovements(2).filterNotNullTo(allSwaps)
+        findNodeTransferImprovements().filterNotNullTo(allSwaps)
+        return allSwaps
+    }
+
+    private fun iteration(chooser: () -> ISwap?): Boolean {
+        evaluations++
+        val originalDistance = currentSolution.totalDistance
+
+        val routeRemovals = findTwoOptRouteRemoval() + findNodeTransferImprovements(true)
+        val bestSwap = if (routeRemovals.isNotEmpty()) {
+            logger.trace("Removed a vehicle via LS!!!")
+            routeRemovals.maxOrNull()!!
+        } else {
+            chooser()
+        }
+
+        bestSwap?.performSwap(currentSolution) ?: return false
 
 //        logger.trace(bestSwap.toString())
 //        logger.trace("Saved distance: ${bestSwap.distanceSavings}")
-//        logger.trace(Solution.fromSolutionBuilder(solution).formatOutput())
+//        logger.trace(Solution.fromSolutionBuilder(currentSolution).formatOutput())
 
-        val finalDistance = solution.totalDistance
+        val finalDistance = currentSolution.totalDistance
         if (abs(originalDistance - finalDistance - bestSwap.distanceSavings) > 1e-5)
             throw RuntimeException("bad distance - expected ${bestSwap.distanceSavings}, got ${originalDistance - finalDistance}")
 
@@ -104,7 +179,7 @@ class LocalSearch(
 
     private fun findInternalSwapImprovements(step: Int): List<InternalSwapContainer> {
         val internalSwaps = mutableListOf<InternalSwapContainer>()
-        val routes = solution.routes
+        val routes = currentSolution.routes
 
         for (routeId in 0 until routes.size) {
             val route = routes[routeId].route
@@ -160,7 +235,7 @@ class LocalSearch(
 
     private fun findTwoOptRouteRemoval(): List<TwoOptSwapContainer> {
         val routeRemoval = mutableListOf<TwoOptSwapContainer>()
-        val routes = solution.routes
+        val routes = currentSolution.routes
 
         for (routeId1 in 0 until routes.size) {
             val route1 = routes[routeId1]
@@ -188,7 +263,7 @@ class LocalSearch(
 
     private fun findTwoOptImprovements(): List<TwoOptSwapContainer> {
         val improvements = mutableListOf<TwoOptSwapContainer>()
-        val routes = solution.routes
+        val routes = currentSolution.routes
 
         for (routeId1 in 0 until (routes.size - 1)) {
             val route1 = routes[routeId1]
@@ -267,9 +342,9 @@ class LocalSearch(
         return distanceSavings
     }
 
-    private fun findNodeTransferImprovements(onlyRouteRemoval: Boolean): List<NodeTransferContainer> {
+    private fun findNodeTransferImprovements(onlyRouteRemoval: Boolean = false): List<NodeTransferContainer> {
         val improvements = mutableListOf<NodeTransferContainer>()
-        val routes = solution.routes
+        val routes = currentSolution.routes
 
         for (routeId1 in 0 until routes.size) {
             val route1 = routes[routeId1]

@@ -36,13 +36,13 @@ fun main() {
     logger.info("Before:\n" + Solution.fromSolutionBuilder(solutionBuilder).formatOutput())
 
     val startTime = Instant.now()
-    val iterations = LocalSearch(instance, solutionBuilder).search()
+    val bestSolution = LocalSearch(instance, solutionBuilder).fullSearch(2000, Duration.ofSeconds(60))
     val runtime = Duration.between(startTime, Instant.now())
     logger.info("RUNTIME LOCAL SEARCH: ${runtime.toSeconds()}s ${runtime.toMillisPart()}ms")
 
-    logger.info("Final:\n" + Solution.fromSolutionBuilder(solutionBuilder).formatOutput())
+    logger.info("Final:\n" + Solution.fromSolutionBuilder(bestSolution).formatOutput())
 
     val formattedTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"))
-    Solution.fromSolutionBuilder(solutionBuilder)
+    Solution.fromSolutionBuilder(bestSolution)
         .exportToFile("src/main/resources/results/i$instanceId-LS-${formattedTimestamp}-${Random.nextULong()}.txt")
 }
