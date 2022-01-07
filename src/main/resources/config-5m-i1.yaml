@@ -1,20 +1,20 @@
 ant:
-    count: 80
-    alpha: 0.7
-    beta: 1.2
-    theta: 0.55
-    q0: 0.2
-    rho: 0.08
+  count: 80
+  alpha: 0.7
+  beta: 1.2
+  theta: 0.55
+  q0: 0.2
+  rho: 0.08
 
 antColony:
-    iterations: 1000000000
-    runtime: 250 s
-    tauZero: 1E-3
-    estimateTauZero: true
-    estimateLocalSearch:
-        iterations: 500
-        runtime: 6 s
+  iterations: 1000000000
+  runtime: 250s
+  tauZero: 1E-3
+  estimateTauZero: true
+  estimateLocalSearch:
+    iterations: 500
+    runtime: 6s
 
 finalLocalSearch:
-    iterations: 2000
-    runtime: 50 s
+  iterations: 2000
+  runtime: 50s
