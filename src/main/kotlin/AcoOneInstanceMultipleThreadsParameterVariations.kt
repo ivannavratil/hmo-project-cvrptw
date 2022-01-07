@@ -23,9 +23,6 @@ fun main() {
     val instance = Instance.fromInstanceId(instanceId)
     val baseConfig = ConfigChooser.getConfig(instanceId, timeLimitMarker)
 
-    File("src/main/resources/graph/i$instanceId").appendText(
-        Json.encodeToString(baseConfig) + System.lineSeparator()
-    )
 
     while (true) {
 
