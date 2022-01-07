@@ -7,8 +7,9 @@ interface ITerminationCriteria {
     fun terminate(iteration: Int = -1): Boolean
 }
 
-class TotalTimeTermination(runtime: Duration) : ITerminationCriteria {
-    private val endTime = Instant.now() + runtime
+class TotalTimeTermination(private val endTime: Instant) : ITerminationCriteria {
+
+    constructor(runtime: Duration) : this(Instant.now() + runtime)
 
     override fun terminate(iteration: Int): Boolean {
         return Instant.now() > endTime
