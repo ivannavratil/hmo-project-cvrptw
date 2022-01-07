@@ -27,9 +27,8 @@ import kotlin.random.nextULong
 
 fun main() {
     val instanceId = 1
-    val runtime = Duration.ofSeconds(120)
 
-    val base = ConfigChooser.getConfig(instanceId, runtime)
+    val base = ConfigChooser.getConfig5m(instanceId)
 
     File("src/main/resources/graph/i$instanceId").appendText(
         Json.encodeToString(base) + System.lineSeparator()

@@ -40,22 +40,22 @@ class LocalSearch(
     private lateinit var startTime: Instant
     private val logger = LogManager.getLogger(this::class.java.simpleName)
 
-    fun quickSearch(iterLimit: Int = 500, runtime: Duration): SolutionBuilder {
+    fun quickSearch(config: Config.LocalSearch): SolutionBuilder {
         startTime = Instant.now()
         val compositeTermination = CompositeTermination(
-            TotalTimeTermination(startTime + runtime),
-            TotalIterationsTermination(iterLimit)
+            TotalTimeTermination(startTime + config.runtime),
+            TotalIterationsTermination(config.iterations)
         )
         searchInternal(compositeTermination, ::chooseBestSwap1)
         return incumbentSolution
     }
 
     // TODO Track which chooser found incumbent solution?
-    fun fullSearch(iterLimitPerType: Int = 2000, totalRuntime: Duration): SolutionBuilder {
+    fun fullSearch(config: Config.LocalSearch): SolutionBuilder {
         startTime = Instant.now()
-        val timeTermination = TotalTimeTermination(startTime + totalRuntime)
+        val timeTermination = TotalTimeTermination(startTime + config.runtime)
         val compositeTermination = CompositeTermination(
-            timeTermination, TotalIterationsTermination(iterLimitPerType)
+            timeTermination, TotalIterationsTermination(config.iterations)
         )
 
         // Try in order of quality and predictability, to make the most use of limited runtime.

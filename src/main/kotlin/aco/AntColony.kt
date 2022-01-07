@@ -91,7 +91,7 @@ class AntColony(
         )
 
         if (config.antColony.estimateTauZero) {
-            config.antColony.tauZero = calculateTauZero()
+            config.antColony.tauZero = calculateTauZero(config.antColony.estimateLocalSearch!!)
             logger.info("Tau zero set to ${config.antColony.tauZero}")
         }
         pheromones = FlatSquareMatrix(instance.nodes.size) { _, _ -> config.antColony.tauZero }
@@ -106,14 +106,14 @@ class AntColony(
         return incumbentSolution
     }
 
-    private fun calculateTauZero(): Double {
+    private fun calculateTauZero(lsConfig: Config.LocalSearch): Double {
         val ant = Ant(instance, FlatSquareMatrix(instance.nodes.size) { _, _ -> config.antColony.tauZero }, config.ant)
 
         repeat(50) {
             evaluationsTauZero++
             ant.traverse()?.let { solution ->
                 val ls = LocalSearch(instance, solution)
-                ls.quickSearch(500, Duration.ofSeconds(7))
+                ls.quickSearch(lsConfig)
                 evaluationsTauZero += ls.incumbentEvaluations
                 return 1 / ls.incumbentSolution.totalDistance
             }

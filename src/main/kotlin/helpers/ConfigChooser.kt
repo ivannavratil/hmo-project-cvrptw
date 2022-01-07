@@ -1,43 +1,23 @@
 package helpers
 
-import java.time.Duration
+import com.sksamuel.hoplite.ConfigLoader
 
 object ConfigChooser {
 
-    fun getConfig(instanceId: Int, runtime: Duration = Duration.ofSeconds(120)): Config {
-        return when (instanceId) {
-            1 -> Config(
-                Config.Ant(80, 0.7, 1.2, 0.55, 0.2, 0.08),
-                Config.AntColony(Int.MAX_VALUE, runtime, 1E-3, true)
-            )
+    fun getConfig1m(instanceId: Int): Config {
+        return getConfigFromResource("/config-1m-i$instanceId.yaml")
+    }
 
-            2 -> Config(
-                Config.Ant(80, 1.0, 1.25, 0.45, 0.4, 0.2),
-                Config.AntColony(Int.MAX_VALUE, runtime, 2E-4, true)
-            )
+    fun getConfig5m(instanceId: Int): Config {
+        return getConfigFromResource("/config-5m-i$instanceId.yaml")
+    }
 
-            3 -> Config(
-                Config.Ant(20, 1.0, 1.4, 0.5, 0.4, 0.2),
-                Config.AntColony(Int.MAX_VALUE, runtime, 7E-5, true)
-            )
+    fun getConfigUnbounded(instanceId: Int): Config {
+        return getConfigFromResource("/config-un-i$instanceId.yaml")
+    }
 
-            4 -> Config(
-                Config.Ant(20, 1.1, 1.25, 0.7, 0.4, 0.15),
-                Config.AntColony(Int.MAX_VALUE, runtime, 6E-5, true)
-            )
-
-            5 -> Config(
-                Config.Ant(14, 1.25, 1.2, 0.72, 0.4, 0.15),
-                Config.AntColony(Int.MAX_VALUE, runtime, 2E-5, true)
-            )
-
-            6 -> Config(
-                Config.Ant(6, 0.9, 1.25, 0.6, 0.4, 0.2),
-                Config.AntColony(Int.MAX_VALUE, runtime, 1E-6, true)
-            )
-
-            else -> throw RuntimeException("bad instance ID")
-        }
+    private fun getConfigFromResource(resource: String): Config {
+        return ConfigLoader().loadConfigOrThrow(resource)
     }
 
 }

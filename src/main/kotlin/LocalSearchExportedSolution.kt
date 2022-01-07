@@ -1,3 +1,4 @@
+import helpers.Config
 import local.LocalSearch
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
@@ -36,7 +37,8 @@ fun main() {
     logger.info("Before:\n" + Solution.fromSolutionBuilder(solutionBuilder).formatOutput())
 
     val startTime = Instant.now()
-    val bestSolution = LocalSearch(instance, solutionBuilder).fullSearch(2000, Duration.ofSeconds(60))
+    val bestSolution = LocalSearch(instance, solutionBuilder)
+        .fullSearch(Config.LocalSearch(2000, Duration.ofSeconds(60)))
     val runtime = Duration.between(startTime, Instant.now())
     logger.info("RUNTIME LOCAL SEARCH: ${runtime.toSeconds()}s ${runtime.toMillisPart()}ms")
 
