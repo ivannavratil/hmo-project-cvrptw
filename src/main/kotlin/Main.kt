@@ -54,7 +54,8 @@ fun searchWithExports(
     instance: Instance,
     config: Config,
     exportName: String,
-    logger: Logger
+    logger: Logger,
+    variedParameter: Any? = null
 ): SolutionBuilder? {
     val formattedTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"))
     val randomStamp = Random.nextUInt()
@@ -94,12 +95,14 @@ fun searchWithExports(
         "${resultMetadata.totalRuntimeAco.toSeconds()};" +
                 "${incumbentSolutionAco.vehiclesUsed};" +
                 "${incumbentSolutionAco.totalDistance}" +
+                (if (variedParameter != null) ";$variedParameter" else "") +
                 System.lineSeparator()
     )
     File("src/main/resources/graph/$exportName-LS.txt").appendText(
         "${resultMetadata.totalRuntimeCombined.toSeconds()};" +
                 "${incumbentSolutionLs.vehiclesUsed};" +
                 "${incumbentSolutionLs.totalDistance}" +
+                (if (variedParameter != null) ";$variedParameter" else "") +
                 System.lineSeparator()
     )
 
