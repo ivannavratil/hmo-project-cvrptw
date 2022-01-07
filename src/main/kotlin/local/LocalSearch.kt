@@ -35,7 +35,7 @@ class LocalSearch(
         private set
 
     private val randomChoosers = arrayListOf(::chooseBestSwap3Random, ::chooseBestSwap4Random, ::chooseBestSwap5Random)
-    private val randomChoosersLottery = WeightedLottery(doubleArrayOf(1.3, 2.5, 1.0))
+    private val randomChoosersLottery = WeightedLottery(doubleArrayOf(0.3, 0.5, 0.2))
 
     private lateinit var startTime: Instant
     private val logger = LogManager.getLogger(this::class.java.simpleName)
