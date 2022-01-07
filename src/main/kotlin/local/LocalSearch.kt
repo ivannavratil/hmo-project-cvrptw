@@ -28,7 +28,8 @@ class LocalSearch(
     var incumbentSolution = originalSolution
         private set
 
-    private var evaluations = 0
+    var evaluations = 0
+        private set
     var incumbentEvaluations = 0
         private set
     var incumbentTime: Duration = Duration.ZERO
