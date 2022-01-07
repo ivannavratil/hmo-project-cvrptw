@@ -26,7 +26,6 @@ data class Instance(
 
 
     companion object {
-        @Suppress("MemberVisibilityCanBePrivate")
         fun fromFile(file: File): Instance {
             val buffer = file.readLines()
             val (numberOfVehicles, capacity) = buffer[2].parseInts()
