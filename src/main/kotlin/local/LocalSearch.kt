@@ -87,7 +87,7 @@ class LocalSearch(
                         "time: ${incumbentTime.toSeconds()}s, evaluations: $incumbentEvaluations"
             )
         }
-        logger.info("Iterations: $iters")
+        //logger.info("Iterations: $iters")
     }
 
     private fun chooseBetter(current: ISwap?, new: ISwap?): ISwap? =
