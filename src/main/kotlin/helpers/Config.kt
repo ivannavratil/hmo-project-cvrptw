@@ -1,8 +1,19 @@
 package helpers
 
-import kotlinx.serialization.Contextual
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import java.time.Duration
+
+object DurationAsLongSerializer : KSerializer<Duration> {
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("Duration", PrimitiveKind.LONG)
+    override fun serialize(encoder: Encoder, value: Duration) = encoder.encodeLong(value.toMillis())
+    override fun deserialize(decoder: Decoder): Duration = Duration.ofMillis(decoder.decodeLong())
+}
 
 // Total maximum runtime is equal to antColony.runtime + finalLocalSearch.runtime
 
@@ -31,7 +42,7 @@ data class Config(
     @Serializable
     data class AntColony(
         val iterations: Int,
-        @Contextual
+        @Serializable(with = DurationAsLongSerializer::class)
         val runtime: Duration,
         var tauZero: Double,
         val estimateTauZero: Boolean,
@@ -46,7 +57,7 @@ data class Config(
     @Serializable
     data class LocalSearch(
         val iterations: Int,
-        @Contextual
+        @Serializable(with = DurationAsLongSerializer::class)
         val runtime: Duration
     ) {
         override fun toString(): String {
