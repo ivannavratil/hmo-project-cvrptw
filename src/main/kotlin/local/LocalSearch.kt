@@ -1,6 +1,12 @@
 package local
 
-import helpers.*
+import helpers.CompositeTermination
+import helpers.Config
+import helpers.ITerminationCriteria
+import helpers.TotalIterationsTermination
+import helpers.TotalTimeTermination
+import helpers.WeightedLottery
+import helpers.seededRandom
 import org.apache.logging.log4j.LogManager
 import shared.Instance
 import shared.NodeMeta
@@ -16,9 +22,6 @@ private interface ISwap : Comparable<ISwap> {
     fun performSwap(solution: SolutionBuilder)
     override fun compareTo(other: ISwap) = distanceSavings.compareTo(other.distanceSavings)
 }
-
-// TODO LOCAL SEARCH TIME max(10s, 10% of total)? Separate Config param?
-// TODO Use evaluations etc. after search
 
 class LocalSearch(
     private val instance: Instance,
@@ -84,13 +87,13 @@ class LocalSearch(
             incumbentSolution = currentSolution
             incumbentEvaluations = evaluations
             incumbentTime = Duration.between(startTime, Instant.now())
-//            logger.info(
-//                "Found new best solution - " +
-//                        "vehicles: ${incumbentSolution.vehiclesUsed}, distance: ${incumbentSolution.totalDistance}, " +
-//                        "time: ${incumbentTime.toSeconds()}s, evaluations: $incumbentEvaluations"
-//            )
+            logger.info(
+                "Found new best solution - " +
+                        "vehicles: ${incumbentSolution.vehiclesUsed}, distance: ${incumbentSolution.totalDistance}, " +
+                        "time: ${incumbentTime.toSeconds()}s, evaluations: $incumbentEvaluations"
+            )
         }
-//        logger.info("Iterations: $iters")
+        logger.info("Iterations: $iters")
     }
 
     private fun chooseBetter(current: ISwap?, new: ISwap?): ISwap? =
@@ -159,7 +162,7 @@ class LocalSearch(
 
         val routeRemovals = findTwoOptRouteRemoval() + findNodeTransferImprovements(true)
         val bestSwap = if (routeRemovals.isNotEmpty()) {
-            logger.trace("Removed a vehicle via LS!!!")
+            //logger.trace("Removed a vehicle via LS!!!")
             routeRemovals.maxOrNull()!!
         } else {
             chooser()
