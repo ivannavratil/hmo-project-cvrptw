@@ -9,8 +9,6 @@ import shared.Instance
 import java.io.File
 import kotlin.concurrent.thread
 
-// TODO Array / ArrayList / List ?
-
 // TODO For instance 6:
 // TODO alpha [0.7, 1.1] makes almost no difference
 // TODO large beta significantly reduces distances at the cost of more cars

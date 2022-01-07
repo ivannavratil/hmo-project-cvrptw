@@ -24,7 +24,7 @@ class Ant(
             if (neighbors.isEmpty()) {
                 solutionBuilder.addNextNode(instance.depot)
                 if (solutionBuilder.isFinished) {
-                    return solutionBuilder  // TODO local search
+                    return solutionBuilder
                 }
 
                 solutionBuilder.createNewRoute()
