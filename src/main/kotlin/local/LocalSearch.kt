@@ -1,12 +1,6 @@
 package local
 
-import helpers.CompositeTermination
-import helpers.Config
-import helpers.ITerminationCriteria
-import helpers.TotalIterationsTermination
-import helpers.TotalTimeTermination
-import helpers.WeightedLottery
-import helpers.seededRandom
+import helpers.*
 import org.apache.logging.log4j.LogManager
 import shared.Instance
 import shared.NodeMeta
@@ -39,7 +33,7 @@ class LocalSearch(
         private set
 
     private val randomChoosers = arrayListOf(::chooseBestSwap3Random, ::chooseBestSwap4Random, ::chooseBestSwap5Random)
-    private val randomChoosersLottery = WeightedLottery(doubleArrayOf(0.3, 0.5, 0.2))
+    private val randomChoosersLottery = WeightedLottery(doubleArrayOf(0.45, 0.4, 0.15))
 
     private lateinit var startTime: Instant
     private val logger = LogManager.getLogger(this::class.java.simpleName)
@@ -121,7 +115,7 @@ class LocalSearch(
     }
 
     private fun chooseBestSwap3Random(): ISwap? {
-        // Randomly choose a neighborhood and then the best swap from it.
+        // Randomly choose a neighborhood and then the best swap from it. Executes very fast.
         return listOf(
             { findTwoOptImprovements() },
             { findInternalSwapImprovements(1) },
