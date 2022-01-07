@@ -17,9 +17,6 @@ private interface ISwap : Comparable<ISwap> {
     override fun compareTo(other: ISwap) = distanceSavings.compareTo(other.distanceSavings)
 }
 
-// TODO LOCAL SEARCH TIME max(10s, 10% of total)? Separate Config param?
-// TODO Use evaluations etc. after search
-
 class LocalSearch(
     private val instance: Instance,
     private val originalSolution: SolutionBuilder  // remains unaltered
@@ -90,7 +87,7 @@ class LocalSearch(
 //                        "time: ${incumbentTime.toSeconds()}s, evaluations: $incumbentEvaluations"
 //            )
         }
-//        logger.info("Iterations: $iters")
+        logger.info("Iterations: $iters")
     }
 
     private fun chooseBetter(current: ISwap?, new: ISwap?): ISwap? =
