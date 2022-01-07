@@ -1,18 +1,22 @@
 import helpers.ConfigChooser
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import java.io.File
+import org.apache.logging.log4j.Level
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
+import org.apache.logging.log4j.core.config.Configurator
+import shared.Instance
 
 fun main() {
+    val logger: Logger = LogManager.getLogger("main")
+    Configurator.setRootLevel(Level.TRACE)
+
     val instanceId = 1
+    val timeLimitMarker = "5m"
+    val exportName = "res-$timeLimitMarker-i$instanceId"
 
-    val base = ConfigChooser.getConfig5m(instanceId)
-
-    File("src/main/resources/graph/config.json").appendText(
-        Json.encodeToString(base) + System.lineSeparator()
-    )
+    val instance = Instance.fromInstanceId(instanceId)
+    val config = ConfigChooser.getConfig(instanceId, timeLimitMarker)
 
     while (true) {
-        main2(instanceId, base.deepCopy())
+        searchWithExports(instance, config.deepCopy(), exportName, logger)
     }
 }
