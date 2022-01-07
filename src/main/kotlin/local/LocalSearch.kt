@@ -396,8 +396,8 @@ class LocalSearch(
         val n5 = route2Raw[nodeOrdinal2].node.id
 
         val distances = instance.distances
-        val currentDistance = distances[n1, n2] + distances[n2, n3] + distances[n4, n5]
-        val swappedDistance = distances[n1, n3] + distances[n4, n2] + distances[n2, n5]
+        val currentDistance = distances[n2, n1] + distances[n2, n3] + distances[n4, n5]
+        val swappedDistance = distances[n1, n3] + distances[n2, n4] + distances[n2, n5]
 
         val distanceSavings = currentDistance - swappedDistance
         if (onlyImproving && distanceSavings <= 0)

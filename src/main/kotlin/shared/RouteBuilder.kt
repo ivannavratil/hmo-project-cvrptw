@@ -47,7 +47,7 @@ class RouteBuilder {
 
         // Will the vehicle manage to return to the depot
         val depotArrival = maxOf(arrivalTime, node.readyTime) + node.serviceTime +
-                instance.travelTime[node.id, instance.depot.id]
+                instance.travelTime[instance.depot.id, node.id]
         if (depotArrival > instance.depot.dueTime)
             return false
 
