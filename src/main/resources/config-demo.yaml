@@ -7,7 +7,7 @@ ant:
   rho: 0.15
 
 antColony:
-  iterations: 2000
+  iterations: 100000
   runtime: 50s
   tauZero: 1E-4
   estimateTauZero: true
@@ -16,5 +16,5 @@ antColony:
     runtime: 6s
 
 finalLocalSearch:
-  iterations: 2000
+  iterations: 5000
   runtime: 10s

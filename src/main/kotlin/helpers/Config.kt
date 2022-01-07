@@ -30,7 +30,7 @@ data class Config(
     @Serializable
     data class AntColony(
         val iterations: Int,
-        @Serializable(with = DurationAsLongSerializer::class)
+        @Serializable(with = DurationAsStringSerializer::class)
         val runtime: Duration,
         var tauZero: Double,
         val estimateTauZero: Boolean,
@@ -45,7 +45,7 @@ data class Config(
     @Serializable
     data class LocalSearch(
         val iterations: Int,
-        @Serializable(with = DurationAsLongSerializer::class)
+        @Serializable(with = DurationAsStringSerializer::class)
         val runtime: Duration
     ) {
         override fun toString(): String {
