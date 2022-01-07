@@ -1,12 +1,9 @@
 import helpers.ConfigChooser
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.apache.logging.log4j.core.config.Configurator
 import shared.Instance
-import java.io.File
 import kotlin.concurrent.thread
 
 // TODO For instance 6:
@@ -24,10 +21,6 @@ fun main() {
 
     val instance = Instance.fromInstanceId(instanceId)
     val baseConfig = ConfigChooser.getConfig(instanceId, timeLimitMarker)
-
-    File("src/main/resources/graph/i$instanceId").appendText(
-        Json.encodeToString(baseConfig) + System.lineSeparator()
-    )
 
     for (i in 1..2) {
 
