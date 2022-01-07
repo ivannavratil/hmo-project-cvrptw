@@ -30,18 +30,18 @@ fun main() {
 
     for (i in 0 until 10) {
         thread(name = "instance = $instanceId, thread = $i") {
-            main2(base.deepCopy())
+            main2(instanceId, base.deepCopy())
         }
     }
 }
 
-fun main2(config: Config) {
+fun main2(instanceId: Int, config: Config) {
     val logger: Logger = LogManager.getLogger("main")
     Configurator.setRootLevel(Level.TRACE)
 
     println("helpers.Config setup: $config")
 
-    val instance = Instance.fromInstanceId(config.instanceId)
+    val instance = Instance.fromInstanceId(instanceId)
 
     val aco = AntColony(instance, config)
 
@@ -53,9 +53,9 @@ fun main2(config: Config) {
     val formattedTimestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"))
 
     Solution.fromSolutionBuilder(incumbentSolution!!)
-        .exportToFile("src/main/resources/results/i${config.instanceId}-${formattedTimestamp}-${Random.nextULong()}.txt")
+        .exportToFile("src/main/resources/results/i$instanceId-$formattedTimestamp-${Random.nextULong()}.txt")
 
     File("src/main/resources/graph/results.txt").appendText(
-        "${config.instanceId};${incumbentSolution.vehiclesUsed};${incumbentSolution.totalDistance}" + System.lineSeparator()
+        "$instanceId;${incumbentSolution.vehiclesUsed};${incumbentSolution.totalDistance}" + System.lineSeparator()
     )
 }

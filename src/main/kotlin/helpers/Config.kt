@@ -6,7 +6,6 @@ import java.time.Duration
 
 @Serializable
 data class Config(
-    val instanceId: Int,
     val ant: Ant,
     val antColony: AntColony,
 ) {
