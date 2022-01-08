@@ -51,7 +51,7 @@ class Ant(
 
     private fun calculateNumerators(sourceMeta: NodeMeta, destination: Node): Double {
         val pheromones = pheromones[sourceMeta.node.id, destination.id].pow(antConfig.alpha)
-        val visibility = instance.inverseDistances[sourceMeta.node.id, destination.id].pow(antConfig.beta)
+        val visibility = 1.0 / (instance.distances[sourceMeta.node.id, destination.id]).pow(antConfig.beta)
         val waitTime = waitHeuristic.calculateWaitTime(sourceMeta, destination).pow(antConfig.theta)
         return pheromones * visibility * waitTime
     }
