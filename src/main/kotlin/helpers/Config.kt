@@ -34,7 +34,8 @@ data class Config(
         val runtime: Duration,
         var tauZero: Double,
         val estimateTauZero: Boolean,
-        val estimateLocalSearch: LocalSearch?  // counted within AntColony runtime
+        val estimateLocalSearch: LocalSearch?,  // counted within AntColony runtime
+        val bestAntLocalSearch: LocalSearch  // counted within AntColony runtime, repeated for each iteration
     ) {
         override fun toString(): String {
             return "AntColony(iterations=$iterations, runtime=${runtime.toSeconds()}s, tauZero=$tauZero, " +

@@ -41,7 +41,8 @@ fun main(args: Array<String>) {
             Config.Ant(50, 1.0, 1.25, 0.55, 0.35, 0.15),
             Config.AntColony(
                 1000, Duration.ofSeconds(50), 1E-4, true,
-                Config.LocalSearch(500, Duration.ofSeconds(6))
+                Config.LocalSearch(500, Duration.ofSeconds(6)),
+                Config.LocalSearch(8, Duration.ofMillis(100))
             ),
             Config.LocalSearch(2000, Duration.ofSeconds(10))
         )
