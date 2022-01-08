@@ -13,8 +13,14 @@ import kotlin.math.ceil
 
 private interface ISwap : Comparable<ISwap> {
     val distanceSavings: Double
+    val customerNumberDifference: Double
+
     fun performSwap(solution: SolutionBuilder)
-    override fun compareTo(other: ISwap) = distanceSavings.compareTo(other.distanceSavings)
+
+    override fun compareTo(other: ISwap): Int {
+        return compareValuesBy(this, other, { it.customerNumberDifference }, { it.distanceSavings })
+//        return distanceSavings.compareTo(other.distanceSavings)
+    }
 }
 
 class LocalSearch(
@@ -249,7 +255,7 @@ class LocalSearch(
                 val distanceSavings = twoOptSwapSaving(route1, nodeOrdinal1, route2, nodeOrdinal2, false)
                 if (!distanceSavings.isNaN()) {
                     routeRemoval.add(
-                        TwoOptSwapContainer(routeId1, routeId2, nodeOrdinal1, nodeOrdinal2, distanceSavings)
+                        TwoOptSwapContainer(routeId1, routeId2, nodeOrdinal1, nodeOrdinal2, distanceSavings, routes)
                     )
                 }
             }
@@ -276,7 +282,7 @@ class LocalSearch(
                             continue
 
                         improvements.add(
-                            TwoOptSwapContainer(routeId1, routeId2, nodeOrdinal1, nodeOrdinal2, distanceSavings)
+                            TwoOptSwapContainer(routeId1, routeId2, nodeOrdinal1, nodeOrdinal2, distanceSavings, routes)
                         )
                     }
                 }
@@ -367,7 +373,14 @@ class LocalSearch(
                         )
                         if (!distanceSavings.isNaN()) {
                             improvements.add(
-                                NodeTransferContainer(routeId1, routeId2, nodeOrdinal1, nodeOrdinal2, distanceSavings)
+                                NodeTransferContainer(
+                                    routeId1,
+                                    routeId2,
+                                    nodeOrdinal1,
+                                    nodeOrdinal2,
+                                    distanceSavings,
+                                    routes
+                                )
                             )
                         }
                     }
@@ -465,15 +478,14 @@ class LocalSearch(
     private inner class InternalSwapContainer(
         val routeId: Int,
         val nodeOrdinal: Int,
-        step: Int,
-        override val distanceSavings: Double
+        val step: Int,
+        override val distanceSavings: Double,
+        override val customerNumberDifference: Double = 0.0
     ) : ISwap {
-        val step: Int
-
         init {
-            if (step != 1 && step != 2)
+            if (step != 1 && step != 2) {
                 throw IllegalArgumentException("bad step value: $step")
-            this.step = step
+            }
         }
 
         override fun performSwap(solution: SolutionBuilder) {
@@ -496,8 +508,19 @@ class LocalSearch(
         val routeId2: Int,
         val nodeOrdinal1: Int,
         val nodeOrdinal2: Int,
-        override val distanceSavings: Double
+        override val distanceSavings: Double,
+        routes: List<RouteBuilder>
     ) : ISwap {
+        override val customerNumberDifference: Double
+
+        init {
+            val r1 = routes[routeId1].route.size
+            val r2 = routes[routeId2].route.size
+            val minBefore = minOf(r1, r2)
+            val minAfter = minOf(nodeOrdinal1 + r2 - nodeOrdinal2 - 1, nodeOrdinal2 + r1 - nodeOrdinal1 - 1)
+            customerNumberDifference = (minBefore - minAfter).toDouble() / minBefore
+        }
+
         private fun copySecondPart(routeBuilder: RouteBuilder, nodeOrdinal: Int) =
             routeBuilder.route.subList(nodeOrdinal + 1, routeBuilder.route.size).toList()
 
@@ -524,8 +547,19 @@ class LocalSearch(
         val routeId2: Int,  // transferred to here
         val nodeOrdinal1: Int,
         val nodeOrdinal2: Int,
-        override val distanceSavings: Double
+        override val distanceSavings: Double,
+        routes: MutableList<RouteBuilder>
     ) : ISwap {
+        override val customerNumberDifference: Double
+
+        init {
+            val r1 = routes[routeId1].route.size
+            val r2 = routes[routeId2].route.size
+            val minBefore = minOf(r1, r2)
+            val minAfter = minOf(r1 - 1, r2 + 1)
+            customerNumberDifference = (minBefore - minAfter).toDouble() / minBefore
+        }
+
         override fun performSwap(solution: SolutionBuilder) {
             val routeBuilder1 = solution.routes[routeId1]
             val routeBuilder2 = solution.routes[routeId2]

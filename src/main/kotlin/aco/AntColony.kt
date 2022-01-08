@@ -52,7 +52,10 @@ class AntColony(
             return false
         }
 
-        val bestAnt = solutions.minOf { it }
+        // TODO use config?
+        // val bestAnt = solutions.minOf { it }
+        val bestAnt = LocalSearch(instance, solutions.minOf { it })
+            .quickSearch(Config.LocalSearch(8, Duration.ofMillis(100)))
 
         if (incumbentSolution == null || bestAnt < incumbentSolution!!) {
             logger.info("Found new best solution - vehicles: ${bestAnt.vehiclesUsed}, distance: ${bestAnt.totalDistance}")
