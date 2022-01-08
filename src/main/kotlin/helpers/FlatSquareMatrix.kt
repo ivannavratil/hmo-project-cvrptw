@@ -1,5 +1,7 @@
 package helpers
 
+import kotlin.math.ceil
+
 class FlatSquareMatrix {
 
     private val stride: Int
@@ -17,9 +19,10 @@ class FlatSquareMatrix {
         this.stride = stride
     }
 
-    operator fun get(r: Int, c: Int): Double {
-        return data[r * stride + c]
-    }
+    operator fun get(r: Int, c: Int): Double = data[r * stride + c]
+
+    // Used for calculating travel time. Not cached because of matrix size.
+    fun getCeil(r: Int, c: Int): Int = ceil(data[r * stride + c]).toInt()
 
     operator fun set(r: Int, c: Int, value: Double) {
         data[r * stride + c] = value
@@ -31,20 +34,5 @@ class FlatSquareMatrix {
     }
 
     fun copy() = FlatSquareMatrix(stride, data.clone())
-
-    fun transformInPlace(f: (Double) -> Double): FlatSquareMatrix {
-        for (i in data.indices)
-            data[i] = f(data[i])
-        return this
-    }
-
-}
-
-
-class FlatSquareMatrixInt(private val stride: Int, initializer: (row: Int, col: Int) -> Int) {
-
-    private val data = IntArray(stride * stride) { initializer(it / stride, it % stride) }
-
-    operator fun get(r: Int, c: Int) = data[r * stride + c]
 
 }

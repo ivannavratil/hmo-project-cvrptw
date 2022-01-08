@@ -452,7 +452,7 @@ class LocalSearch(
         for (nodeMeta in routePart) {
             val node = nodeMeta.node
 
-            val arrivalTime = previousDepartureTime + instance.travelTime[previousNodeId, node.id]
+            val arrivalTime = previousDepartureTime + instance.distances.getCeil(previousNodeId, node.id)
             if (arrivalTime > node.dueTime)
                 return false
 

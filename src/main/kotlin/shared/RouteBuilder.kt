@@ -41,13 +41,13 @@ class RouteBuilder {
 
         // Will the vehicle arrive before customer is closed
         val lastNodeMeta = route.last()
-        val arrivalTime = lastNodeMeta.departureTime + instance.travelTime[lastNodeMeta.node.id, node.id]
+        val arrivalTime = lastNodeMeta.departureTime + instance.distances.getCeil(lastNodeMeta.node.id, node.id)
         if (arrivalTime > node.dueTime)
             return false
 
         // Will the vehicle manage to return to the depot
         val depotArrival = maxOf(arrivalTime, node.readyTime) + node.serviceTime +
-                instance.travelTime[instance.depot.id, node.id]
+                instance.distances.getCeil(instance.depot.id, node.id)
         if (depotArrival > instance.depot.dueTime)
             return false
 
