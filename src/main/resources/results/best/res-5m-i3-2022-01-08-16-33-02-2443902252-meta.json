@@ -1,0 +1,35 @@
+{
+    "incumbentEvaluationsAco": 16880,
+    "incumbentTimeAco": "PT1M34.2527629S",
+    "evaluationsAco": 44340,
+    "evaluationsAcoTauZero": 0,
+    "incumbentEvaluationsLocal": 88,
+    "incumbentTimeLocal": "PT0.1462016S",
+    "evaluationsLocal": 40158,
+    "totalRuntimeAco": "PT4M10.1228263S",
+    "totalRuntimeLocal": "PT50.001968S",
+    "config": {
+        "ant": {
+            "count": 20,
+            "alpha": 1.0,
+            "beta": 1.4,
+            "theta": 0.5,
+            "q0": 0.4,
+            "rho": 0.2
+        },
+        "antColony": {
+            "iterations": 1000000000,
+            "runtime": "PT4M10S",
+            "tauZero": 7.0E-5,
+            "estimateTauZero": false,
+            "estimateLocalSearch": {
+                "iterations": 500,
+                "runtime": "PT6S"
+            }
+        },
+        "finalLocalSearch": {
+            "iterations": 2000,
+            "runtime": "PT50S"
+        }
+    }
+}
