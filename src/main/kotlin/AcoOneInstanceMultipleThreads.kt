@@ -17,9 +17,11 @@ fun main() {
     val instance = Instance.fromInstanceId(instanceId)
     val config = ConfigChooser.getConfig(instanceId, timeLimitMarker)
 
-    for (i in 0 until 10) {
+    for (i in 0 until 6) {
         thread(name = "instance = $instanceId, thread = $i") {
-            searchWithExports(instance, config.deepCopy(), exportName, logger)
+            while (true) {
+                searchWithExports(instance, config.deepCopy(), exportName, logger)
+            }
         }
     }
 }
