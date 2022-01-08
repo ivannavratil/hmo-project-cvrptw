@@ -20,7 +20,10 @@ import kotlin.random.Random
 import kotlin.random.nextUInt
 
 
-private val jsonFormatter = Json { prettyPrint = true }
+private val jsonFormatter = Json {
+    prettyPrint = true
+    encodeDefaults = true
+}
 
 fun main(args: Array<String>) {
     val logger: Logger = LogManager.getLogger("main")
