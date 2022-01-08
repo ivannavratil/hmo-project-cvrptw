@@ -1,13 +1,13 @@
 {
-    "incumbentEvaluationsAco": 7112,
-    "incumbentTimeAco": "PT3M0.178998S",
-    "evaluationsAco": 9898,
+    "incumbentEvaluationsAco": 4298,
+    "incumbentTimeAco": "PT1M55.0680005S",
+    "evaluationsAco": 9310,
     "evaluationsAcoTauZero": 0,
-    "incumbentEvaluationsLocal": 5569,
-    "incumbentTimeLocal": "PT32.4689991S",
-    "evaluationsLocal": 8383,
-    "totalRuntimeAco": "PT4M10.3559993S",
-    "totalRuntimeLocal": "PT50.0020004S",
+    "incumbentEvaluationsLocal": 634,
+    "incumbentTimeLocal": "PT5.8269973S",
+    "evaluationsLocal": 6386,
+    "totalRuntimeAco": "PT4M10.0310023S",
+    "totalRuntimeLocal": "PT50.0029968S",
     "config": {
         "ant": {
             "count": 14,
