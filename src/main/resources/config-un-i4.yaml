@@ -8,7 +8,7 @@ ant:
 
 antColony:
   iterations: 1000000000
-  runtime: 11min
+  runtime: 6min
   tauZero: 6E-5
   estimateTauZero: false
   estimateLocalSearch:
@@ -20,4 +20,4 @@ antColony:
 
 finalLocalSearch:
   iterations: 2000
-  runtime: 80s
+  runtime: 2min
