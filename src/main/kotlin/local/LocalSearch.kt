@@ -138,7 +138,9 @@ class LocalSearch(
     private fun chooseBestSwap5Random(): ISwap? {
         // Choose from a RCL (best 20%).
         val allSwaps = generateAllNeighbors()
-        if (allSwaps.isEmpty()) return null
+        if (allSwaps.isEmpty()) {
+            return null
+        }
         allSwaps.sortByDescending { it }
         return allSwaps[seededRandom.nextInt(ceil(allSwaps.size * 0.2).toInt())]
     }
