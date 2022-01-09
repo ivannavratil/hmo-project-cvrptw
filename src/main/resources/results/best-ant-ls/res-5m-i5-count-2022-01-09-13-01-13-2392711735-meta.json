@@ -1,0 +1,42 @@
+{
+    "incumbentEvaluationsAco": 6912,
+    "incumbentTimeAco": "PT3M59.741315S",
+    "evaluationsAco": 7218,
+    "evaluationsAcoTauZero": 0,
+    "incumbentEvaluationsLocal": 304,
+    "incumbentTimeLocal": "PT3.921941S",
+    "evaluationsLocal": 3980,
+    "totalRuntimeAco": "PT4M10.229757S",
+    "totalRuntimeLocal": "PT50.003969S",
+    "config": {
+        "ant": {
+            "count": 18,
+            "alpha": 1.25,
+            "beta": 1.2,
+            "theta": 0.72,
+            "q0": 0.4,
+            "rho": 0.15
+        },
+        "antColony": {
+            "iterations": 1000000000,
+            "runtime": "PT4M10S",
+            "tauZero": 2.0E-5,
+            "estimateTauZero": false,
+            "estimateLocalSearch": {
+                "iterations": 500,
+                "runtime": "PT6S"
+            },
+            "bestAntLocalSearch": {
+                "iterations": 8,
+                "runtime": "PT0.1S"
+            }
+        },
+        "finalLocalSearch": {
+            "iterations": 2000,
+            "runtime": "PT50S"
+        }
+    },
+    "totalIncumbentEvaluations": 7216,
+    "totalIncumbentTime": "PT4M3.663256S",
+    "totalRuntimeCombined": "PT5M0.233726S"
+}
