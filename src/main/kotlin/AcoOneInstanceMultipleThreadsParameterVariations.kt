@@ -1,10 +1,7 @@
 import helpers.ConfigChooser
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import shared.Instance
-import java.io.File
 import kotlin.concurrent.thread
 
 // TODO For instance 6:

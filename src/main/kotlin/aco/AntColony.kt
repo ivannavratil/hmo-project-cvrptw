@@ -1,6 +1,10 @@
 package aco
 
-import helpers.*
+import helpers.CompositeTermination
+import helpers.Config
+import helpers.FlatSquareMatrix
+import helpers.TotalIterationsTermination
+import helpers.TotalTimeTermination
 import local.LocalSearch
 import org.apache.logging.log4j.LogManager
 import shared.Instance

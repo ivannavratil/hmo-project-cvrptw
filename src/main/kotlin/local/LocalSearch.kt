@@ -1,6 +1,12 @@
 package local
 
-import helpers.*
+import helpers.CompositeTermination
+import helpers.Config
+import helpers.ITerminationCriteria
+import helpers.TotalIterationsTermination
+import helpers.TotalTimeTermination
+import helpers.WeightedLottery
+import helpers.seededRandom
 import org.apache.logging.log4j.LogManager
 import shared.Instance
 import shared.NodeMeta
@@ -24,8 +30,7 @@ private interface ISwap : Comparable<ISwap> {
 }
 
 class LocalSearch(
-    private val instance: Instance,
-    private val originalSolution: SolutionBuilder  // remains unaltered
+    private val instance: Instance, private val originalSolution: SolutionBuilder  // remains unaltered
 ) {
     private lateinit var currentSolution: SolutionBuilder
     var incumbentSolution = originalSolution
@@ -47,8 +52,7 @@ class LocalSearch(
     fun quickSearch(config: Config.LocalSearch): SolutionBuilder {
         startTime = Instant.now()
         val compositeTermination = CompositeTermination(
-            TotalTimeTermination(startTime + config.runtime),
-            TotalIterationsTermination(config.iterations)
+            TotalTimeTermination(startTime + config.runtime), TotalIterationsTermination(config.iterations)
         )
         searchInternal(compositeTermination, ::chooseBestSwap1)
         return incumbentSolution
@@ -77,20 +81,18 @@ class LocalSearch(
         currentSolution = originalSolution.deepCopy()
         var iters = 0
         while (!terminationCriteria.terminate(iters++)) {
-            if (!iteration(chooser))
-                break
+            if (!iteration(chooser)) break
             // currentSolution was improved
 
-            if (currentSolution !== incumbentSolution && currentSolution >= incumbentSolution)
+            if (currentSolution !== incumbentSolution && currentSolution >= incumbentSolution) {
                 continue
+            }
 
             incumbentSolution = currentSolution
             incumbentEvaluations = evaluations
             incumbentTime = Duration.between(startTime, Instant.now())
             logger.info(
-                "Found new best solution - " +
-                        "vehicles: ${incumbentSolution.vehiclesUsed}, distance: ${incumbentSolution.totalDistance}, " +
-                        "time: ${incumbentTime.toSeconds()}s, evaluations: $incumbentEvaluations"
+                "Found new best solution - " + "vehicles: ${incumbentSolution.vehiclesUsed}, distance: ${incumbentSolution.totalDistance}, " + "time: ${incumbentTime.toSeconds()}s, evaluations: $incumbentEvaluations"
             )
         }
         //logger.info("Iterations: $iters")
@@ -104,8 +106,7 @@ class LocalSearch(
         var bestSwap = findTwoOptImprovements().maxOrNull() as ISwap?
         if (bestSwap == null) {
             bestSwap = chooseBetter(
-                findInternalSwapImprovements(1).maxOrNull(),
-                findInternalSwapImprovements(2).maxOrNull()
+                findInternalSwapImprovements(1).maxOrNull(), findInternalSwapImprovements(2).maxOrNull()
             )
         }
         return chooseBetter(bestSwap, findNodeTransferImprovements().maxOrNull())
@@ -122,14 +123,10 @@ class LocalSearch(
 
     private fun chooseBestSwap3Random(): ISwap? {
         // Randomly choose a neighborhood and then the best swap from it. Executes very fast.
-        return listOf(
-            { findTwoOptImprovements() },
+        return listOf({ findTwoOptImprovements() },
             { findInternalSwapImprovements(1) },
             { findInternalSwapImprovements(2) },
-            { findNodeTransferImprovements() }
-        ).shuffled(seededRandom)
-            .asSequence()
-            .map { it -> it().maxOrNull() }
+            { findNodeTransferImprovements() }).shuffled(seededRandom).asSequence().map { it -> it().maxOrNull() }
             .firstNotNullOfOrNull { it }
     }
 
@@ -141,8 +138,7 @@ class LocalSearch(
     private fun chooseBestSwap5Random(): ISwap? {
         // Choose from a RCL (best 20%).
         val allSwaps = generateAllNeighbors()
-        if (allSwaps.isEmpty())
-            return null
+        if (allSwaps.isEmpty()) return null
         allSwaps.sortByDescending { it }
         return allSwaps[seededRandom.nextInt(ceil(allSwaps.size * 0.2).toInt())]
     }
@@ -175,8 +171,7 @@ class LocalSearch(
 //        logger.trace(Solution.fromSolutionBuilder(currentSolution).formatOutput())
 
         val finalDistance = currentSolution.totalDistance
-        if (abs(originalDistance - finalDistance - bestSwap.distanceSavings) > 1e-5)
-            throw RuntimeException("bad distance - expected ${bestSwap.distanceSavings}, got ${originalDistance - finalDistance}")
+        if (abs(originalDistance - finalDistance - bestSwap.distanceSavings) > 1e-5) throw RuntimeException("bad distance - expected ${bestSwap.distanceSavings}, got ${originalDistance - finalDistance}")
 
         return true
     }
@@ -208,13 +203,9 @@ class LocalSearch(
         val nmNext = route[nodeOrdinal + step + 1]
 
         val distanceSavings = calculateDistanceSavings(
-            node1Id = nmPrev.node.id,
-            node1IdNext = nm1.node.id,
-            node2Id = nmNext.node.id,
-            node2IdNext = nmLast.node.id
+            node1Id = nmPrev.node.id, node1IdNext = nm1.node.id, node2Id = nmNext.node.id, node2IdNext = nmLast.node.id
         )
-        if (distanceSavings <= 0)
-            return Double.NaN
+        if (distanceSavings <= 0) return Double.NaN
 
         // Demand will always be satisfied.
 
@@ -231,8 +222,7 @@ class LocalSearch(
         route[nodeOrdinal + 1] = nm2
         route[nodeOrdinal + 2] = nm3
 
-        if (!isValid)
-            return Double.NaN
+        if (!isValid) return Double.NaN
 
         return distanceSavings
     }
@@ -245,8 +235,7 @@ class LocalSearch(
             val route1 = routes[routeId1]
 
             for (routeId2 in 0 until routes.size) {
-                if (routeId1 == routeId2)
-                    continue
+                if (routeId1 == routeId2) continue
 
                 val route2 = routes[routeId2]
                 val nodeOrdinal1 = 0
@@ -278,8 +267,7 @@ class LocalSearch(
                 for (nodeOrdinal1 in 0 until (route1.route.size - 1)) {
                     for (nodeOrdinal2 in 1 until (route2.route.size - 1)) {
                         val distanceSavings = twoOptSwapSaving(route1, nodeOrdinal1, route2, nodeOrdinal2, true)
-                        if (distanceSavings.isNaN())
-                            continue
+                        if (distanceSavings.isNaN()) continue
 
                         improvements.add(
                             TwoOptSwapContainer(routeId1, routeId2, nodeOrdinal1, nodeOrdinal2, distanceSavings, routes)
@@ -296,18 +284,15 @@ class LocalSearch(
     private fun merge(nodeOrdinal: Int, routeBuilder: RouteBuilder, nodesToAdd: List<NodeMeta>) {
         val route = routeBuilder.route
 
-        while (route.size > nodeOrdinal + 1)
-            route.removeLast()
+        while (route.size > nodeOrdinal + 1) route.removeLast()
 
-        for (nodeMeta in nodesToAdd)
-            route.add(route.last().calculateNext(nodeMeta.node, instance))
+        for (nodeMeta in nodesToAdd) route.add(route.last().calculateNext(nodeMeta.node, instance))
 
         updateDistanceAndCapacity(routeBuilder)
     }
 
     private fun calculateTwoOptSwapDistanceSavings(
-        route1: RouteBuilder, nodeOrdinal1: Int,
-        route2: RouteBuilder, nodeOrdinal2: Int
+        route1: RouteBuilder, nodeOrdinal1: Int, route2: RouteBuilder, nodeOrdinal2: Int
     ) = calculateDistanceSavings(
         node1Id = route1.route[nodeOrdinal1].node.id,
         node1IdNext = route1.route[nodeOrdinal1 + 1].node.id,
@@ -316,32 +301,25 @@ class LocalSearch(
     )
 
     private fun twoOptSwapSaving(
-        route1: RouteBuilder, nodeOrdinal1: Int,
-        route2: RouteBuilder, nodeOrdinal2: Int,
-        onlyImproving: Boolean
+        route1: RouteBuilder, nodeOrdinal1: Int, route2: RouteBuilder, nodeOrdinal2: Int, onlyImproving: Boolean
     ): Double {
         val nodeMeta1 = route1.route[nodeOrdinal1]
         val nodeMeta2 = route2.route[nodeOrdinal2]
 
         val distanceSavings = calculateTwoOptSwapDistanceSavings(route1, nodeOrdinal1, route2, nodeOrdinal2)
-        if (onlyImproving && distanceSavings <= 1e-8)
-            return Double.NaN
+        if (onlyImproving && distanceSavings <= 1e-8) return Double.NaN
 
         val route1SecondPart = route1.route.subList(nodeOrdinal1 + 1, route1.route.size)
         val route2SecondPart = route2.route.subList(nodeOrdinal2 + 1, route2.route.size)
 
         val totalDemand1 = sumDemand(route1.route.subList(0, nodeOrdinal1 + 1), route2SecondPart)
-        if (totalDemand1 > instance.capacity)
-            return Double.NaN
+        if (totalDemand1 > instance.capacity) return Double.NaN
 
         val totalDemand2 = sumDemand(route2.route.subList(0, nodeOrdinal2 + 1), route1SecondPart)
-        if (totalDemand2 > instance.capacity)
-            return Double.NaN
+        if (totalDemand2 > instance.capacity) return Double.NaN
 
-        if (!validateTimeWindows(nodeMeta1, route2SecondPart))
-            return Double.NaN
-        if (!validateTimeWindows(nodeMeta2, route1SecondPart))
-            return Double.NaN
+        if (!validateTimeWindows(nodeMeta1, route2SecondPart)) return Double.NaN
+        if (!validateTimeWindows(nodeMeta2, route1SecondPart)) return Double.NaN
 
         return distanceSavings
     }
@@ -353,19 +331,16 @@ class LocalSearch(
         for (routeId1 in 0 until routes.size) {
             val route1 = routes[routeId1]
 
-            if (onlyRouteRemoval && route1.route.size != 3)
-                continue
+            if (onlyRouteRemoval && route1.route.size != 3) continue
 
             for (routeId2 in 0 until routes.size) {
-                if (routeId1 == routeId2)
-                    continue
+                if (routeId1 == routeId2) continue
 
                 val route2 = routes[routeId2]
 
                 for (nodeOrdinal1 in 1 until (route1.route.size - 1)) {
                     val demand = route1.route[nodeOrdinal1].node.demand
-                    if (route2.remainingCapacity < demand)
-                        continue
+                    if (route2.remainingCapacity < demand) continue
 
                     for (nodeOrdinal2 in 1 until route2.route.size) {
                         val distanceSavings = nodeTransferSaving(
@@ -374,12 +349,7 @@ class LocalSearch(
                         if (!distanceSavings.isNaN()) {
                             improvements.add(
                                 NodeTransferContainer(
-                                    routeId1,
-                                    routeId2,
-                                    nodeOrdinal1,
-                                    nodeOrdinal2,
-                                    distanceSavings,
-                                    routes
+                                    routeId1, routeId2, nodeOrdinal1, nodeOrdinal2, distanceSavings, routes
                                 )
                             )
                         }
@@ -392,9 +362,7 @@ class LocalSearch(
     }
 
     private fun nodeTransferSaving(
-        route1: RouteBuilder, nodeOrdinal1: Int,
-        route2: RouteBuilder, nodeOrdinal2: Int,
-        onlyImproving: Boolean
+        route1: RouteBuilder, nodeOrdinal1: Int, route2: RouteBuilder, nodeOrdinal2: Int, onlyImproving: Boolean
     ): Double {
         // We know route2 has enough capacity to accept the node.
         val route1Raw = route1.route
@@ -413,16 +381,14 @@ class LocalSearch(
         val swappedDistance = distances[n1, n3] + distances[n2, n4] + distances[n2, n5]
 
         val distanceSavings = currentDistance - swappedDistance
-        if (onlyImproving && distanceSavings <= 0)
-            return Double.NaN
+        if (onlyImproving && distanceSavings <= 0) return Double.NaN
 
         // Because of the triangle inequality, route1 must already have valid time windows.
         // Avoid creating new lists.
         route2Raw[nodeOrdinal2 - 1] = nodeMeta2
         val isValid = validateTimeWindows(nodeMeta4, route2Raw.subList(nodeOrdinal2 - 1, route2Raw.size))
         route2Raw[nodeOrdinal2 - 1] = nodeMeta4
-        if (!isValid)
-            return Double.NaN
+        if (!isValid) return Double.NaN
 
         return distanceSavings
     }
@@ -466,8 +432,7 @@ class LocalSearch(
             val node = nodeMeta.node
 
             val arrivalTime = previousDepartureTime + instance.distances.getCeil(previousNodeId, node.id)
-            if (arrivalTime > node.dueTime)
-                return false
+            if (arrivalTime > node.dueTime) return false
 
             previousNodeId = node.id
             previousDepartureTime = maxOf(arrivalTime, node.readyTime) + node.serviceTime
