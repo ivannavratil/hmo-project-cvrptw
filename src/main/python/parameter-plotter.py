@@ -65,7 +65,7 @@ def plot_scatter_param(ax, params_to_score: Dict[float, Tuple[float, float]], ti
     is_exponential = is_params_exponential(params)
 
     norm = mpl.colors.LogNorm() if is_exponential else mpl.colors.Normalize()
-    cmap = cm.jet
+    cmap = cm.autumn
 
     ax.set_title(title, weight='bold')
     ax.set_xlabel('average number of vehicles', labelpad=6)
@@ -74,7 +74,7 @@ def plot_scatter_param(ax, params_to_score: Dict[float, Tuple[float, float]], ti
     ax.set_xmargin(0.15)
     ax.set_ymargin(0.15)
 
-    im = ax.scatter(vehicles, distances, s=250, c=params, cmap=cmap, norm=norm, alpha=0.4)
+    im = ax.scatter(vehicles, distances, s=150, c=params, cmap=cmap, norm=norm, alpha=1)
 
     # min_area_index = np.argmin(params_area)
     # max_area_index = np.argmax(params_area)
@@ -95,7 +95,7 @@ def plot_scatter_param(ax, params_to_score: Dict[float, Tuple[float, float]], ti
 
 
 def plot_all_for_param(formatted_path_in: str, formatted_path_out: str, param_meta: Tuple[str, str], time_marker: str):
-    fig, axs = plt.subplots(3, 2, figsize=(15, 15))
+    fig, axs = plt.subplots(3, 2, figsize=(17, 17))
     for i, ax in enumerate(itertools.chain.from_iterable(axs)):
         instance_id = i + 1
         with open(formatted_path_in.format(time_marker=time_marker, instance_id=instance_id, param=param_meta[0])) as f:
