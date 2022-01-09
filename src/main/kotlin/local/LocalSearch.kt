@@ -81,7 +81,9 @@ class LocalSearch(
         currentSolution = originalSolution.deepCopy()
         var iters = 0
         while (!terminationCriteria.terminate(iters++)) {
-            if (!iteration(chooser)) break
+            if (!iteration(chooser)) {
+                break
+            }
             // currentSolution was improved
 
             if (currentSolution !== incumbentSolution && currentSolution >= incumbentSolution) {
