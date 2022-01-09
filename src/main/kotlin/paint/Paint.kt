@@ -19,13 +19,16 @@ import javax.swing.JPanel
 fun main() {
     val f = JFrame()
 
+    val edgeMargin = 10
+
     val screenSize: Dimension = Toolkit.getDefaultToolkit().screenSize
     val height = screenSize.getHeight().toInt()
 
-    val instanceId = 1
+    val instanceId = 3
     val instance = Instance.fromInstanceId(instanceId)
 
-    val solution: Solution = Solution.fromFile(File("src/main/resources/results/best/i$instanceId-LS.txt"))
+    val solution: Solution =
+        Solution.fromFile(File("src/main/resources/results/best-ant-ls/res-un-i3-theta-2022-01-09-05-23-45-2200515233-LS.txt"))
 //    val solution: Solution = shared.Solution.fromFile(File("src/main/resources/results/fake-res-1m-i${instanceId}.txt"))
 //    val solution: Solution? = null
 
@@ -91,16 +94,16 @@ fun main() {
                     if (j == 0) {
                         g.drawString(
                             "R$i",
-                            ((customer1.xCoordinate + customer2.xCoordinate) * multiplier / 2).toFloat(),
-                            ((customer1.yCoordinate + customer2.yCoordinate) * multiplier / 2).toFloat()
+                            ((customer1.xCoordinate + customer2.xCoordinate) * multiplier / 2 + edgeMargin).toFloat(),
+                            ((customer1.yCoordinate + customer2.yCoordinate) * multiplier / 2 + edgeMargin).toFloat()
                         )
                     }
 
                     g.drawLine(
-                        (customer1.xCoordinate * multiplier).toInt(),
-                        (customer1.yCoordinate * multiplier).toInt(),
-                        (customer2.xCoordinate * multiplier).toInt(),
-                        (customer2.yCoordinate * multiplier).toInt()
+                        (customer1.xCoordinate * multiplier + edgeMargin).toInt(),
+                        (customer1.yCoordinate * multiplier + edgeMargin).toInt(),
+                        (customer2.xCoordinate * multiplier + edgeMargin).toInt(),
+                        (customer2.yCoordinate * multiplier + edgeMargin).toInt()
                     )
                 }
             }
@@ -114,8 +117,8 @@ fun main() {
                 val pointSize = if (i == 0) depotPointSize else customerPointSize
 
                 g.fillOval(
-                    (node.xCoordinate * multiplier - pointSize / 2).toInt(),
-                    (node.yCoordinate * multiplier - pointSize / 2).toInt(),
+                    (node.xCoordinate * multiplier - pointSize / 2 + edgeMargin).toInt(),
+                    (node.yCoordinate * multiplier - pointSize / 2 + edgeMargin).toInt(),
                     pointSize,
                     pointSize
                 )
