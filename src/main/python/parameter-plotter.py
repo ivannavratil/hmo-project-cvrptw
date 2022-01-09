@@ -110,7 +110,7 @@ def plot_all_for_param(formatted_path_in: str, formatted_path_out: str, param_me
 
     fig.tight_layout()
     stamp = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    fig.savefig(formatted_path_out.format(time_marker=time_marker, param=param_meta[0], stamp=stamp), dpi=600)
+    fig.savefig(formatted_path_out.format(time_marker=time_marker, param=param_meta[0], stamp=stamp), dpi=300)
     fig.show()
 
 
