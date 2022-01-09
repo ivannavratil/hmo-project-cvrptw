@@ -2,7 +2,7 @@
 
 package helpers
 
-import java.util.*
+import java.util.Arrays
 
 class WeightedLottery(private val weights: DoubleArray) {
     private val accumulatedWeights = DoubleArray(weights.size)
