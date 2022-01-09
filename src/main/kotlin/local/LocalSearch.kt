@@ -308,7 +308,9 @@ class LocalSearch(
     private fun merge(nodeOrdinal: Int, routeBuilder: RouteBuilder, nodesToAdd: List<NodeMeta>) {
         val route = routeBuilder.route
 
-        while (route.size > nodeOrdinal + 1) route.removeLast()
+        while (route.size > nodeOrdinal + 1) {
+            route.removeLast()
+        }
 
         for (nodeMeta in nodesToAdd) {
             route.add(route.last().calculateNext(nodeMeta.node, instance))
