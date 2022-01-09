@@ -1,13 +1,12 @@
 import datetime
 import itertools
-import operator
-from collections import defaultdict
-from typing import Dict, Tuple, List
-
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
+import operator
+from collections import defaultdict
 from matplotlib import cm
+from typing import Dict, Tuple, List
 
 
 def parse_raw_graph_data_contents(lines: List[str]):
@@ -111,7 +110,7 @@ def plot_all_for_param(formatted_path_in: str, formatted_path_out: str, param_me
 
     fig.tight_layout()
     stamp = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    fig.savefig(formatted_path_out.format(time_marker=time_marker, param=param_meta[0], stamp=stamp))
+    fig.savefig(formatted_path_out.format(time_marker=time_marker, param=param_meta[0], stamp=stamp), dpi=600)
     fig.show()
 
 
