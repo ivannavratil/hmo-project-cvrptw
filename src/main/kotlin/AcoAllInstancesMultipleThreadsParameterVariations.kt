@@ -61,7 +61,7 @@ fun main() {
 
             executor.execute {
                 val cTau = baseConfig.deepCopy()
-                cTau.antColony.tauZero = 1.0.pow(ThreadLocalRandom.current().nextInt(-8, 0).toDouble())
+                cTau.antColony.tauZero = 10.0.pow(ThreadLocalRandom.current().nextInt(-8, 0).toDouble())
                 searchWithExports(instance, cTau, "$exportName-tau", logger, cTau.antColony.tauZero)
             }
 
