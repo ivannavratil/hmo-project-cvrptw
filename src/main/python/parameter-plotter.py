@@ -66,7 +66,7 @@ def plot_scatter_param(ax, params_to_score: Dict[float, Tuple[float, float]], ti
     is_exponential = is_params_exponential(params)
 
     norm = mpl.colors.LogNorm() if is_exponential else mpl.colors.Normalize()
-    cmap = cm.jet  # 'jet'  # cm.hot
+    cmap = cm.jet
 
     ax.set_title(title, weight='bold')
     ax.set_xlabel('average number of vehicles', labelpad=6)
