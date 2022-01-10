@@ -94,14 +94,14 @@ fun searchWithExports(
         Charsets.UTF_8
     )
 
-    File("src/main/resources/graph/$exportName-ACO.txt").appendText(
+    File("src/main/resources/graph-new-params/$exportName-ACO.txt").appendText(
         "${resultMetadata.totalRuntimeAco.toSeconds()};" +
                 "${incumbentSolutionAco.vehiclesUsed};" +
                 "${incumbentSolutionAco.totalDistance}" +
                 (if (variedParameter != null) ";$variedParameter" else "") +
                 System.lineSeparator()
     )
-    File("src/main/resources/graph/$exportName-LS.txt").appendText(
+    File("src/main/resources/graph-new-params/$exportName-LS.txt").appendText(
         "${resultMetadata.totalRuntimeCombined.toSeconds()};" +
                 "${incumbentSolutionLs.vehiclesUsed};" +
                 "${incumbentSolutionLs.totalDistance}" +
