@@ -1,10 +1,10 @@
 ant:
-  count: 14
+  count: 15
   alpha: 1.25
-  beta: 1.2
-  theta: 0.72
+  beta: 0.8
+  theta: 0.7
   q0: 0.4
-  rho: 0.15
+  rho: 0.2
 
 antColony:
   iterations: 1000000000
