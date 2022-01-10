@@ -1,8 +1,8 @@
 ant:
-  count: 60
-  alpha: 0.9
-  beta: 0.7
-  theta: 0.6
+  count: 50
+  alpha: 1.1
+  beta: 0.9
+  theta: 0.35
   q0: 0.4
   rho: 0.5
 
