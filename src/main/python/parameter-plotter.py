@@ -88,7 +88,7 @@ def plot_scatter_param(ax, params_to_score: Dict[float, Tuple[float, float]], ti
     # ax.legend(scatterpoints=1, frameon=True, labelspacing=1.3, borderpad=1.2, title='Legend')
 
     # for i, value in enumerate(params):
-    #     ax.annotate(f'{param_name} = {value}', (vehicles[i], distances[i]))
+    #     ax.annotate(f'{value}', (vehicles[i], distances[i]))
 
     fig = ax.get_figure()
     fig.colorbar(im, ax=ax)
