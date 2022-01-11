@@ -14,7 +14,7 @@ fun main() {
     }
 
     if (dir.isDirectory) { // make sure it's a directory
-        for (f in dir.listFiles()) {
+        for (f in dir.listFiles()!!) {
             try {
 
                 if (f.name.contains(".DS_Store") || f.name.contains("ACO") || f.name.contains("meta")) {
@@ -36,5 +36,4 @@ fun main() {
 
         }
     }
-
 }
