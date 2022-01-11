@@ -1,26 +1,26 @@
 {
-    "incumbentEvaluationsAco": 16120,
-    "incumbentTimeAco": "PT5M41.583641S",
-    "evaluationsAco": 16980,
+    "incumbentEvaluationsAco": 11620,
+    "incumbentTimeAco": "PT3M6.3400001S",
+    "evaluationsAco": 21760,
     "evaluationsAcoTauZero": 0,
-    "incumbentEvaluationsLocal": 3642,
-    "incumbentTimeLocal": "PT22.883303S",
-    "evaluationsLocal": 17679,
-    "totalRuntimeAco": "PT6M0.273342S",
-    "totalRuntimeLocal": "PT2M0.002879S",
+    "incumbentEvaluationsLocal": 1887,
+    "incumbentTimeLocal": "PT11.4430001S",
+    "evaluationsLocal": 23082,
+    "totalRuntimeAco": "PT6M0.2330415S",
+    "totalRuntimeLocal": "PT2M0.0010002S",
     "config": {
         "ant": {
             "count": 20,
-            "alpha": 1.1,
-            "beta": 1.25,
-            "theta": 0.7,
-            "q0": 0.4,
-            "rho": 0.28
+            "alpha": 1.4,
+            "beta": 1.35,
+            "theta": 0.54,
+            "q0": 0.2,
+            "rho": 0.43
         },
         "antColony": {
             "iterations": 1000000000,
             "runtime": "PT6M",
-            "tauZero": 6.0E-5,
+            "tauZero": 1.0E-4,
             "estimateTauZero": false,
             "estimateLocalSearch": {
                 "iterations": 500,
@@ -36,7 +36,7 @@
             "runtime": "PT2M"
         }
     },
-    "totalIncumbentEvaluations": 19762,
-    "totalIncumbentTime": "PT6M4.466944S",
-    "totalRuntimeCombined": "PT8M0.276221S"
+    "totalIncumbentEvaluations": 13507,
+    "totalIncumbentTime": "PT3M17.7830002S",
+    "totalRuntimeCombined": "PT8M0.2340417S"
 }
