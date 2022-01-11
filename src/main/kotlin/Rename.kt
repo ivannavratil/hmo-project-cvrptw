@@ -1,6 +1,7 @@
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 
 fun main() {
 
@@ -25,15 +26,11 @@ fun main() {
                 val last = split.last().split(".")[1]
 
                 val newName =
-                    "src/main/resources/results/best-export/" + split[0] + "-" + split[1] + "-" + split[2] + "-" + last
+                    "src/main/resources/results/best-export/" + split[0] + "-" + split[1] + "-" + split[2] + "." + last
 
-                if (f.renameTo(File(newName))) {
-                    System.out.println("Rename succesful")
-                } else {
-                    System.out.println("Rename failed")
-                }
+                Files.copy(f.toPath(), Path.of(newName), StandardCopyOption.REPLACE_EXISTING)
+
             } catch (e: Exception) {
-                // TODO: handle exception
                 e.printStackTrace()
             }
 
