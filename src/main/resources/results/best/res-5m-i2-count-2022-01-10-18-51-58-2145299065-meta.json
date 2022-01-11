@@ -1,21 +1,21 @@
 {
-    "incumbentEvaluationsAco": 38240,
-    "incumbentTimeAco": "PT2M14.7658369S",
-    "evaluationsAco": 73440,
+    "incumbentEvaluationsAco": 160080,
+    "incumbentTimeAco": "PT3M54.7184913S",
+    "evaluationsAco": 179120,
     "evaluationsAcoTauZero": 0,
-    "incumbentEvaluationsLocal": 6219,
-    "incumbentTimeLocal": "PT5.6460818S",
-    "evaluationsLocal": 48925,
-    "totalRuntimeAco": "PT4M20.2451125S",
-    "totalRuntimeLocal": "PT40.0008119S",
+    "incumbentEvaluationsLocal": 0,
+    "incumbentTimeLocal": "PT0S",
+    "evaluationsLocal": 97794,
+    "totalRuntimeAco": "PT4M20.1106926S",
+    "totalRuntimeLocal": "PT40.000513S",
     "config": {
         "ant": {
             "count": 80,
-            "alpha": 1.0,
-            "beta": 1.25,
-            "theta": 0.45,
+            "alpha": 1.1,
+            "beta": 0.9,
+            "theta": 0.35,
             "q0": 0.4,
-            "rho": 0.36
+            "rho": 0.5
         },
         "antColony": {
             "iterations": 1000000000,
@@ -36,7 +36,7 @@
             "runtime": "PT40S"
         }
     },
-    "totalIncumbentEvaluations": 44459,
-    "totalIncumbentTime": "PT2M20.4119187S",
-    "totalRuntimeCombined": "PT5M0.2459244S"
+    "totalIncumbentEvaluations": 160080,
+    "totalIncumbentTime": "PT3M54.7184913S",
+    "totalRuntimeCombined": "PT5M0.1112056S"
 }
