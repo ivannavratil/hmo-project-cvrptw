@@ -4,10 +4,6 @@ import org.apache.logging.log4j.Logger
 import shared.Instance
 import kotlin.concurrent.thread
 
-// TODO For instance 6:
-// TODO alpha [0.7, 1.1] makes almost no difference
-// TODO large beta significantly reduces distances at the cost of more cars
-// TODO large theta results in longer distances, roughly same #cars
 
 fun main() {
     val logger: Logger = LogManager.getLogger("main")

@@ -56,7 +56,7 @@ class RouteBuilder {
 
     fun addNextNode(node: Node, unvisitedNodes: MutableSet<Node>) {
         if (node !== instance.depot && !isValidNextNode(node, unvisitedNodes))
-            throw RuntimeException("¡Ay, caramba!")  // TODO comment out
+            throw RuntimeException("¡Ay, caramba!")
 
         val lastNodeMeta = route.last()
         route.add(lastNodeMeta.calculateNext(node, instance))

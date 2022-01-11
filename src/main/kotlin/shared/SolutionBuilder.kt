@@ -19,7 +19,7 @@ class SolutionBuilder : Comparable<SolutionBuilder> {
     val currentRoute get() = routes.last()
     val vehiclesUsed get() = routes.size
     val isFinished get() = unvisitedNodes.isEmpty()
-    val totalDistance get() = routes.sumOf { it.totalDistance }  // TODO recalculated many times
+    val totalDistance get() = routes.sumOf { it.totalDistance }
 
     fun createNewRoute() = routes.add(RouteBuilder(instance))
 

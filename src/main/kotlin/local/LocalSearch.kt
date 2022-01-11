@@ -60,7 +60,6 @@ class LocalSearch(
         return incumbentSolution
     }
 
-    // TODO Track which chooser found incumbent solution?
     fun fullSearch(config: Config.LocalSearch): SolutionBuilder {
         startTime = Instant.now()
         val timeTermination = TotalTimeTermination(startTime + config.runtime)
