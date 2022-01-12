@@ -117,8 +117,8 @@ parameter_names = [
 def plot_everything():
     for param_meta in parameter_names:
         plot_all_for_param(
-            'src/main/resources/graph-new-params/res-{time_marker}-i{instance_id}-{param}-LS.txt',
-            'src/main/resources/graph-rendered-new-params/{time_marker}-{param}-{stamp}-LS.png',
+            'src/main/resources/graph/res-{time_marker}-i{instance_id}-{param}-LS.txt',
+            'src/main/resources/graph-rendered/{time_marker}-{param}-{stamp}-LS.png',
             param_meta, '5m'
         )
 
