@@ -1,4 +1,5 @@
 import math
+import operator
 import sys
 
 
@@ -79,6 +80,11 @@ def validate(vehicle_num, capacity, nodes, routes_num, distance, routes):
 
     assert len(visited_node_ids) == len(nodes) - 1
     assert abs(total_travelled - distance) < 1E-5
+
+    total_instance_demand = sum(map(operator.itemgetter('demand'), nodes))
+    print(f'total instance demand: {total_instance_demand}')
+    print(f'routes_num * capacity = {routes_num} * {capacity} = {routes_num * capacity}')
+    print(f'lower bound for vehicles: {total_instance_demand / capacity}')
 
 
 def calc_distance(id1, id2, nodes):
