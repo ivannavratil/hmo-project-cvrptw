@@ -1,9 +1,9 @@
 ant:
-  count: 25
-  alpha: 1.2
-  beta: 1.6
-  theta: 0.45
-  q0: 0.3
+  count: 20
+  alpha: 1.25
+  beta: 1.1
+  theta: 0.3
+  q0: 0.15
   rho: 0.3
 
 antColony:

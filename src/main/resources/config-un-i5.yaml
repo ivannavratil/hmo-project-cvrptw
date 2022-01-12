@@ -1,14 +1,14 @@
 ant:
-  count: 14
-  alpha: 1.25
-  beta: 1.2
-  theta: 0.72
-  q0: 0.4
-  rho: 0.15
+  count: 15
+  alpha: 1.0
+  beta: 0.8
+  theta: 0.4
+  q0: 0.15
+  rho: 0.25
 
 antColony:
   iterations: 1000000000
-  runtime: 12min
+  runtime: 7min
   tauZero: 2E-5
   estimateTauZero: false
   estimateLocalSearch:
@@ -20,4 +20,4 @@ antColony:
 
 finalLocalSearch:
   iterations: 2000
-  runtime: 120s
+  runtime: 3min
