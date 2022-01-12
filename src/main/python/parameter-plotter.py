@@ -76,17 +76,6 @@ def plot_scatter_param(ax, params_to_score: Dict[float, Tuple[float, float]], ti
 
     im = ax.scatter(vehicles, distances, s=150, c=params, cmap=cmap, norm=norm, alpha=1)
 
-    # min_area_index = np.argmin(params_area)
-    # max_area_index = np.argmax(params_area)
-    # min_area = params_area[min_area_index]
-    # max_area = params_area[max_area_index]
-    # min_value = params[min_area_index]
-    # max_value = params[max_area_index]
-
-    # for value, area in [(min_value, min_area), (max_value, max_area)]:
-    #     ax.scatter([], [], c='k', alpha=0.2, s=area, label=str(value))
-    # ax.legend(scatterpoints=1, frameon=True, labelspacing=1.3, borderpad=1.2, title='Legend')
-
     # for i, value in enumerate(params):
     #     ax.annotate(f'{value}', (vehicles[i], distances[i]))
 
