@@ -1,13 +1,13 @@
 ant:
-  count: 50
-  alpha: 1.0
-  beta: 1.25
-  theta: 0.55
-  q0: 0.35
-  rho: 0.15
+  count: 20
+  alpha: 1.15
+  beta: 1.0
+  theta: 0.5
+  q0: 0.3
+  rho: 0.35
 
 antColony:
-  iterations: 100000
+  iterations: 1000000000
   runtime: 50s
   tauZero: 1E-4
   estimateTauZero: true
