@@ -5,8 +5,8 @@ Zagreb.
 
 ### Project structure
 
-Report: [PDF](HOM_2021_Project_report.pdf)  
 Assignment: [PDF](HOM_2021_Project_assignment.pdf)
+Report: [PDF](HOM_2021_Project_report.pdf)  
 
 Best results: [best-export](src/main/resources/results/best-export)  
 Plotted routes: [best-export-pics](src/main/resources/results/best-export-pics)  
