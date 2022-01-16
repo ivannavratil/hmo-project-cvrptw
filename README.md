@@ -7,6 +7,7 @@ Zagreb.
 
 Assignment: [PDF](HOM_2021_Project_assignment.pdf)  
 Report: [PDF](HOM_2021_Project_report.pdf)  
+Presentation: [PPTX](HOM_2021_Project_presentation.pptx)  
 
 Best results: [best-export](src/main/resources/results/best-export)  
 Plotted routes: [best-export-pics](src/main/resources/results/best-export-pics)  
