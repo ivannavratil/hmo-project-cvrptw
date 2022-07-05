@@ -1,7 +1,7 @@
 # Capacitated Vehicle Routing Problem with Time Windows (CVRPTW)
 
 Project for course Heuristic Optimization Methods at Faculty of Electrical Engineering and Computing, University of Zagreb.  
-Selected as the best-performing student project.
+Selected as the best-performing student project of the 49 contending projects.
 
 ### Project structure
 
